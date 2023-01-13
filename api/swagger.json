@@ -383,12 +383,12 @@
             "required": true,
             "schema": {
               "enum": [
-                "subscription",
-                "crops",
+                "subscriptionsList",
+                "cropsList",
                 "sourcesList",
                 "destinationsList",
-                "harvesters",
-                "drivers"
+                "harvestersList",
+                "driversList"
               ]
             }
           }
@@ -421,7 +421,7 @@
         }
       }
     },
-    "/constants/autos": {
+    "/constants/allAutos": {
       "get": {
         "tags": [
           "constants"

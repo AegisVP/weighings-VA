@@ -19,7 +19,7 @@ function connectMail() {
 
 async function main() {
   try {
-    await allConstants.updateAll();
+    allConstants.updateAll();
     connectMail();
     connectMongoose();
 
