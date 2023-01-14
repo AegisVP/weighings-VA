@@ -34,16 +34,16 @@ class DbConstants {
 
     constantsStream.on('change', change => {
       this.assignOneValue(change.fullDocument);
-      console.log('Constants updated in DB')
+      console.log(`Updated constant "${change.fullDocument.type}" from DB`);
     });
 
     autosStream.on('change', change => {
       this.allAutos = this.allAutos.map(auto => (String(auto._id) === String(change.fullDocument._id) ? change.fullDocument : auto));
-      console.log('Constants updated in DB');
+      console.log('Updated constant "autos" from DB');
     });
 
     this.assignValues(allConstants);
-    console.log('Constants fetched');
+    console.log('All constants fetched from DB');
   }
 
   assignValues(allConstants) {
