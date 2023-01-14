@@ -1,6 +1,6 @@
 {
-	"name": "weighings",
-	"version": "0.0.0",
+	"name": "weighings-api",
+	"version": "0.1.0",
 	"private": true,
 	"scripts": {
 		"start": "cross-env NODE_ENV=production node ./server.js",

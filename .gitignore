@@ -104,5 +104,8 @@ dist
 .tern-port
 
 # VSCode files
-
 .vscode
+
+# Build directory
+build/
+*/public/
