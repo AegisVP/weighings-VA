@@ -30,6 +30,7 @@ async function loginUser(req, res, next) {
 
   if (!user) return next(requestError(401, 'Unable to login', 'NoSuchUser'));
 
+  console.log(`Entered password hash: ${await bcrypt.hash(password, 10)}`);
   if (!(await bcrypt.compare(password, user.password))) return next(requestError(401, 'Unable to login', 'WrongPassword'));
 
   const { _id, name, subscription = false } = user;
