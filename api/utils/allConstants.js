@@ -1,4 +1,4 @@
-const { DB_HOST } = require('../config');
+const { MONGODB_HOST } = require('../config');
 
 class DbConstants {
   constructor() {
@@ -17,7 +17,7 @@ class DbConstants {
 
   async updateAll() {
     const MongoClient = require('mongodb').MongoClient;
-    const client = new MongoClient(DB_HOST, { useNewUrlParser: true });
+    const client = new MongoClient(MONGODB_HOST, { useNewUrlParser: true });
     await client.connect();
 
     const allConstantsCursor = client.db('VAgro').collection('constants');
@@ -38,8 +38,14 @@ class DbConstants {
     });
 
     autosStream.on('change', change => {
-      this.allAutos = this.allAutos.map(auto => (String(auto._id) === String(change.fullDocument._id) ? change.fullDocument : auto));
-      console.log('Updated constant "autos" from DB');
+      this.allAutos = this.allAutos.map(auto => {
+        if (String(auto._id) === String(change.fullDocument._id)) {
+          console.log(`Updated "${change.fullDocument.model}" in "autos" from DB`);
+          return change.fullDocument;
+        } else {
+          return auto;
+        }
+      });
     });
 
     this.assignValues(allConstants);

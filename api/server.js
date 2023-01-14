@@ -1,13 +1,13 @@
 require('dotenv').config();
-const { DB_HOST, PORT } = require('./config');
+const { MONGODB_HOST, PORT } = require('./config');
 const { allConstants } = require('./utils');
 
 async function connectMongoose() {
   const mongoose = require('mongoose');
 
-  if (!DB_HOST) throw new Error('DB_HOST not defined!');
+  if (!MONGODB_HOST) throw new Error('MONGODB_HOST not defined!');
 
-  await mongoose.connect(DB_HOST);
+  await mongoose.connect(MONGODB_HOST);
   console.log(`Connected to MongoDB`);
 }
 
