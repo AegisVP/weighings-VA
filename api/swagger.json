@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://vitalagro.onrender.com"
+      "url": "https://vitalagro.onrender.com/api"
     }
   ],
   "tags": [
