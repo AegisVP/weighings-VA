@@ -2,7 +2,7 @@ const { MONGODB_HOST } = require('../config');
 
 class DbConstants {
   constructor() {
-    this.allAutos = [];
+    this.autosList = [];
     this.subscriptionsList = [];
     this.driversList = [];
     this.sourcesList = [];
@@ -24,7 +24,10 @@ class DbConstants {
     const allConstants = await allConstantsCursor.find().toArray();
 
     const allAutosCursor = client.db('VAgro').collection('autos');
-    this.allAutos = await allAutosCursor.find().toArray();
+    this.autosList = await allAutosCursor.find().toArray();
+
+    this.assignValues(allConstants);
+    console.log('All constants fetched from DB');
 
     // //////////////////////  watch for updates  ////////////////////////////////////
 
@@ -47,9 +50,6 @@ class DbConstants {
         }
       });
     });
-
-    this.assignValues(allConstants);
-    console.log('All constants fetched from DB');
   }
 
   assignValues(allConstants) {

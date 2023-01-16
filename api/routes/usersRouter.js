@@ -8,11 +8,8 @@ usersRouter.post('/signup', validationBody(userJoiSchemas.addSchema), tryCatchWr
 usersRouter.post('/login', validationBody(userJoiSchemas.loginSchema), tryCatchWrapper(usersController.loginUser));
 usersRouter.post('/verify', validationBody(userJoiSchemas.verifyEmailSchema), tryCatchWrapper(usersController.resendVerificationEmail));
 usersRouter.get('/verify/:verificationToken', tryCatchWrapper(usersController.verifyUserEmail));
-
-usersRouter.use(tryCatchWrapper(authService));
-
-usersRouter.patch('/', validationBody(userJoiSchemas.subscriptionSchema), tryCatchWrapper(usersController.updateSubscription));
-usersRouter.post('/logout', tryCatchWrapper(usersController.logoutUser));
-usersRouter.get('/current', tryCatchWrapper(usersController.currentUser));
+usersRouter.patch('/', tryCatchWrapper(authService), validationBody(userJoiSchemas.subscriptionSchema), tryCatchWrapper(usersController.updateSubscription));
+usersRouter.post('/logout', tryCatchWrapper(authService), tryCatchWrapper(usersController.logoutUser));
+usersRouter.get('/current', tryCatchWrapper(authService), tryCatchWrapper(usersController.currentUser));
 
 module.exports = usersRouter;

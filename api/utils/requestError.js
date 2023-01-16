@@ -1,6 +1,6 @@
-module.exports = (status, message, name = 'Error') => {
-  const error = new Error(message);
-  error.name = name;
-  error.status = status;
-  return error;
+module.exports = (status, userMessage, serverMessage = 'Error') => {
+  const err = new Error(userMessage);
+  err.name = serverMessage;
+  err.status = status;
+  return err;
 };

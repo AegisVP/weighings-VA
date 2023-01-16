@@ -7,6 +7,7 @@ const { CROSS_ENV } = require('./config');
 const { usersRouter, weighingsRouter, constantsRouter } = require('./routes');
 const { authService } = require('./middlewares');
 const swaggerDocument = require('./swagger.json');
+const { tryCatchWrapper } = require('./utils');
 
 const app = express();
 
@@ -46,29 +47,25 @@ var corsOptionsDelegate = function (req, callback) {
 
 // https://expressjs.com/en/resources/middleware/cors.html
 */
-app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
 
 app.use(cors());
-
 app.use(morgan(formatsLogger));
-app.use(express.json());
 
+app.use('/', express.static('../public'));
+app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
 app.get('/api', (_, res) => res.redirect('/api/docs'));
 app.use('/api/docs', swaggerUi.serve);
 app.use('/api/docs', swaggerUi.setup(swaggerDocument), swaggerUi.serve);
 
+app.use(express.json());
+
 app.use('/api/user', usersRouter);
-
-app.use('/', express.static('../public'));
-
-app.use(authService);
-
-app.use('/api/weighings', weighingsRouter);
-app.use('/api/constants', constantsRouter);
+app.use('/api/weighings', [authService, weighingsRouter]);
+app.use('/api/constants', [authService, constantsRouter]);
 
 app.use((_, res) => res.status(404).json({ message: 'Not found' }));
 
-app.use((err, _, res) => {
+app.use((err, req, res, next) => {
   console.error(`App error handler: [${err.name}] - ${err.message}`);
 
   if (err.name === 'CastError' || err.name === 'ValidationError') {
