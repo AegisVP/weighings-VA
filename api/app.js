@@ -11,8 +11,6 @@ const { tryCatchWrapper } = require('./utils');
 
 const app = express();
 
-const formatsLogger = CROSS_ENV === 'development' ? 'dev' : 'short';
-
 /*
 // Configuring CORS
 const corsOptions = {
@@ -48,11 +46,14 @@ var corsOptionsDelegate = function (req, callback) {
 // https://expressjs.com/en/resources/middleware/cors.html
 */
 
+app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
+
 app.use(cors());
+
+const formatsLogger = CROSS_ENV === 'development' ? 'dev' : 'short';
 app.use(morgan(formatsLogger));
 
 app.use('/', express.static('../public'));
-app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
 app.get('/api', (_, res) => res.redirect('/api/docs'));
 app.use('/api/docs', swaggerUi.serve);
 app.use('/api/docs', swaggerUi.setup(swaggerDocument), swaggerUi.serve);
