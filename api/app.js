@@ -48,19 +48,19 @@ var corsOptionsDelegate = function (req, callback) {
 // https://expressjs.com/en/resources/middleware/cors.html
 */
 
-// app.use(cors());
-// app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
-// app.use('/', express.static('../public'));
-// app.get('/api', (_, res) => res.redirect('/api/docs'));
-// app.use('/api/docs', swaggerUi.serve);
-// app.use('/api/docs', swaggerUi.setup(swaggerDocument), swaggerUi.serve);
+app.use(cors());
+app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
+app.use('/', express.static('../public'));
+app.get('/api', (_, res) => res.redirect('/api/docs'));
+app.use('/api/docs', swaggerUi.serve);
+app.use('/api/docs', swaggerUi.setup(swaggerDocument), swaggerUi.serve);
 
-// app.use(morgan(formatsLogger));
+app.use(morgan(formatsLogger));
 app.use(express.json());
 
 app.use('/api/user', usersRouter);
-// app.use('/api/weighings', [authService, weighingsRouter]);
-// app.use('/api/constants', [authService, constantsRouter]);
+app.use('/api/weighings', [authService, weighingsRouter]);
+app.use('/api/constants', [authService, constantsRouter]);
 
 app.use((_, res) => res.status(404).json({ message: 'Not found' }));
 
