@@ -1,4 +1,11 @@
 export const constants = {
-  apiServerAddress: 'https://vital-agro-api.onrender.com',
-  basePath: '/api/',
+  BASE_URL: 'https://vitalagro.onrender.com',
+  icon: {
+    clear: '❌',
+    delete: '🗑',
+    add: '➕',
+    working: '🛠',
+    search: '🔎',
+    pin: '📌',
+  },
 };
