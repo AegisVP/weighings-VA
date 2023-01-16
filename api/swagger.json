@@ -325,7 +325,7 @@
             "description": "Type of constant to return",
             "required": true,
             "schema": {
-              "enum": ["subscription", "crops", "sourcesList", "destinationsList", "harvesters", "drivers"]
+              "enum": ["subscriptionsList", "cropsList", "sourcesList", "destinationsList", "harvestersList", "driversList"]
             }
           }
         ],
@@ -353,7 +353,7 @@
         }
       }
     },
-    "/constants/autos": {
+    "/constants/autosList": {
       "get": {
         "tags": ["constants"],
         "operationId": "getConstantAutos",
