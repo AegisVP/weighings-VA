@@ -49,7 +49,7 @@ const sendEmail = async message => {
 };
 
 const verify = () => {
-  console.log('SendGrid is ready');
+  return !!SENDGRID_API_KEY;
 };
 
 module.exports = {

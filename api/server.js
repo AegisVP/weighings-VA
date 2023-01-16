@@ -3,18 +3,30 @@ const { MONGODB_HOST, PORT } = require('./config');
 const { allConstants } = require('./utils');
 
 async function connectMongoose() {
-  const mongoose = require('mongoose');
+  try {
+    const mongoose = require('mongoose');
 
-  if (!MONGODB_HOST) throw new Error('MONGODB_HOST not defined!');
+    if (!MONGODB_HOST) throw new Error('MONGODB_HOST not defined!');
 
-  await mongoose.connect(MONGODB_HOST);
-  console.log(`Connected to MongoDB`);
+    mongoose.set('strictQuery', false);
+    await mongoose.connect(MONGODB_HOST);
+
+    console.log(`Connected to MongoDB`);
+  } catch (err) {
+    console.error('Connection to MongoDB failed!');
+    process.exit(2001);
+  }
 }
 
 function connectMail() {
   const { mailInterface } = require('./utils');
 
-  mailInterface.verify();
+  if (mailInterface.verify()) {
+    console.log('SendGrid configuration loaded');
+  } else {
+    console.error('SendGrid configuration failed!');
+    process.exit(3001);
+  }
 }
 
 async function main() {
