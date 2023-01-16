@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux';
-import { loginUser } from '../redux/user/userOperations';
+
+import { loginUser } from 'redux/user/userOperations';
 
 export const LoginForm = () => {
   const dispatch = useDispatch();

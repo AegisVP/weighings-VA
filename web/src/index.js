@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { App } from './components/App';
+
+import { App } from './components/App/App';
 import { theme } from './components/Common/Theme.jsx';
 import { store } from './redux/store';
 import './index.css';
@@ -23,10 +24,10 @@ import './index.css';
 //
 ///////////////////
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root-page')).render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter basename="/weighings-VA-web">
+      <BrowserRouter basename="/">
         <ThemeProvider theme={theme}>
           <App />
         </ThemeProvider>

@@ -2,7 +2,7 @@
   "name": "weighings-web",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://aegisvp.github.io/",
+  "homepage": "https://vitalagro.onrender.com",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
     "axios": "^1.2.2",

@@ -3,8 +3,8 @@ import { setupListeners } from '@reduxjs/toolkit/dist/query';
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import userReducer from './user/userSlice';
-import { weighingsApi } from './services/weighingsApi';
+import userReducer from 'redux/user/userSlice';
+import { weighingsApi } from 'redux/services/weighingsApi';
 
 const presistedUserReducer = persistReducer(
   {
