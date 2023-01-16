@@ -25,11 +25,9 @@
     }
   ],
   "paths": {
-    "/user/signup": {
+    "/users/signup": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Create new user",
         "operationId": "createUser",
         "requestBody": {
@@ -52,39 +50,14 @@
                     "example": "a1b2c3"
                   }
                 },
-                "required": [
-                  "name",
-                  "email",
-                  "password"
-                ]
+                "required": ["name", "email", "password"]
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "User created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "example": "Alex"
-                    },
-                    "email": {
-                      "type": "string",
-                      "example": "example@email.com"
-                    },
-                    "subscription": {
-                      "type": "number",
-                      "example": 0
-                    }
-                  }
-                }
-              }
-            }
+            "description": "User created"
           },
           "409": {
             "description": "User with email already exist",
@@ -102,11 +75,9 @@
         }
       }
     },
-    "/user/login": {
+    "/users/login": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Logs user into the system",
         "operationId": "loginUser",
         "requestBody": {
@@ -166,11 +137,9 @@
         }
       }
     },
-    "/user/logout": {
+    "/users/logout": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Logs out current logged in user session",
         "operationId": "logoutUser",
         "parameters": [
@@ -198,11 +167,9 @@
         }
       }
     },
-    "/user/current": {
+    "/users/current": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Get current user details",
         "operationId": "refreshUser",
         "parameters": [
@@ -223,7 +190,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/userAuthInfo"
+                  "$ref": "#/components/schemas/UserInfo"
                 }
               }
             }
@@ -237,13 +204,10 @@
         }
       }
     },
-    "/user": {
+    "/": {
       "patch": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Update user subscription level",
-        "description": "Done only by user with \"owner\" subscription level",
         "operationId": "updateUser",
         "parameters": [
           {
@@ -279,24 +243,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "email": {
-                      "type": "string",
-                      "example": "example@email.com"
-                    },
-                    "subscription": {
-                      "type": "number",
-                      "example": 0
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Successful operation"
           },
           "401": {
             "$ref": "#/components/responses/InvalidAuth"
@@ -309,9 +256,7 @@
     },
     "/weighings": {
       "post": {
-        "tags": [
-          "weighings"
-        ],
+        "tags": ["weighings"],
         "summary": "Enter weighing data",
         "operationId": "newWeighing",
         "parameters": [
@@ -361,9 +306,7 @@
     },
     "/constants/{constant}": {
       "get": {
-        "tags": [
-          "constants"
-        ],
+        "tags": ["constants"],
         "operationId": "getConstantList",
         "parameters": [
           {
@@ -382,14 +325,7 @@
             "description": "Type of constant to return",
             "required": true,
             "schema": {
-              "enum": [
-                "subscriptionsList",
-                "cropsList",
-                "sourcesList",
-                "destinationsList",
-                "harvestersList",
-                "driversList"
-              ]
+              "enum": ["subscription", "crops", "sourcesList", "destinationsList", "harvesters", "drivers"]
             }
           }
         ],
@@ -398,11 +334,7 @@
             "description": "returns list of constant values",
             "content": {
               "application/json": {
-                "example": [
-                  "list item 1",
-                  "list item 2",
-                  "list item 3"
-                ]
+                "example": ["list item 1", "list item 2", "list item 3"]
               }
             }
           },
@@ -421,11 +353,9 @@
         }
       }
     },
-    "/constants/allAutos": {
+    "/constants/autos": {
       "get": {
-        "tags": [
-          "constants"
-        ],
+        "tags": ["constants"],
         "operationId": "getConstantAutos",
         "parameters": [
           {
@@ -674,17 +604,21 @@
       "UserInfo": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "Alex"
-          },
-          "email": {
-            "type": "string",
-            "example": "example@email.com"
-          },
-          "subscription": {
-            "type": "number",
-            "example": 0
+          "user": {
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Alex"
+              },
+              "email": {
+                "type": "string",
+                "example": "example@email.com"
+              },
+              "subscription": {
+                "type": "number",
+                "example": 0
+              }
+            }
           }
         }
       },
@@ -694,9 +628,6 @@
           "token": {
             "type": "string",
             "example": "aa11bb22cc33"
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserInfo"
           }
         }
       },
