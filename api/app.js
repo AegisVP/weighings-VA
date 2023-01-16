@@ -3,13 +3,14 @@ const morgan = require('morgan');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 
+const { CROSS_ENV } = require('./config');
 const { usersRouter, weighingsRouter, constantsRouter } = require('./routes');
 const { authService } = require('./middlewares');
 const swaggerDocument = require('./swagger.json');
 
 const app = express();
 
-const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
+const formatsLogger = CROSS_ENV === 'development' ? 'dev' : 'short';
 
 /*
 // Configuring CORS
