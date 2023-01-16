@@ -21,7 +21,7 @@ async function registerUser(req, res, next) {
 
   await mailInterface.sendEmail(mailInterface.generateRegistrationEmail({ name, email, verificationToken }));
 
-  return res.status(201).json({ user: { name, email, subscription: newUser.subscription } });
+  return res.status(201).send();
 }
 
 async function loginUser(req, res, next) {
@@ -40,7 +40,7 @@ async function loginUser(req, res, next) {
   const token = jwt.sign({ _id, email, subscription }, JWT_SECRET);
   await User.findByIdAndUpdate(_id, { token });
 
-  return res.json({ token, user: { name, email, subscription } });
+  return res.json({ token });
 }
 
 async function logoutUser(req, res) {
@@ -50,8 +50,8 @@ async function logoutUser(req, res) {
 }
 
 async function currentUser(req, res) {
-  const { name, email, token, subscription } = req.user;
-  return res.json({ name, email, token, subscription });
+  const { name, email, subscription } = req.user;
+  return res.json({ user: { name, email, subscription } });
 }
 
 async function updateSubscription(req, res, next) {
@@ -66,9 +66,10 @@ async function updateSubscription(req, res, next) {
     if (req.body.subscription === 'owner') return next(requestError(401, 'Not authorized', 'CantPromoteToOwner'));
   }
 
-  const result = await User.findOneAndUpdate({ email: req.body.email }, { subscription: req.body.subscription }, { new: true });
+  // const { email, subscription } = await User.findOneAndUpdate({ email: req.body.email }, { subscription: req.body.subscription }, { new: true });
+  await User.findOneAndUpdate({ email: req.body.email }, { subscription: req.body.subscription });
 
-  return res.json({ email: result.email, subscription: result.subscription });
+  return res.status(200).send(); // json({ email, subscription });
 }
 
 const verifyUserEmail = async (req, res, next) => {

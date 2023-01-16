@@ -25,7 +25,7 @@
     }
   ],
   "paths": {
-    "/user/signup": {
+    "/users/signup": {
       "post": {
         "tags": [
           "user"
@@ -63,28 +63,7 @@
         },
         "responses": {
           "201": {
-            "description": "User created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "example": "Alex"
-                    },
-                    "email": {
-                      "type": "string",
-                      "example": "example@email.com"
-                    },
-                    "subscription": {
-                      "type": "number",
-                      "example": 0
-                    }
-                  }
-                }
-              }
-            }
+            "description": "User created"
           },
           "409": {
             "description": "User with email already exist",
@@ -102,7 +81,7 @@
         }
       }
     },
-    "/user/login": {
+    "/users/login": {
       "post": {
         "tags": [
           "user"
@@ -166,7 +145,7 @@
         }
       }
     },
-    "/user/logout": {
+    "/users/logout": {
       "post": {
         "tags": [
           "user"
@@ -198,7 +177,7 @@
         }
       }
     },
-    "/user/current": {
+    "/users/current": {
       "get": {
         "tags": [
           "user"
@@ -223,7 +202,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/userAuthInfo"
+                  "$ref": "#/components/schemas/UserInfo"
                 }
               }
             }
@@ -237,13 +216,12 @@
         }
       }
     },
-    "/user": {
+    "/": {
       "patch": {
         "tags": [
           "user"
         ],
         "summary": "Update user subscription level",
-        "description": "Done only by user with \"owner\" subscription level",
         "operationId": "updateUser",
         "parameters": [
           {
@@ -279,24 +257,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "email": {
-                      "type": "string",
-                      "example": "example@email.com"
-                    },
-                    "subscription": {
-                      "type": "number",
-                      "example": 0
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Successful operation"
           },
           "401": {
             "$ref": "#/components/responses/InvalidAuth"
@@ -383,12 +344,12 @@
             "required": true,
             "schema": {
               "enum": [
-                "subscriptionsList",
-                "cropsList",
+                "subscription",
+                "crops",
                 "sourcesList",
                 "destinationsList",
-                "harvestersList",
-                "driversList"
+                "harvesters",
+                "drivers"
               ]
             }
           }
@@ -421,7 +382,7 @@
         }
       }
     },
-    "/constants/allAutos": {
+    "/constants/autos": {
       "get": {
         "tags": [
           "constants"
@@ -674,17 +635,21 @@
       "UserInfo": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "Alex"
-          },
-          "email": {
-            "type": "string",
-            "example": "example@email.com"
-          },
-          "subscription": {
-            "type": "number",
-            "example": 0
+          "user": {
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Alex"
+              },
+              "email": {
+                "type": "string",
+                "example": "example@email.com"
+              },
+              "subscription": {
+                "type": "number",
+                "example": 0
+              }
+            }
           }
         }
       },
@@ -694,9 +659,6 @@
           "token": {
             "type": "string",
             "example": "aa11bb22cc33"
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserInfo"
           }
         }
       },
