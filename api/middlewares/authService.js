@@ -7,8 +7,8 @@ module.exports = async (req, res, next) => {
   if (!req.headers.authorization) return next(requestError(401, 'Not authorized', 'NoAuthHeader'));
 
   const [authScheme, token] = req.headers.authorization.split(' ');
-  if (authScheme !== 'Bearer') return next(requestError(401, 'Auth scheme unsupported', 'InvalidHeader'));
-  if (!token) return next(requestError(401, 'Not authorized', 'InvalidHeader'));
+  if (authScheme !== 'Bearer') return next(requestError(401, 'Not authorized', 'UnsupportedAuth'));
+  if (!token) return next(requestError(401, 'Not authorized', 'NoToken'));
 
   const decodedUser = jwt.verify(token, JWT_SECRET);
   if (!decodedUser?._id || !decodedUser?.email) return next(requestError(401, 'Not authorized', 'TokenInvalid'));
