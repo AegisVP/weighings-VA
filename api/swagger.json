@@ -2,12 +2,12 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Vital-AGRO Weighings API",
-    "version": "1.0.0",
-    "description": "This is a description of Vital-AGRO's weghings API server, based on the OpenAPI 3.0 specification.\n\nSome useful links:\n- [repository](https://github.com/AegisVP/weighings-VA-web)"
+    "version": "1.0.1",
+    "description": "This is a description of Vital-AGRO's weghings API server, based on the OpenAPI 3.0 specification.\n\nSome useful links:\n- [repository](https://github.com/AegisVP/weighings-VA)"
   },
   "servers": [
     {
-      "url": "https://vital-agro-api.onrender.com/api"
+      "url": "https://vitalagro.onrender.com"
     }
   ],
   "tags": [
