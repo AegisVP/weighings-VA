@@ -27,9 +27,7 @@
   "paths": {
     "/users/signup": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Create new user",
         "operationId": "createUser",
         "requestBody": {
@@ -52,11 +50,7 @@
                     "example": "a1b2c3"
                   }
                 },
-                "required": [
-                  "name",
-                  "email",
-                  "password"
-                ]
+                "required": ["name", "email", "password"]
               }
             }
           }
@@ -83,9 +77,7 @@
     },
     "/users/login": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Logs user into the system",
         "operationId": "loginUser",
         "requestBody": {
@@ -147,9 +139,7 @@
     },
     "/users/logout": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Logs out current logged in user session",
         "operationId": "logoutUser",
         "parameters": [
@@ -179,9 +169,7 @@
     },
     "/users/current": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Get current user details",
         "operationId": "refreshUser",
         "parameters": [
@@ -218,9 +206,7 @@
     },
     "/": {
       "patch": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Update user subscription level",
         "operationId": "updateUser",
         "parameters": [
@@ -270,9 +256,7 @@
     },
     "/weighings": {
       "post": {
-        "tags": [
-          "weighings"
-        ],
+        "tags": ["weighings"],
         "summary": "Enter weighing data",
         "operationId": "newWeighing",
         "parameters": [
@@ -322,9 +306,7 @@
     },
     "/constants/{constant}": {
       "get": {
-        "tags": [
-          "constants"
-        ],
+        "tags": ["constants"],
         "operationId": "getConstantList",
         "parameters": [
           {
@@ -343,14 +325,7 @@
             "description": "Type of constant to return",
             "required": true,
             "schema": {
-              "enum": [
-                "subscription",
-                "crops",
-                "sourcesList",
-                "destinationsList",
-                "harvesters",
-                "drivers"
-              ]
+              "enum": ["subscription", "crops", "sourcesList", "destinationsList", "harvesters", "drivers"]
             }
           }
         ],
@@ -359,11 +334,7 @@
             "description": "returns list of constant values",
             "content": {
               "application/json": {
-                "example": [
-                  "list item 1",
-                  "list item 2",
-                  "list item 3"
-                ]
+                "example": ["list item 1", "list item 2", "list item 3"]
               }
             }
           },
@@ -384,9 +355,7 @@
     },
     "/constants/autos": {
       "get": {
-        "tags": [
-          "constants"
-        ],
+        "tags": ["constants"],
         "operationId": "getConstantAutos",
         "parameters": [
           {
