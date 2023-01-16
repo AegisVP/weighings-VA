@@ -13,7 +13,7 @@
   "tags": [
     {
       "name": "user",
-      "description": "Operations about user"
+      "description": "Operations with user"
     },
     {
       "name": "weighings",
@@ -25,7 +25,7 @@
     }
   ],
   "paths": {
-    "/users/signup": {
+    "/user/signup": {
       "post": {
         "tags": ["user"],
         "summary": "Create new user",
@@ -75,7 +75,7 @@
         }
       }
     },
-    "/users/login": {
+    "/user/login": {
       "post": {
         "tags": ["user"],
         "summary": "Logs user into the system",
@@ -137,7 +137,7 @@
         }
       }
     },
-    "/users/logout": {
+    "/user/logout": {
       "post": {
         "tags": ["user"],
         "summary": "Logs out current logged in user session",
@@ -167,7 +167,7 @@
         }
       }
     },
-    "/users/current": {
+    "/user/current": {
       "get": {
         "tags": ["user"],
         "summary": "Get current user details",
