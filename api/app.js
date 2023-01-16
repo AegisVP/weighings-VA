@@ -46,6 +46,8 @@ var corsOptionsDelegate = function (req, callback) {
 
 // https://expressjs.com/en/resources/middleware/cors.html
 */
+app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
+
 app.use(cors());
 
 app.use(morgan(formatsLogger));
