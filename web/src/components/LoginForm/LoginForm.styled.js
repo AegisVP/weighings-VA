@@ -3,6 +3,8 @@ import styled from 'styled-components';
 export const StyledButton = styled.button`
   margin: 10px;
   padding: 10px 20px;
+  min-width: 120px;
+  min-height: 45px;
 
   outline: none;
   border: none;
@@ -12,6 +14,13 @@ export const StyledButton = styled.button`
   box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.1);
 
   font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:disabled {
+    color: #666666;
+  }
 
   &:hover,
   &:focus {

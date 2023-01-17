@@ -37,20 +37,26 @@ export const NavLinkStyled = styled(NavLink)`
   margin: 0 5px;
 
   background-color: #ffffcc;
-  border-top-right-radius: 5px;
-  border-top-left-radius: 5px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
 
   text-decoration: none;
+  box-shadow: inset 1px 2px 4px 1px rgba(0, 0, 0, 0.1);
 
   &.active {
     background-color: #ffffee;
     padding-bottom: 15px;
-    box-shadow: 0 -2px 3px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 3px 0px 4px rgba(0, 0, 0, 0.15);
   }
 `;
 
 export const AuthLinks = styled.aside`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+
   align-self: center;
-  padding: 5px 10px;
   font-size: 16px;
 `;
