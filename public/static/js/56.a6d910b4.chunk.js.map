@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/56.a6d910b4.chunk.js","mappings":"sIAIA,UAJ2B,WACzB,OAAO,iDACT,C","sources":["pages/WeighingsEntry.jsx"],"sourcesContent":["const WeighingsEntryPage = () => {\r\n  return <div>Weighings entry page</div>;\r\n};\r\n\r\nexport default WeighingsEntryPage;\r\n"],"names":[],"sourceRoot":""}

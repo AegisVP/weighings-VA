@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkweighings_web=self.webpackChunkweighings_web||[]).push([[768],{8768:function(e,n,i){i.r(n);var s=i(184);n.default=function(){return(0,s.jsx)("div",{children:"Day select page"})}}}]);
+//# sourceMappingURL=768.03f0e809.chunk.js.map

@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkweighings_web=self.webpackChunkweighings_web||[]).push([[993],{6993:function(e,n,i){i.r(n);var s=i(184);n.default=function(){return(0,s.jsx)("div",{children:"\u0420\u0435\u0454\u0441\u0442\u0440 \u0432\u043e\u0434\u0456\u044f"})}}}]);
+//# sourceMappingURL=993.8576a142.chunk.js.map

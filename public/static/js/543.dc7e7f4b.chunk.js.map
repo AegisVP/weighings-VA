@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/543.dc7e7f4b.chunk.js","mappings":"uIAIA,UAJuB,WACrB,OAAO,6CACT,C","sources":["pages/DriverListPage.jsx"],"sourcesContent":["const DriverListPage = () => {\r\n  return <div>Driver list page</div>;\r\n};\r\n\r\nexport default DriverListPage;\r\n"],"names":[],"sourceRoot":""}

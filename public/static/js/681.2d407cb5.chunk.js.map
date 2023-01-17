@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/681.2d407cb5.chunk.js","mappings":"uIAIA,UAJ6B,WAC3B,OAAO,mDACT,C","sources":["pages/WeighingsAnalyze.jsx"],"sourcesContent":["const WeighingsAnalyzePage = () => {\r\n  return <div>Weighings analyze page</div>;\r\n};\r\n\r\nexport default WeighingsAnalyzePage;\r\n"],"names":[],"sourceRoot":""}

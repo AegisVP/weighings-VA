@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkweighings_web=self.webpackChunkweighings_web||[]).push([[543],{2543:function(e,i,n){n.r(i);var s=n(184);i.default=function(){return(0,s.jsx)("div",{children:"Driver list page"})}}}]);
+//# sourceMappingURL=543.dc7e7f4b.chunk.js.map

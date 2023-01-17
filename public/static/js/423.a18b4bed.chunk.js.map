@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/423.a18b4bed.chunk.js","mappings":"uIAIA,UAJoB,WAClB,OAAO,gDACT,C","sources":["pages/ReportsPage.jsx"],"sourcesContent":["const ReportsPage = () => {\r\n  return <div>Reports select page</div>;\r\n};\r\n\r\nexport default ReportsPage;\r\n"],"names":[],"sourceRoot":""}

@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkweighings_web=self.webpackChunkweighings_web||[]).push([[56],{3056:function(e,n,i){i.r(n);var s=i(184);n.default=function(){return(0,s.jsx)("div",{children:"Weighings entry page"})}}}]);
+//# sourceMappingURL=56.a6d910b4.chunk.js.map

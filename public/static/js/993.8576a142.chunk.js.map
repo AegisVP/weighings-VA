@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/993.8576a142.chunk.js","mappings":"uIAIA,UAJqB,WACnB,OAAO,gGACT,C","sources":["pages/DriverReport.jsx"],"sourcesContent":["const DriverReport = () => {\r\n  return <div>Реєстр водія</div>;\r\n};\r\n\r\nexport default DriverReport;\r\n"],"names":[],"sourceRoot":""}
