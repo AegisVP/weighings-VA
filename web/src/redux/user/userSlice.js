@@ -3,7 +3,7 @@ import { handlePending, handleFulfilled, handleRejected } from 'utils/defaultHan
 import { handleLoginUser, handleRegisterUser, handleLogoutUser, handleRefreshUser } from 'redux/user/userHandlers';
 import { loginUser, logoutUser, refreshUser, registerUser } from 'redux/user/userOperations';
 
-export const initialUserState = {
+export const initialAuthState = {
   user: {
     name: null,
     email: null,
@@ -16,7 +16,7 @@ export const initialUserState = {
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: initialUserState,
+  initialState: initialAuthState,
   extraReducers: builder => {
     builder
       .addCase(loginUser.fulfilled, handleLoginUser)

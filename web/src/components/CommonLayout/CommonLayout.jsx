@@ -2,8 +2,9 @@ import { useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
 import { HeaderBar } from 'components/HeaderBar/HeaderBar';
-import { LoginForm } from 'components/LoginForm/LoginForm';
 import { selectUserIsLoggedIn } from 'redux/selectors';
+import { MainBodyWrapper } from './CommonLayout.styled';
+import LoginPage from 'pages/LoginPage';
 
 export const CommonLayout = () => {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
@@ -11,7 +12,7 @@ export const CommonLayout = () => {
   return (
     <>
       <HeaderBar />
-      {isLoggedIn ? <Outlet /> : <LoginForm />}
+      <MainBodyWrapper>{isLoggedIn ? <Outlet /> : <LoginPage />}</MainBodyWrapper>
     </>
   );
 };

@@ -8,7 +8,7 @@ import { weighingsApi } from 'redux/services/weighingsApi';
 
 const presistedUserReducer = persistReducer(
   {
-    key: 'user',
+    key: 'auth',
     storage,
     whitelist: ['token'],
   },
@@ -17,10 +17,7 @@ const presistedUserReducer = persistReducer(
 
 const rootReducer = combineReducers({
   weighings: weighingsApi.reducer,
-  user: presistedUserReducer,
-  // diary: diaryReducer,
-  // diet: dietReducer,
-  // modal: modalReducer,
+  auth: presistedUserReducer,
 });
 
 export const store = configureStore({
