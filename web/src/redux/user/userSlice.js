@@ -1,16 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { handlePending, handleFulfilled, handleRejected } from '../utils/defaultHandlers';
-import {
-  handleLoginUser,
-  handleRegisterUser,
-  handleLogoutUser,
-  handleRefreshUser,
-} from './userHandlers';
-import { loginUser, logoutUser, refreshUser, registerUser } from './userOperations';
+import { handlePending, handleFulfilled, handleRejected } from 'utils/defaultHandlers';
+import { handleLoginUser, handleRegisterUser, handleLogoutUser, handleRefreshUser } from 'redux/user/userHandlers';
+import { loginUser, logoutUser, refreshUser, registerUser } from 'redux/user/userOperations';
 
-export const initialUserState = {
-  name: null,
-  email: null,
+export const initialAuthState = {
+  user: {
+    name: null,
+    email: null,
+    subscription: null,
+  },
   token: null,
   isLoading: false,
   error: null,
@@ -18,7 +16,7 @@ export const initialUserState = {
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: initialUserState,
+  initialState: initialAuthState,
   extraReducers: builder => {
     builder
       .addCase(loginUser.fulfilled, handleLoginUser)

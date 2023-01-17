@@ -1,22 +1,22 @@
-export const selectUserAuth = store => {
-  const { name, email, token } = store.user;
-  return { name, email, token };
+export const selectUserInfo = store => {
+  const { name, email, subscription } = store.auth.user;
+  return { name, email, subscription };
 };
 
-export const selectUserToken = store => store.user.token;
+export const selectUserToken = store => store.auth.token;
 
-export const selectUserParams = store => store.user.params;
+export const selectUserError = store => store.auth.error;
 
-export const selectIsLoadingUser = store => store.user.isLoading;
-
-export const selectErrorUser = store => store.user.error;
+export const selectUserIsLoading = store => store.auth.isLoading;
 
 export const selectUserIsLoggedIn = store => {
-  const { email, token } = selectUserAuth(store);
+  const { email } = selectUserInfo(store);
+  const token = selectUserToken(store);
   return !!token && !!email;
 };
 
 export const selectUserIsRefreshing = store => {
-  const { name, token } = selectUserAuth(store);
+  const { name } = selectUserInfo(store);
+  const token = selectUserToken(store);
   return !!token && !name;
 };

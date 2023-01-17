@@ -1,23 +1,23 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { authHeader } from '../utils/authHeader';
-import { constants } from '../../constants';
 
-axios.defaults.baseURL = `${constants.apiServerAddress}/api`;
+import { authHeader } from 'utils/authHeader';
+import { constants } from 'constants';
 
-export const loginUser = createAsyncThunk('user/login', async (val, thunkAPI) => {
+axios.defaults.baseURL = `${constants.BASE_URL}/api/user`;
+
+export const registerUser = createAsyncThunk('user/register', async (val, thunkAPI) => {
   try {
-    const response = await axios.post('/user/login', val);
-    authHeader.set(response.data.token);
+    const response = await axios.post('/signup', val);
     return response.data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data.message || err.message);
   }
 });
 
-export const registerUser = createAsyncThunk('user/register', async (val, thunkAPI) => {
+export const loginUser = createAsyncThunk('user/login', async (val, thunkAPI) => {
   try {
-    const response = await axios.post('/user', val);
+    const response = await axios.post('/login', val);
     authHeader.set(response.data.token);
     return response.data;
   } catch (err) {
@@ -27,9 +27,9 @@ export const registerUser = createAsyncThunk('user/register', async (val, thunkA
 
 export const logoutUser = createAsyncThunk('user/logout', async (val, thunkAPI) => {
   try {
-    const response = await axios.patch('/user/logout', val);
+    await axios.post('/logout', val);
     authHeader.clear();
-    return response.data;
+    return;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data.message || err.message);
   }
@@ -37,19 +37,20 @@ export const logoutUser = createAsyncThunk('user/logout', async (val, thunkAPI) 
 
 export const refreshUser = createAsyncThunk('user/refresh', async (_, thunkAPI) => {
   try {
-    const response = await axios.get('/user/current');
-    const { name, email, params } = response.data;
-    const token = thunkAPI.getState().user.token;
-    return { name, email, token, params };
+    const response = await axios.get('/current');
+    const { user } = response.data;
+    const token = thunkAPI.getState().auth.token;
+    return { user, token };
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data.message || err.message);
   }
 });
 
-export const fetchParams = createAsyncThunk('user/fetchParams', async (val, thunkAPI) => {
+export const updateUser = createAsyncThunk('user/update', async (val, thunkAPI) => {
   try {
-    const response = await axios.get('/user/current', val);
-    return response.data?.params;
+    const response = await axios.patch('/', val);
+    const { subscription, email } = response.data;
+    return { subscription, email };
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response.data.message || err.message);
   }
