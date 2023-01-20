@@ -23,6 +23,7 @@ const userSlice = createSlice({
       .addCase(registerUser.fulfilled, handleRegisterUser)
       .addCase(logoutUser.fulfilled, handleLogoutUser)
       .addCase(refreshUser.fulfilled, handleRefreshUser)
+      .addCase(refreshUser.rejected, () => initialAuthState)
       .addMatcher(action => action.type.endsWith('/pending'), handlePending)
       .addMatcher(action => action.type.endsWith('/fulfilled'), handleFulfilled)
       .addMatcher(action => action.type.endsWith('/rejected'), handleRejected);
