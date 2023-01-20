@@ -1,10 +1,10 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, Route, Routes } from 'react-router';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
 
 import { authHeader } from 'utils/authHeader';
 import { refreshUser } from 'redux/actions';
-import { selectUserIsRefreshing, selectUserToken } from 'redux/selectors';
+import { selectUserIsLoggedIn, selectUserIsRefreshing, selectUserToken } from 'redux/selectors';
 
 import { CommonLayout } from 'components/CommonLayout/CommonLayout';
 
@@ -20,7 +20,9 @@ const Form78Report = lazy(() => import('pages/Form78Report'));
 
 export const App = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isRefreshing = useSelector(selectUserIsRefreshing);
+  const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const token = useSelector(selectUserToken);
 
   // Load user info into redux
@@ -28,10 +30,10 @@ export const App = () => {
     if (isRefreshing) {
       authHeader.set(token);
       dispatch(refreshUser());
+    } else {
+      if (!isLoggedIn) navigate('/login');
     }
-    console.log('App - useEffect');
-  }, [dispatch, isRefreshing, token]);
-  console.log('App');
+  }, [dispatch, isLoggedIn, isRefreshing, navigate, token]);
 
   return (
     <Suspense fallback={<p>Please wait, loading...</p>}>
