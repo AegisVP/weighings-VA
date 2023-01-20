@@ -8,6 +8,7 @@ import { selectUserIsRefreshing, selectUserToken } from 'redux/selectors';
 
 import { CommonLayout } from 'components/CommonLayout/CommonLayout';
 
+const WelcomePage = lazy(() => import('pages/WelcomePage'));
 const WeighingsEntryPage = lazy(() => import('pages/WeighingsEntry'));
 const WeighingsAnalyzePage = lazy(() => import('pages/WeighingsAnalyze'));
 const LoginPage = lazy(() => import('pages/LoginPage'));
@@ -26,16 +27,17 @@ export const App = () => {
   useEffect(() => {
     if (isRefreshing) {
       authHeader.set(token);
-
       dispatch(refreshUser());
     }
+    console.log('App - useEffect');
   }, [dispatch, isRefreshing, token]);
+  console.log('App');
 
   return (
     <Suspense fallback={<p>Please wait, loading...</p>}>
       <Routes>
         <Route path="/" element={<CommonLayout />}>
-          <Route index element={<Navigate to="/weighings" />} />
+          <Route index element={<WelcomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="weighings" element={<WeighingsEntryPage />}>
             <Route path=":params" element={<WeighingsAnalyzePage />} />

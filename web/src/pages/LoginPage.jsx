@@ -6,6 +6,8 @@ import { selectUserIsLoggedIn } from 'redux/selectors';
 
 const LoginPage = () => {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
+  console.log('LoginPage');
+
   return isLoggedIn ? <Navigate to="/" /> : <LoginForm />;
 };
 
