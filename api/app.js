@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 
 const { CROSS_ENV } = require('./config');
 const { usersRouter, weighingsRouter, constantsRouter } = require('./routes');
@@ -53,7 +54,6 @@ app.use(cors());
 const formatsLogger = CROSS_ENV === 'development' ? 'dev' : 'short';
 app.use(morgan(formatsLogger));
 
-app.use('/', express.static('../public'));
 app.get('/api', (_, res) => res.redirect('/api/docs'));
 app.use('/api/docs', swaggerUi.serve);
 app.use('/api/docs', swaggerUi.setup(swaggerDocument), swaggerUi.serve);
@@ -64,6 +64,8 @@ app.use('/api/user', usersRouter);
 app.use('/api/weighings', [authService, weighingsRouter]);
 app.use('/api/constants', [authService, constantsRouter]);
 
+app.get('/*', express.static('../public'));
+app.get('*', (_, res) => res.sendFile(path.resolve('../public/index.html')));
 app.use((_, res) => res.status(404).json({ message: 'Not found' }));
 
 app.use((err, req, res, next) => {
