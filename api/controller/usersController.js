@@ -12,7 +12,7 @@ async function registerUser(req, res, next) {
   const { name, email } = req.body;
   const verificationToken = createNewVerificationToken();
 
-  if (await User.findOne({ email })) return next(requestError(409, 'Email is already in use', 'Conflict'));
+  if (await User.findOne({ email })) return next(requestError(409, 'Ця пошта вже зареєстрована', 'Conflict'));
 
   const newUser = new User(req.body);
   newUser.verificationToken = verificationToken;
@@ -28,16 +28,16 @@ async function loginUser(req, res, next) {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
-  if (!user) return next(requestError(401, 'Unable to login', 'NoSuchUser'));
+  if (!user) return next(requestError(401, "Ім'я та пароль хибні", 'NoSuchUser'));
 
   if (!(await bcrypt.compare(password, user.password))) {
     console.log('Entered password hash:', await bcrypt.hash(password, 10));
-    return next(requestError(401, 'Unable to login', 'WrongPassword'));
+    return next(requestError(401, "Ім'я та пароль хибні", 'WrongPassword'));
   }
 
   const { _id, name, subscription = false } = user;
 
-  if (!user.isVerified) return next(requestError(401, 'Verify your email', 'EmailNotVerified'));
+  if (!user.isVerified) return next(requestError(401, 'Очікую підтверждення користувача', 'EmailNotVerified'));
 
   const token = jwt.sign({ _id, name, email, subscription }, JWT_SECRET);
   await User.findByIdAndUpdate(_id, { token });
@@ -58,10 +58,10 @@ async function currentUser(req, res) {
 
 async function updateSubscription(req, res, next) {
   if (req.user.subscription !== 'owner' && req.user.subscription !== 'manager') return next(requestError(401, 'Not authorized', 'NotQualified'));
-  if (req.user.email === req.body.email) return next(requestError(400, 'Can not change own access level', 'CantUpdateSelf'));
+  if (req.user.email === req.body.email) return next(requestError(400, 'Не можна змінювати свій рівень', 'CantUpdateSelf'));
 
   const updateUser = await User.findOne({ email: req.body.email });
-  if (!updateUser) return next(requestError(404, 'No such user', 'NoUserToUpdate'));
+  if (!updateUser) return next(requestError(404, 'Користувача не існує', 'NoUserToUpdate'));
 
   if (req.user.subscription === 'manager') {
     if (updateUser.subscription === 'owner') return next(requestError(401, 'Not authorized', 'CantModifyOwner'));
