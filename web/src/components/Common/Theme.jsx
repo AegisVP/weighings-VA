@@ -1,11 +1,15 @@
 export const theme = {
   colors: {
-    defaultText: '#090909',
-    mediumText: '#555555',
-    inverseText: '#D9D9D9',
-    secondBackground: '#FFF9F9',
-    pageBackground: '#FFFFFF',
-    buttonColor: 'rgb(180, 200, 255)',
+    text: {
+      defaultText: '#090909',
+      mediumText: '#555555',
+      inverseText: 'd9d9d9',
+      errorText: '#d95555',
+    },
+    background: {
+      pageBackground: '#fefefe',
+      secondBackground: '#ffffee',
+    },
   },
   fontSizes: {
     xs: '8px',
@@ -16,6 +20,7 @@ export const theme = {
     xxl: '48px',
   },
   fontWeights: {
+    thin: 100,
     normal: 400,
     bold: 700,
   },
@@ -25,6 +30,13 @@ export const theme = {
     normal: '5px',
     large: '10px',
     round: '50%',
+  },
+  shadow: {
+    button: {
+      default: '0 0 3px 2px rgba(0, 0, 0, 0.1)',
+      hover: 'inset -2px -2px 3px 1px rgba(0, 0, 0, 0.1)',
+      active: 'inset 2px 2px 3px 1px rgba(0, 0, 0, 0.3)',
+    },
   },
   margin: `margin: ${returnParams}`,
   padding: `padding: ${returnParams}`,
