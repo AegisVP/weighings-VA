@@ -1,17 +1,17 @@
 import styled from 'styled-components';
 
 export const StyledButton = styled.button`
-  margin: 10px;
-  padding: 10px 20px;
+  margin: ${p => p.theme.mp(2)};
+  padding: ${p => p.theme.mp(2, 3)};
   min-width: 120px;
   min-height: 45px;
 
   outline: none;
   border: none;
-  border-radius: 10px;
+  border-radius: ${p => p.theme.mp(2)};
 
-  background-color: #ffffee;
-  box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.1);
+  background-color: ${p => p.theme.colors.background.secondBackground};
+  box-shadow: ${p => p.theme.shadow.button.default};
 
   font-weight: 500;
   display: flex;
@@ -19,16 +19,16 @@ export const StyledButton = styled.button`
   align-items: center;
 
   &:disabled {
-    color: #666666;
+    color: ${p => p.theme.colors.text.mediumText};
   }
 
   &:hover,
   &:focus {
-    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.1), inset -2px -2px 3px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: ${p => p.theme.shadow.button.default}, ${p => p.theme.shadow.button.hover};
   }
 
   &:active {
-    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.1), inset 2px 2px 3px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: ${p => p.theme.shadow.button.default}, ${p => p.theme.shadow.button.active};
   }
 `;
 
@@ -43,19 +43,24 @@ export const StyledForm = styled.form`
 `;
 
 export const StyledEntryField = styled.label`
-  margin: 10px auto;
+  margin: ${p => p.theme.mp(2, 'auto')};
 `;
 
 export const StyledLabel = styled.span`
-  margin: 0 5px;
+  margin: ${p => p.theme.mp(0, 1)};
 `;
 
 export const StyledInputField = styled.input`
-  margin: 0 5px;
-  padding: 5px 10px;
+  margin: ${p => p.theme.mp(0, 1)};
+  padding: ${p => p.theme.mp(1, 0)};
   outline: none;
   border: 1px solid #cccccc;
   border-bottom: 3px solid #888888;
-  border-radius: 5px;
-  background-color: #ffffee;
+  border-radius: ${p => p.theme.radii.normal};
+  background-color: ${p => p.theme.colors.background.secondBackground};
+`;
+
+export const ErrorMessage = styled.div`
+  color: ${p => p.theme.colors.errorText};
+  font-weight: ${p => p.theme.fontWeights.bold};
 `;

@@ -4,10 +4,10 @@ import styled from 'styled-components';
 export const HeaderBarSection = styled.header`
   width: 100%;
 
-  font-size: 16px;
+  font-size: ${p => p.theme.fontSizes.m};
   font-weight: 500;
 
-  background-color: #eeeeee;
+  background-color: #f8f8f8;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 `;
 
@@ -22,7 +22,7 @@ export const HeaderWrapper = styled.div`
   max-width: 1240px;
 
   margin: ${p => p.theme.mp(0, 'auto', 0, 'auto')};
-  padding: 10px 20px 0;
+  padding: ${p => p.theme.mp(2, 3, 0)};
 `;
 
 export const NavWrapper = styled.nav`
@@ -33,12 +33,12 @@ export const NavWrapper = styled.nav`
 
 export const NavLinkStyled = styled(NavLink)`
   display: inline-block;
-  padding: 10px 20px 10px;
-  margin: 0 5px;
+  padding: ${p => p.theme.mp(2, 3)};
+  margin: ${p => p.theme.mp(0, 1)};
 
   background-color: #ffffcc;
-  border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
+  border-top-right-radius: ${p => p.theme.radii.large};
+  border-top-left-radius: ${p => p.theme.radii.large};
 
   text-decoration: none;
   box-shadow: inset 1px 2px 4px 1px rgba(0, 0, 0, 0.1);
@@ -58,5 +58,5 @@ export const AuthLinks = styled.aside`
   gap: 10px;
 
   align-self: center;
-  font-size: 16px;
+  font-size: ${p => p.theme.fontSizes.m};
 `;
