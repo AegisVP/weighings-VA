@@ -5,7 +5,7 @@ import storage from 'redux-persist/lib/storage';
 
 import userReducer from 'redux/user/userSlice';
 import { weighingsApi } from 'redux/services/weighingsAPI';
-import { constantsApi } from './constants/constantsAPI';
+import { constantsApi } from './services/constantsAPI';
 
 const presistedUserReducer = persistReducer(
   {
