@@ -4,7 +4,8 @@ import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 
 import userReducer from 'redux/user/userSlice';
-import { weighingsApi } from 'redux/services/weighingsApi';
+import { weighingsApi } from 'redux/services/weighingsAPI';
+import { constantsApi } from './constants/constantsAPI';
 
 const presistedUserReducer = persistReducer(
   {
@@ -16,6 +17,7 @@ const presistedUserReducer = persistReducer(
 );
 
 const rootReducer = combineReducers({
+  constants: constantsApi.reducer,
   weighings: weighingsApi.reducer,
   auth: presistedUserReducer,
 });
@@ -29,6 +31,7 @@ export const store = configureStore({
       },
     }),
     weighingsApi.middleware,
+    constantsApi.middleware,
   ],
 });
 

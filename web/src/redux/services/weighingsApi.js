@@ -4,6 +4,8 @@ import { constants } from 'constants';
 
 export const weighingsApi = createApi({
   reducerPath: 'weighings',
+  tagTypes: ['Weighing'],
+  keepUnusedDataFor: 60,
   baseQuery: fetchBaseQuery({
     baseUrl: `${constants.BASE_URL}/api/weighings`,
     prepareHeaders: (headers, { getState }) => {
@@ -14,7 +16,8 @@ export const weighingsApi = createApi({
   }),
   endpoints: builder => ({
     getWeighings: builder.query({
-      query: UrlSearchParams => ({ url: `/?${UrlSearchParams.toString}`, method: 'GET' }),
+      providesTags: ['Weighing'],
+      query: UrlSearchParams => `/?${UrlSearchParams.toString}`,
     }),
     addWeighing: builder.mutation({
       query: weighing => ({ url: '/', method: 'POST', body: weighing }),
