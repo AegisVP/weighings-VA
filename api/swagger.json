@@ -204,7 +204,7 @@
         }
       }
     },
-    "/": {
+    "/user": {
       "patch": {
         "tags": ["user"],
         "summary": "Update user subscription level",
