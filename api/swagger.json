@@ -457,8 +457,21 @@
         "type": "object",
         "properties": {
           "date": {
-            "type": "string",
-            "example": 20220923
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "example": 2023
+              },
+              "month": {
+                "type": "number",
+                "example": 2
+              },
+              "date": {
+                "type": "number",
+                "example": 15
+              }
+            }
           },
           "auto": {
             "type": "object",
@@ -533,8 +546,21 @@
             "example": "a11b22c33"
           },
           "date": {
-            "type": "string",
-            "example": 20220923
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "example": 2023
+              },
+              "month": {
+                "type": "number",
+                "example": 2
+              },
+              "date": {
+                "type": "number",
+                "example": 15
+              }
+            }
           },
           "auto": {
             "type": "object",
