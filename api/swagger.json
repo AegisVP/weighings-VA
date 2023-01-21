@@ -467,7 +467,7 @@
                 "type": "number",
                 "example": 2
               },
-              "date": {
+              "day": {
                 "type": "number",
                 "example": 15
               }
@@ -556,7 +556,7 @@
                 "type": "number",
                 "example": 2
               },
-              "date": {
+              "day": {
                 "type": "number",
                 "example": 15
               }
