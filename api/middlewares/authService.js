@@ -16,7 +16,6 @@ module.exports = async (req, res, next) => {
   } catch (e) {
     return next(requestError(401, 'Зайдіть знову', 'TokenVerifyFailed'));
   }
-  console.log({ decodedUser });
   if (!decodedUser?._id || !decodedUser?.email || !decodedUser?.name || !decodedUser?.subscription) return next(requestError(401, 'Не авторизовано', 'TokenInvalid'));
 
   const dbUser = await User.findById(decodedUser._id);

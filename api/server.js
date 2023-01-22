@@ -14,7 +14,8 @@ async function connectMongoose() {
     console.log(`Connected to MongoDB`);
   } catch (err) {
     console.error('Connection to MongoDB failed!');
-    process.exit(2001);
+    console.error('Error:', err);
+    process.exit(2);
   }
 }
 
@@ -25,7 +26,7 @@ function connectMail() {
     console.log('SendGrid configuration loaded');
   } else {
     console.error('SendGrid configuration failed!');
-    process.exit(3001);
+    process.exit(3);
   }
 }
 

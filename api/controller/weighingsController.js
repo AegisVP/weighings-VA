@@ -2,15 +2,6 @@ const { requestError } = require('../utils');
 const { Weighings } = require('../model');
 const { subscriptionsList, driversList, sourcesList, destinationsList, harvestersList, cropsList } = require('../utils').allConstants;
 
-/*
-
-const enteredDate = new Date(weighingRecord.date);
-const [enteredYear, enteredMonth, enteredDay] = [enteredDate.getFullYear(), enteredDate.getMonth(), enteredDate.getDate()];
-
-console.log({ enteredDate, enteredDay, enteredMonth, enteredYear });
-  
-*/
-
 const getWeighings = async (req, res, next) => {
   if (req.user.subscription === subscriptionsList[0]) return next(requestError(401, 'Not authorized', 'NotQualified'));
 
@@ -33,11 +24,9 @@ const getWeighings = async (req, res, next) => {
   // if (source) searchParams['crop.source'] = source;
   // if (source) searchParams['crop.source'] = source;
 
-  console.log({ searchParams });
   const result = await Weighings.find(searchParams);
 
   res.json({ length: result.length, weighings: result });
-  // res.json({ message: 'getWeighings ran' });
 };
 
 const addWeighing = async (req, res, next) => {
@@ -83,8 +72,6 @@ const addWeighing = async (req, res, next) => {
 
   weighingRecord.createdBy = req.user.email;
 
-  console.log(weighingRecord);
-  // const result = weighingRecord;
   const result = await Weighings.create(weighingRecord);
 
   return res.json({ ...(warnings.length && { warnings }), result });

@@ -9,6 +9,7 @@ const { usersRouter, weighingsRouter, constantsRouter } = require('./routes');
 const { authService } = require('./middlewares');
 const swaggerDocument = require('./swagger.json');
 const { tryCatchWrapper } = require('./utils');
+const { heathCheck } = require('./controller');
 
 const app = express();
 
@@ -47,9 +48,9 @@ var corsOptionsDelegate = function (req, callback) {
 // https://expressjs.com/en/resources/middleware/cors.html
 */
 
-app.use('/ishealthy', (_, res) => res.status(200).json({ message: 'OK' }));
-
 app.use(cors());
+
+app.use('/ishealthy', heathCheck);
 
 const formatsLogger = CROSS_ENV === 'development' ? 'dev' : 'short';
 app.use(morgan(formatsLogger));
