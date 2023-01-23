@@ -25,29 +25,29 @@ const weighingDbSchema = new Schema(
     },
     auto: {
       id: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'autos',
         required: true,
       },
       driver: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'drivers',
         required: true,
       },
     },
     crop: {
       id: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'crops',
         required: true,
       },
       source: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'sources',
         required: true,
       },
       destination: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'destinations',
         required: true,
       },
@@ -74,7 +74,7 @@ const weighingDbSchema = new Schema(
     harvesters: [
       {
         id: {
-          type: Schema.Types.ObjectId,
+          type: String,
           ref: 'harvesters',
           required: true,
         },
@@ -101,17 +101,13 @@ const addSchema = Joi.object({
     day: Joi.number().required(),
   },
   auto: {
-    id: Joi.objectId().required(),
+    id: Joi.string().required(),
     driver: Joi.string().required(),
   },
   crop: {
-    name: Joi.string().required(),
-    source: Joi.string()
-      // .valid(...allConstants.sourcesList)
-      .required(),
-    destination: Joi.string()
-      // .valid(...allConstants.destinationsList)
-      .required(),
+    id: Joi.string().required(),
+    source: Joi.string().required(),
+    destination: Joi.string().required(),
   },
   weighing: {
     tare: Joi.number().required(),
@@ -121,7 +117,7 @@ const addSchema = Joi.object({
   },
   harvesters: Joi.array().items(
     Joi.object({
-      name: Joi.string().required(),
+      id: Joi.string().required(),
       weight: Joi.number(),
     })
   ),

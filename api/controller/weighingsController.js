@@ -1,10 +1,24 @@
-const { requestError, allConstants, getDbEntryId } = require('../utils');
+const {
+  requestError,
+  allConstants,
+  getDbEntryId: { getSubscriptionsIdByName },
+} = require('../utils');
 const { Weighings } = require('../model');
 
-const { getSubscriptionsIdByName } = getDbEntryId;
-const { autosList, driversList, sourcesList, destinationsList, harvestersList, cropsList } = allConstants;
-
 const getWeighings = async (req, res, next) => {
+  //
+  // TODO:
+  // implement searches by
+  // - date
+  // - end date (for date range)
+  // - driver
+  // - source
+  // - destination
+  // - type of crop
+  // - isIncoming
+  // - by harvester
+  //
+
   if (req.user.subscription === getSubscriptionsIdByName('basic')) return next(requestError(401, 'Not authorized', 'NotQualified'));
 
   const searchParams = {};
@@ -32,16 +46,23 @@ const getWeighings = async (req, res, next) => {
 };
 
 const addWeighing = async (req, res, next) => {
+  //
+  // TODO:
+  // - implement "isIncoming"
+  // - implement "isHarvested"
+  //
+
   const warnings = [];
   const weighingRecord = req.body;
 
   if (String(req.user.subscription) !== String(getSubscriptionsIdByName('weighing'))) return next(requestError(401, 'Not authorized', 'NotQualified'));
 
-  if (!autosList.map(i => String(i._id)).includes(weighingRecord.auto.id)) return next(requestError(400, 'Invalid auto ID', 'NoSuchAuto'));
-  if (!driversList.map(i => String(i._id)).includes(weighingRecord.auto.driver)) return next(requestError(400, 'Invalid driver ID', 'NoSuchDriver'));
-  if (!cropsList.map(i => String(i._id)).includes(weighingRecord.crop.id)) return next(requestError(400, 'Invalid crop ID', 'NoSuchCrop'));
-  if (!sourcesList.map(i => String(i._id)).includes(weighingRecord.crop.source)) return next(requestError(400, 'Invalid crop source', 'NoSuchSource'));
-  if (!destinationsList.map(i => String(i._id)).includes(weighingRecord.crop.destination)) return next(requestError(400, 'Invalid crop destination', 'NoSuchDestination'));
+  if (!allConstants.autosList.map(i => String(i._id)).includes(weighingRecord.auto.id)) return next(requestError(400, 'Invalid auto ID', 'NoSuchAuto'));
+  if (!allConstants.driversList.map(i => String(i._id)).includes(weighingRecord.auto.driver)) return next(requestError(400, 'Invalid driver ID', 'NoSuchDriver'));
+  if (!allConstants.cropsList.map(i => String(i._id)).includes(weighingRecord.crop.id)) return next(requestError(400, 'Invalid crop ID', 'NoSuchCrop'));
+  if (!allConstants.sourcesList.map(i => String(i._id)).includes(weighingRecord.crop.source)) return next(requestError(400, 'Invalid crop source', 'NoSuchSource'));
+  if (!allConstants.destinationsList.map(i => String(i._id)).includes(weighingRecord.crop.destination))
+    return next(requestError(400, 'Invalid crop destination', 'NoSuchDestination'));
 
   const { weighing, crop, harvesters } = weighingRecord;
   const { brutto, tare, netto } = weighing;
@@ -53,13 +74,13 @@ const addWeighing = async (req, res, next) => {
     weighingRecord.weighing = { ...weighingRecord.weighing, netto: newNetto };
   }
 
-  if (harvestersCount > 0 && sourcesList.find(i => String(i._id) === crop.source)?.harvested) {
+  if (harvestersCount > 0 && allConstants.sourcesList.find(i => String(i._id) === crop.source)?.harvested) {
     const nettoForEachHarvester = newNetto / harvestersCount;
     const harvestersClone = [];
     let totalWeight = 0;
 
     for (const harvester of harvesters) {
-      if (!harvestersList.map(i => String(i._id)).includes(harvester.id)) return next(requestError(400, `Invalid harvester id ${harvester.id}`, 'NoSuchHarvester'));
+      if (!allConstants.harvestersList.map(i => String(i._id)).includes(harvester.id)) return next(requestError(400, `Invalid harvester id ${harvester.id}`, 'NoSuchHarvester'));
 
       totalWeight += parseInt(harvester.weight);
       harvestersClone.push({ id, weight: nettoForEachHarvester });
