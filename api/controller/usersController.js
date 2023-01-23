@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { v4: uuid } = require('uuid');
 
-const { requestError, mailInterface } = require('../utils');
+const { requestError, mailInterface, getDbEntryId } = require('../utils');
+const { getSubscriptionsIdByName } = getDbEntryId;
 const { User } = require('../model');
 const { JWT_SECRET } = require('../config');
 
@@ -57,15 +58,16 @@ async function currentUser(req, res) {
 }
 
 async function updateSubscription(req, res, next) {
-  if (req.user.subscription !== 'owner' && req.user.subscription !== 'manager') return next(requestError(401, 'Not authorized', 'NotQualified'));
+  if (req.user.subscription !== getSubscriptionsIdByName('owner') && req.user.subscription !== getSubscriptionsIdByName('manager'))
+    return next(requestError(401, 'Not authorized', 'NotQualified'));
   if (req.user.email === req.body.email) return next(requestError(400, 'Не можна змінювати свій рівень', 'CantUpdateSelf'));
 
   const updateUser = await User.findOne({ email: req.body.email });
   if (!updateUser) return next(requestError(404, 'Користувача не існує', 'NoUserToUpdate'));
 
-  if (req.user.subscription === 'manager') {
-    if (updateUser.subscription === 'owner') return next(requestError(401, 'Not authorized', 'CantModifyOwner'));
-    if (req.body.subscription === 'owner') return next(requestError(401, 'Not authorized', 'CantPromoteToOwner'));
+  if (req.user.subscription === getSubscriptionsIdByName('manager')) {
+    if (updateUser.subscription === getSubscriptionsIdByName('owner')) return next(requestError(401, 'Not authorized', 'CantModifyOwner'));
+    if (req.body.subscription === getSubscriptionsIdByName('owner')) return next(requestError(401, 'Not authorized', 'CantPromoteToOwner'));
   }
 
   // const { email, subscription } = await User.findOneAndUpdate({ email: req.body.email }, { subscription: req.body.subscription }, { new: true });

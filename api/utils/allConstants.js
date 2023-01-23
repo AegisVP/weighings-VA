@@ -20,48 +20,48 @@ class DbConstants {
     const client = new MongoClient(MONGODB_HOST, { useNewUrlParser: true });
     await client.connect();
 
-    const allConstantsCursor = client.db('VAgro').collection('constants');
-    const allConstants = await allConstantsCursor.find().toArray();
+    const autosCursor = client.db('VAgro').collection('autos');
+    const cropsCursor = client.db('VAgro').collection('crops');
+    const destinationsCursor = client.db('VAgro').collection('destinations');
+    const driversCursor = client.db('VAgro').collection('drivers');
+    const harvestersCursor = client.db('VAgro').collection('harvesters');
+    const sourcesCursor = client.db('VAgro').collection('sources');
+    const subscriptionsCursor = client.db('VAgro').collection('subscriptions');
 
-    const allAutosCursor = client.db('VAgro').collection('autos');
-    this.autosList = await allAutosCursor.find().toArray();
+    this.autosList = await autosCursor.find().toArray();
+    this.cropsList = await cropsCursor.find().toArray();
+    this.destinationsList = await destinationsCursor.find().toArray();
+    this.driversList = await driversCursor.find().toArray();
+    this.harvestersList = await harvestersCursor.find().toArray();
+    this.sourcesList = await sourcesCursor.find().toArray();
+    this.subscriptionsList = await subscriptionsCursor.find().toArray();
 
-    this.assignValues(allConstants);
     console.log('All constants fetched from DB');
 
     // //////////////////////  watch for updates  ////////////////////////////////////
 
     const options = { fullDocument: 'updateLookup' };
-    const constantsStream = allConstantsCursor.watch([], options);
-    const autosStream = allAutosCursor.watch([], options);
 
-    constantsStream.on('change', change => {
-      this.assignOneValue(change.fullDocument);
-      console.log(`Updated constant "${change.fullDocument.type}" from DB`);
-    });
+    const autosStream = autosCursor.watch([], options);
+    const cropsStream = cropsCursor.watch([], options);
+    const destinationsStream = destinationsCursor.watch([], options);
+    const driversStream = driversCursor.watch([], options);
+    const harvestersStream = harvestersCursor.watch([], options);
+    const sourcesStream = sourcesCursor.watch([], options);
+    const subscriptionsStream = subscriptionsCursor.watch([], options);
 
-    autosStream.on('change', change => {
-      this.allAutos = this.allAutos.map(auto => {
-        if (String(auto._id) === String(change.fullDocument._id)) {
-          console.log(`Updated "${change.fullDocument.model}" in "autos" from DB`);
-          return change.fullDocument;
-        } else {
-          return auto;
-        }
-      });
-    });
+    autosStream.on('change', change => this.assignOneValue('autos', change.fullDocument));
+    cropsStream.on('change', change => this.assignOneValue('crops', change.fullDocument));
+    destinationsStream.on('change', change => this.assignOneValue('destinations', change.fullDocument));
+    driversStream.on('change', change => this.assignOneValue('drivers', change.fullDocument));
+    harvestersStream.on('change', change => this.assignOneValue('harvesters', change.fullDocument));
+    sourcesStream.on('change', change => this.assignOneValue('sources', change.fullDocument));
+    subscriptionsStream.on('change', change => this.assignOneValue('subscriptions', change.fullDocument));
   }
 
-  assignValues(allConstants) {
-    for (const oneConstant of allConstants) {
-      this[`${oneConstant.type}List`] = oneConstant.data;
-    }
-  }
-
-  assignOneValue(constant) {
-    if (Array.isArray(constant)) return this.assignValues(constant);
-
-    this[`${constant.type}List`] = constant.data;
+  assignOneValue(constant, changeDocument) {
+    console.log(`Updated "${constant}" entry "${changeDocument[String(constant).slice(0, -1)]}" from DB`);
+    this[`${constant}List`] = this[`${constant}List`].map(item => (String(item._id) === String(changeDocument._id) ? changeDocument : item));
   }
 }
 

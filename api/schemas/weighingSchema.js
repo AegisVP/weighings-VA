@@ -2,7 +2,6 @@ const { Schema } = require('mongoose');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
-// const { allConstants } = require('../utils');
 const now = new Date();
 
 const weighingDbSchema = new Schema(
@@ -27,27 +26,29 @@ const weighingDbSchema = new Schema(
     auto: {
       id: {
         type: Schema.Types.ObjectId,
-        ref: 'Auto',
+        ref: 'autos',
         required: true,
       },
       driver: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'drivers',
         required: true,
       },
     },
     crop: {
-      name: {
-        type: String,
+      id: {
+        type: Schema.Types.ObjectId,
+        ref: 'crops',
         required: true,
       },
       source: {
-        type: String,
-        // enum: allConstants.sourcesList,
+        type: Schema.Types.ObjectId,
+        ref: 'sources',
         required: true,
       },
       destination: {
-        type: String,
-        // enum: allConstants.destinationsList,
+        type: Schema.Types.ObjectId,
+        ref: 'destinations',
         required: true,
       },
     },
@@ -72,8 +73,9 @@ const weighingDbSchema = new Schema(
     },
     harvesters: [
       {
-        name: {
-          type: String,
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: 'harvesters',
           required: true,
         },
         weight: {

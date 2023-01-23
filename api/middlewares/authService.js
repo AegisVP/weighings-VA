@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../model');
-const { requestError, allConstants } = require('../utils');
+const { requestError, allConstants, getDbEntryId } = require('../utils');
+const { Weighings } = require('../model');
+
+const { getSubscriptionsIdByName } = getDbEntryId;
 const { JWT_SECRET } = require('../config');
 
 module.exports = async (req, res, next) => {
@@ -31,9 +34,9 @@ module.exports = async (req, res, next) => {
 
   const { subscriptionsList } = allConstants;
 
-  if (subscriptionsList.indexOf(dbUser.subscription) === -1) {
-    dbUser.subscription = subscriptionsList[0];
-    await User.findByIdAndUpdate(dbUser._id, { subscription: subscriptionsList[0] });
+  if (subscriptionsList.map(i => String(i._id)).indexOf(dbUser.subscription) === -1) {
+    dbUser.subscription = getSubscriptionsIdByName('basic');
+    await User.findByIdAndUpdate(dbUser._id, { subscription: dbUser.subscription });
   }
 
   req.user = dbUser;

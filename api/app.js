@@ -8,7 +8,6 @@ const { CROSS_ENV } = require('./config');
 const { usersRouter, weighingsRouter, constantsRouter } = require('./routes');
 const { authService } = require('./middlewares');
 const swaggerDocument = require('./swagger.json');
-const { tryCatchWrapper } = require('./utils');
 const { heathCheck } = require('./controller');
 
 const app = express();
@@ -49,7 +48,6 @@ var corsOptionsDelegate = function (req, callback) {
 */
 
 app.use(cors());
-
 app.use('/ishealthy', heathCheck);
 
 const formatsLogger = CROSS_ENV === 'development' ? 'dev' : 'short';

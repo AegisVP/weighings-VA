@@ -4,4 +4,5 @@ module.exports = {
   mailInterface: require('./sendgrid'),
   formatDate: require('./formatDate'),
   allConstants: require('./allConstants'),
+  getDbEntryId: require('./getDbEntryIdByName'),
 };

@@ -1,9 +1,11 @@
-const { requestError } = require('../utils');
+const { requestError, allConstants, getDbEntryId } = require('../utils');
 const { Weighings } = require('../model');
-const { subscriptionsList, driversList, sourcesList, destinationsList, harvestersList, cropsList } = require('../utils').allConstants;
+
+const { getSubscriptionsIdByName } = getDbEntryId;
+const { autosList, driversList, sourcesList, destinationsList, harvestersList, cropsList } = allConstants;
 
 const getWeighings = async (req, res, next) => {
-  if (req.user.subscription === subscriptionsList[0]) return next(requestError(401, 'Not authorized', 'NotQualified'));
+  if (req.user.subscription === getSubscriptionsIdByName('basic')) return next(requestError(401, 'Not authorized', 'NotQualified'));
 
   const searchParams = {};
   const { source, driver, date } = req.query;
@@ -24,26 +26,25 @@ const getWeighings = async (req, res, next) => {
   // if (source) searchParams['crop.source'] = source;
   // if (source) searchParams['crop.source'] = source;
 
-  const result = await Weighings.find(searchParams);
+  const weighings = await Weighings.find(searchParams);
 
-  res.json({ length: result.length, weighings: result });
+  res.json(weighings);
 };
 
 const addWeighing = async (req, res, next) => {
   const warnings = [];
   const weighingRecord = req.body;
 
-  if (req.user.subscription !== subscriptionsList[1]) return next(requestError(401, 'Not authorized', 'NotQualified'));
+  if (String(req.user.subscription) !== String(getSubscriptionsIdByName('weighing'))) return next(requestError(401, 'Not authorized', 'NotQualified'));
 
-  if (!driversList.includes(weighingRecord.auto.driver)) return next(requestError(400, 'Invalid driver name', 'NoSuchName'));
-  if (!cropsList.includes(weighingRecord.crop.name)) return next(requestError(400, 'Invalid crop name', 'NoSuchName'));
-  if (!sourcesList.includes(weighingRecord.crop.source)) return next(requestError(400, 'Invalid crop source', 'NoSuchName'));
-  if (!destinationsList.includes(weighingRecord.crop.destination)) return next(requestError(400, 'Invalid crop destination', 'NoSuchName'));
+  if (!autosList.map(i => String(i._id)).includes(weighingRecord.auto.id)) return next(requestError(400, 'Invalid auto ID', 'NoSuchAuto'));
+  if (!driversList.map(i => String(i._id)).includes(weighingRecord.auto.driver)) return next(requestError(400, 'Invalid driver ID', 'NoSuchDriver'));
+  if (!cropsList.map(i => String(i._id)).includes(weighingRecord.crop.id)) return next(requestError(400, 'Invalid crop ID', 'NoSuchCrop'));
+  if (!sourcesList.map(i => String(i._id)).includes(weighingRecord.crop.source)) return next(requestError(400, 'Invalid crop source', 'NoSuchSource'));
+  if (!destinationsList.map(i => String(i._id)).includes(weighingRecord.crop.destination)) return next(requestError(400, 'Invalid crop destination', 'NoSuchDestination'));
 
-  const {
-    weighing: { brutto, tare, netto },
-    harvesters,
-  } = weighingRecord;
+  const { weighing, crop, harvesters } = weighingRecord;
+  const { brutto, tare, netto } = weighing;
   const newNetto = parseInt(brutto) - parseInt(tare);
   const harvestersCount = harvesters.length;
 
@@ -52,16 +53,16 @@ const addWeighing = async (req, res, next) => {
     weighingRecord.weighing = { ...weighingRecord.weighing, netto: newNetto };
   }
 
-  if (harvestersCount > 0) {
+  if (harvestersCount > 0 && sourcesList.find(i => String(i._id) === crop.source)?.harvested) {
     const nettoForEachHarvester = newNetto / harvestersCount;
     const harvestersClone = [];
     let totalWeight = 0;
 
-    for (const { name, weight } of harvesters) {
-      if (!harvestersList.includes(name)) return next(requestError(400, `Invalid harvester name ${name}`, 'NoSuchName'));
+    for (const harvester of harvesters) {
+      if (!harvestersList.map(i => String(i._id)).includes(harvester.id)) return next(requestError(400, `Invalid harvester id ${harvester.id}`, 'NoSuchHarvester'));
 
-      totalWeight += parseInt(weight);
-      harvestersClone.push({ name, weight: nettoForEachHarvester });
+      totalWeight += parseInt(harvester.weight);
+      harvestersClone.push({ id, weight: nettoForEachHarvester });
     }
 
     if (totalWeight !== newNetto) {
