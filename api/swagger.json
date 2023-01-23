@@ -233,8 +233,8 @@
                     "example": "example@email.com"
                   },
                   "subscription": {
-                    "type": "number",
-                    "example": 0
+                    "type": "string",
+                    "example": "a01b02c03"
                   }
                 }
               }
@@ -255,6 +255,108 @@
       }
     },
     "/weighings": {
+      "get": {
+        "tags": ["weighings"],
+        "summary": "Get weighings data",
+        "operationId": "getWeighings",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          },
+          {
+            "name": "date",
+            "description": "Date (in YYYY-MM-DD format)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "enddate",
+            "description": "End date to search a date range (in YYYY-MM-DD format)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "driver",
+            "description": "Driver (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "description": "Source of goods (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "destination",
+            "description": "Destination of goods (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "crop",
+            "description": "Type of crop (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "incoming",
+            "description": "All incoming transactions",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "harvester",
+            "description": "All transaction by harvester (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeighingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
       "post": {
         "tags": ["weighings"],
         "summary": "Enter weighing data",
@@ -304,58 +406,10 @@
         }
       }
     },
-    "/constants/{constant}": {
-      "get": {
-        "tags": ["constants"],
-        "operationId": "getConstantList",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "\\_token\\_ is the JWT token issued to the current user during login",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Bearer _token_"
-            }
-          },
-          {
-            "name": "constant",
-            "in": "path",
-            "description": "Type of constant to return",
-            "required": true,
-            "schema": {
-              "enum": ["subscriptionsList", "cropsList", "sourcesList", "destinationsList", "harvestersList", "driversList"]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "returns list of constant values",
-            "content": {
-              "application/json": {
-                "example": ["list item 1", "list item 2", "list item 3"]
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "401": {
-            "$ref": "#/components/responses/InvalidAuth"
-          },
-          "404": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "500": {
-            "$ref": "#/components/responses/ServerError"
-          }
-        }
-      }
-    },
     "/constants/autosList": {
       "get": {
         "tags": ["constants"],
+        "summary": "Get list of autos",
         "operationId": "getConstantAutos",
         "parameters": [
           {
@@ -379,7 +433,7 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "id": {
+                      "_id": {
                         "type": "string",
                         "example": "a11b22c33"
                       },
@@ -390,6 +444,342 @@
                       "licensePlate": {
                         "type": "string",
                         "example": "AA1111AA"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/cropsList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of crops",
+        "operationId": "getConstantCrops",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of crops",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "crop": {
+                        "type": "string",
+                        "example": "Кукурудза"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/destinationsList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of destinations",
+        "operationId": "getConstantDestinations",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of destinations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "destination": {
+                        "type": "string",
+                        "example": "Елеватор"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/driversList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of drivers",
+        "operationId": "getConstantDrivers",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of drivers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "driver": {
+                        "type": "string",
+                        "example": "Васілій"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/harvestersList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of harvesters",
+        "operationId": "getConstantHarvesters",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of harvesters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "harvester": {
+                        "type": "string",
+                        "example": "Кабак Є."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/sourcesList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of sources",
+        "operationId": "getConstantSources",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of sources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "source": {
+                        "type": "string",
+                        "example": "15-2"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/subscriptionsList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of subscriptions",
+        "operationId": "getConstantSubscriptions",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "subscription": {
+                        "type": "string",
+                        "example": "basic"
                       }
                     }
                   }
@@ -482,24 +872,24 @@
               },
               "driver": {
                 "type": "string",
-                "example": "Василий"
+                "example": "a01b02c03"
               }
             }
           },
           "crop": {
             "type": "object",
             "properties": {
-              "name": {
+              "id": {
                 "type": "string",
                 "example": "a01b02c03"
               },
               "source": {
                 "type": "string",
-                "example": "field 01"
+                "example": "a01b02c03"
               },
               "destination": {
                 "type": "string",
-                "example": "storage"
+                "example": "a01b02c03"
               }
             }
           },
@@ -525,9 +915,9 @@
             "items": {
               "type": "object",
               "properties": {
-                "name": {
+                "id": {
                   "type": "string",
-                  "example": "Harvester name"
+                  "example": "a01b02c03"
                 },
                 "weight": {
                   "type": "number",
@@ -539,88 +929,91 @@
         }
       },
       "WeighingResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "a11b22c33"
-          },
-          "date": {
-            "type": "object",
-            "properties": {
-              "year": {
-                "type": "number",
-                "example": 2023
-              },
-              "month": {
-                "type": "number",
-                "example": 2
-              },
-              "day": {
-                "type": "number",
-                "example": 15
-              }
-            }
-          },
-          "auto": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "example": "a01b02c03"
-              },
-              "driver": {
-                "type": "string",
-                "example": "Василий"
-              }
-            }
-          },
-          "crop": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "example": "a01b02c03"
-              },
-              "source": {
-                "type": "string",
-                "example": "field 01"
-              },
-              "destination": {
-                "type": "string",
-                "example": "storage"
-              }
-            }
-          },
-          "weighing": {
-            "type": "object",
-            "properties": {
-              "tare": {
-                "type": "number",
-                "example": 1111
-              },
-              "brutto": {
-                "type": "number",
-                "example": 2222
-              },
-              "isIncoming": {
-                "type": "boolean",
-                "example": true
-              }
-            }
-          },
-          "harvesters": {
-            "type": "array",
-            "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "example": "a11b22c33"
+            },
+            "date": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "Harvester name"
-                },
-                "weight": {
+                "year": {
                   "type": "number",
-                  "example": 500
+                  "example": 2023
+                },
+                "month": {
+                  "type": "number",
+                  "example": 2
+                },
+                "day": {
+                  "type": "number",
+                  "example": 15
+                }
+              }
+            },
+            "auto": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                },
+                "driver": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                }
+              }
+            },
+            "crop": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                },
+                "source": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                },
+                "destination": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                }
+              }
+            },
+            "weighing": {
+              "type": "object",
+              "properties": {
+                "tare": {
+                  "type": "number",
+                  "example": 1111
+                },
+                "brutto": {
+                  "type": "number",
+                  "example": 2222
+                },
+                "isIncoming": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            },
+            "harvesters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "a01b02c03"
+                  },
+                  "weight": {
+                    "type": "number",
+                    "example": 500
+                  }
                 }
               }
             }
@@ -641,8 +1034,8 @@
                 "example": "example@email.com"
               },
               "subscription": {
-                "type": "number",
-                "example": 0
+                "type": "string",
+                "example": "a01b02c03"
               }
             }
           }
