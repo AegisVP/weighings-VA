@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { handlePending, handleFulfilled, handleRejected } from 'utils/defaultHandlers';
+import { handlePending, handleFulfilled, handleRejected } from 'utils';
 import { handleLoginUser, handleRegisterUser, handleLogoutUser, handleRefreshUser } from 'redux/user/userHandlers';
 import { loginUser, logoutUser, refreshUser, registerUser } from 'redux/user/userOperations';
 

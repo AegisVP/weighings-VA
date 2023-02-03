@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useGetConstantQuery } from 'redux/services/constantsAPI';
 
-export const WeighingsEntryForm = () => {
+export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
   const [brutto, setBrutto] = useState();
   const [tare, setTare] = useState();
   const [netto, setNetto] = useState('нетто');
+
   const { data: sourcesList } = useGetConstantQuery('sourcesList');
   const { data: destinationsList } = useGetConstantQuery('destinationsList');
   const { data: cropsList } = useGetConstantQuery('cropsList');
   const { data: autosList } = useGetConstantQuery('autosList');
   const { data: driversList } = useGetConstantQuery('driversList');
   const { data: harvestersList } = useGetConstantQuery('harvestersList');
-  const cols = 6 + parseInt(harvestersList?.length || 0);
+  const cols = 6 + parseInt(harverstersCount || 0);
 
   const autoChangeHandler = e => {
     // const id = e.currentTarget.value;

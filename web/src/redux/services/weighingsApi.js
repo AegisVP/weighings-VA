@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+import { date2Obj } from 'utils';
 import { constants } from 'constants';
 
 export const weighingsApi = createApi({
@@ -9,7 +10,7 @@ export const weighingsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${constants.BASE_URL}/api/weighings`,
     prepareHeaders: (headers, { getState }) => {
-      const token = getState().user.token;
+      const token = getState().auth.token;
       if (token) headers.set('authorization', `Bearer ${token}`);
       return headers;
     },
@@ -17,7 +18,10 @@ export const weighingsApi = createApi({
   endpoints: builder => ({
     getWeighings: builder.query({
       providesTags: ['Weighing'],
-      query: UrlSearchParams => `/?${UrlSearchParams.toString}`,
+      query: (inputSearchParams = date2Obj()) => ({
+        url: `/?${new URLSearchParams(inputSearchParams).toString()}`,
+        method: 'GET',
+      }),
     }),
     addWeighing: builder.mutation({
       query: weighing => ({ url: '/', method: 'POST', body: weighing }),

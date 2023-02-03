@@ -2,21 +2,21 @@ import { lazy, Suspense, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, Routes, useNavigate } from 'react-router';
 
-import { authHeader } from 'utils/authHeader';
+import { authHeader } from 'utils';
 import { refreshUser } from 'redux/actions';
 import { selectUserIsLoggedIn, selectUserIsRefreshing, selectUserToken } from 'redux/selectors';
 
 import { CommonLayout } from 'components/CommonLayout/CommonLayout';
 
 const WelcomePage = lazy(() => import('pages/WelcomePage'));
-const WeighingsEntryPage = lazy(() => import('pages/WeighingsEntry'));
-const WeighingsAnalyzePage = lazy(() => import('pages/WeighingsAnalyze'));
+const WeighingsEntryPage = lazy(() => import('pages/WeighingsEntryPage'));
+const WeighingsAnalyzePage = lazy(() => import('pages/WeighingsAnalyzePage'));
 const LoginPage = lazy(() => import('pages/LoginPage'));
 const ReportsPage = lazy(() => import('pages/ReportsPage'));
 const DriverListPage = lazy(() => import('pages/DriverListPage'));
-const DriverReport = lazy(() => import('pages/DriverReport'));
+const DriverReportPage = lazy(() => import('pages/DriverReportPage'));
 const DaySelectPage = lazy(() => import('pages/DaySelectPage'));
-const Form78Report = lazy(() => import('pages/Form78Report'));
+const Form78ReportPage = lazy(() => import('pages/Form78ReportPage'));
 
 export const App = () => {
   const dispatch = useDispatch();
@@ -46,10 +46,10 @@ export const App = () => {
           </Route>
           <Route path="reports" element={<ReportsPage />}>
             <Route path="driver" element={<DriverListPage />}>
-              <Route path=":driver" element={<DriverReport />} />
+              <Route path=":driver" element={<DriverReportPage />} />
             </Route>
             <Route path="history" element={<DaySelectPage />}>
-              <Route path=":day" element={<Form78Report />} />
+              <Route path=":day" element={<Form78ReportPage />} />
             </Route>
           </Route>
         </Route>

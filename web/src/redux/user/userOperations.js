@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { authHeader } from 'utils/authHeader';
+import { authHeader } from 'utils';
 import { constants } from 'constants';
 
 axios.defaults.baseURL = `${constants.BASE_URL}/api/user`;
