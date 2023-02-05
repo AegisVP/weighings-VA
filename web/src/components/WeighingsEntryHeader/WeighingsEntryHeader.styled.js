@@ -26,3 +26,19 @@ export const CalendarController = styled.input`
   height: 1px;
   width: 1px;
 `;
+
+export const HeaderLabel = styled.label`
+  margin: 0 15px 0 0;
+`;
+
+export const AddButton = styled.button`
+  width: 35px;
+  height: 24px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 15px 0 0;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: rgb(50, 150, 50);
+`;

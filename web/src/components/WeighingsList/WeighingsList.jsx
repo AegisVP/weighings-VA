@@ -1,6 +1,16 @@
 // import { WeighingsEntryForm } from 'components/WeighingEntryForm/WeighingEntryForm';
 import { useGetConstantQuery } from 'redux/services/constantsAPI';
-import { HarvestersList, HarvesterItem } from './WeighingsList.styled';
+import {
+  HarvestersList,
+  HarvesterItem,
+  StyledTable,
+  StyledTableListSection,
+  StyledTableHeaderSection,
+  StyledTableHeaderCell,
+  StyledTableRow,
+  StyledTableCell,
+  StyledTableSpannedErrorCell,
+} from './WeighingsList.styled';
 // import { ReactComponent as Corn } from 'img/corn.svg';
 // import { ReactComponent as Dust } from 'img/dust.svg';
 // import { ReactComponent as Hay } from 'img/hay.svg';
@@ -9,7 +19,7 @@ import { HarvestersList, HarvesterItem } from './WeighingsList.styled';
 // import { ReactComponent as Recycle } from 'img/recycle.svg';
 // import { ReactComponent as Soya } from 'img/soya.svg';
 
-export const WeighingsList = ({ weighings, weighingsIsLoading, weighingsIsFetching, weighingEntries }) => {
+export const WeighingsList = ({ weighings, weighingsIsLoading, weighingsIsFetching, weighingEntries = [] }) => {
   const autosList = new Map();
   const { data: autosData } = useGetConstantQuery('autosList');
   autosData?.forEach(i => autosList.set(String(i._id), { auto: i.auto, licensePlate: i.licensePlate }));
@@ -42,44 +52,38 @@ export const WeighingsList = ({ weighings, weighingsIsLoading, weighingsIsFetchi
     }, []);
 
   return (
-    <table className="border w-[1200px]" border="all">
-      <thead className="border">
-        <tr className="border">
-          <th rowSpan="3" scope="col" className="border">
+    <StyledTable border="all">
+      <StyledTableHeaderSection>
+        <StyledTableRow>
+          <StyledTableHeaderCell rowSpan="3" scope="col">
             Джерело
-          </th>
-          <th colSpan="3" className="border">
-            Машина (трактор)
-          </th>
-          <th colSpan="4" className="border">
-            Вага (кг)
-          </th>
-        </tr>
-        <tr className="border">
-          <th rowSpan="2" scope="col" className="border">
+          </StyledTableHeaderCell>
+          <StyledTableHeaderCell colSpan="3">Машина (трактор)</StyledTableHeaderCell>
+          <StyledTableHeaderCell colSpan="4">Вага (кг)</StyledTableHeaderCell>
+        </StyledTableRow>
+        <StyledTableRow>
+          <StyledTableHeaderCell rowSpan="2" scope="col">
             ПІП водія
-          </th>
-          <th rowSpan="2" scope="col" className="border">
+          </StyledTableHeaderCell>
+          <StyledTableHeaderCell rowSpan="2" scope="col">
             марка
-          </th>
-          <th rowSpan="2" scope="col" className="border">
+          </StyledTableHeaderCell>
+          <StyledTableHeaderCell rowSpan="2" scope="col">
             номер
-          </th>
-          <th rowSpan="2" scope="col" className="border">
+          </StyledTableHeaderCell>
+          <StyledTableHeaderCell rowSpan="2" scope="col">
             брутто
-          </th>
-          <th rowSpan="2" scope="col" className="border">
+          </StyledTableHeaderCell>
+          <StyledTableHeaderCell rowSpan="2" scope="col">
             тара
-          </th>
-          <th rowSpan="2" scope="col" className="border">
+          </StyledTableHeaderCell>
+          <StyledTableHeaderCell rowSpan="2" scope="col">
             нетто
-          </th>
-          <th scope="col" className="border">
-            по комбайнерах
-          </th>
-        </tr>
-        <tr>
-          <td className=" border p-0">
+          </StyledTableHeaderCell>
+          <StyledTableHeaderCell scope="col">по комбайнерах</StyledTableHeaderCell>
+        </StyledTableRow>
+        <StyledTableRow>
+          <StyledTableCell>
             {!!harvestersLocalList && (
               <HarvestersList count={harvestersLocalList.length}>
                 {harvestersLocalList?.map(h => (
@@ -87,49 +91,57 @@ export const WeighingsList = ({ weighings, weighingsIsLoading, weighingsIsFetchi
                 ))}
               </HarvestersList>
             )}
-          </td>
-        </tr>
-      </thead>
-      {/* {!!weighingEntries && (
+          </StyledTableCell>
+        </StyledTableRow>
+      </StyledTableHeaderSection>
+      {/* {weighingEntries.length > 0 && (
         <tbody>
           {weighingEntries.map(entry => (
-            <tr>
-              <td colSpan="8" className="border p-0">
+            <StyledTableRow>
+              <StyledTableCell colSpan="8">
                 <WeighingsEntryForm weighingEntry={entry} harverstersCount={harverstersCount} />
-              </td>
-            </tr>
+              </StyledTableCell>
+            </StyledTableRow>
           ))}
         </tbody>
       )} */}
-      {!!weighings?.length && (
-        <tfoot>
+      {weighings?.length > 0 ? (
+        <StyledTableListSection>
           {weighings.map(weighing => {
             return (
-              <tr key={weighing._id}>
-                <td className="border flex justify-start gap-4 pr-4">
-                  <span>{sourcesList.get(weighing.crop.source)?.source}</span>
-                  <img src={'img/corn.svg'} width="24" height="24" alt={'corn'} />
-                  <span className="ml-auto">-&gt;</span>
-                  <span>{destinationsList.get(weighing.crop.destination)}</span>
-                </td>
-                <td className="border">{driversList.get(weighing.auto.driver)}</td>
-                <td className="border">{autosList.get(weighing.auto.id)?.auto}</td>
-                <td className="border">{autosList.get(weighing.auto.id)?.licensePlate}</td>
-                <td className="border">{weighing.weighing.brutto}</td>
-                <td className="border">{weighing.weighing.tare}</td>
-                <td className="border">{weighing.weighing.netto}</td>
-                <td className="border p-0">
+              <StyledTableRow key={weighing._id}>
+                <StyledTableCell>
+                  <div className="flex justify-start gap-4 w-full">
+                    <span>{sourcesList.get(weighing.crop.source)?.source}</span>
+                    <img src={'img/corn.svg'} width="24" height="24" alt={'corn'} />
+                    <span className="ml-auto">-&gt;</span>
+                    <span>{destinationsList.get(weighing.crop.destination)}</span>
+                  </div>
+                </StyledTableCell>
+                <StyledTableCell>{driversList.get(weighing.auto.driver)}</StyledTableCell>
+                <StyledTableCell>{autosList.get(weighing.auto.id)?.auto}</StyledTableCell>
+                <StyledTableCell>{autosList.get(weighing.auto.id)?.licensePlate}</StyledTableCell>
+                <StyledTableCell>{weighing.weighing.brutto}</StyledTableCell>
+                <StyledTableCell>{weighing.weighing.tare}</StyledTableCell>
+                <StyledTableCell>{weighing.weighing.netto}</StyledTableCell>
+                <StyledTableCell style={{ padding: 0 }}>
                   <HarvestersList count={harvestersLocalList.length}>
                     {harvestersLocalList.map(h => (
                       <HarvesterItem key={h}>{sourcesList.get(weighing.crop.source)?.isHarvested ? weighing.harvesters.find(wh => wh.id === h)?.weight : '- - -'}</HarvesterItem>
                     ))}
                   </HarvestersList>
-                </td>
-              </tr>
+                </StyledTableCell>
+              </StyledTableRow>
             );
           })}
-        </tfoot>
+        </StyledTableListSection>
+      ) : (
+        <StyledTableListSection>
+          <StyledTableRow>
+            <StyledTableSpannedErrorCell colSpan="8">Зважування за цей день відсутні</StyledTableSpannedErrorCell>
+          </StyledTableRow>
+        </StyledTableListSection>
       )}
-    </table>
+    </StyledTable>
   );
 };

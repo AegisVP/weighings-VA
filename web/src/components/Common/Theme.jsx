@@ -38,6 +38,10 @@ export const theme = {
       active: 'inset 2px 2px 3px 1px rgba(0, 0, 0, 0.3)',
     },
   },
+  border: {
+    listTable: '1px solid rgba(0,0,0,0.2)',
+    listTableSection: '2px solid rgba(0,0,0,0.3)',
+  },
   margin: `margin: ${returnParams}`,
   padding: `padding: ${returnParams}`,
   mp: returnParams,

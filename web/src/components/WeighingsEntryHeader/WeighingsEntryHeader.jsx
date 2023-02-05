@@ -1,9 +1,9 @@
 import { Calendar } from 'react-calendar';
 import { createPortal } from 'react-dom';
 import 'react-calendar/dist/Calendar.css';
-import { CalendarController, ModalWrapper } from './WeighingsEntryHeader.styled';
+import { AddButton, CalendarController, HeaderLabel, ModalWrapper } from './WeighingsEntryHeader.styled';
 
-export const WeighingsEntryHeader = ({ destinationsList = [], cropsList = [], updateDate, searchDate = new Date(), dailyTotal }) => {
+export const WeighingsEntryHeader = ({ destinationsList = [], cropsList = [], updateDate, searchDate = new Date(), dailyTotal, addNewWeighing }) => {
   const showCalendarCheckEl = document.getElementById('showCalendar');
   const modalWrapperEl = document.getElementById('modalWrapper');
 
@@ -41,8 +41,8 @@ export const WeighingsEntryHeader = ({ destinationsList = [], cropsList = [], up
 
   return (
     <div id="weighingsHeader">
-      <label>
-        Дата
+      <HeaderLabel>
+        Дата:
         <input type="text" onChange={handleShowCalendar} onFocus={handleShowCalendar} value={searchDate.toLocaleDateString('uk-UA', { dateStyle: 'long' })} />
         {createPortal(
           <ModalWrapper id="modalWrapper">
@@ -51,10 +51,10 @@ export const WeighingsEntryHeader = ({ destinationsList = [], cropsList = [], up
           </ModalWrapper>,
           document.getElementById('root-modal')
         )}
-      </label>
+      </HeaderLabel>
 
-      <label>
-        Місце призначення
+      <HeaderLabel>
+        Місце призначення:
         <select id="destination" name="destination">
           {destinationsList.length > 0 ? (
             destinationsList.map(i => (
@@ -66,10 +66,10 @@ export const WeighingsEntryHeader = ({ destinationsList = [], cropsList = [], up
             <option>--------</option>
           )}
         </select>
-      </label>
+      </HeaderLabel>
 
-      <label>
-        Культура
+      <HeaderLabel>
+        Культура:
         <select name="crop">
           {cropsList.length > 0 ? (
             cropsList.map(i => (
@@ -81,16 +81,16 @@ export const WeighingsEntryHeader = ({ destinationsList = [], cropsList = [], up
             <option>--------</option>
           )}
         </select>
-      </label>
+      </HeaderLabel>
 
-      <button type="button" aria-label="Add weighing">
+      <AddButton type="button" aria-label="Add weighing" onClick={addNewWeighing}>
         +
-      </button>
+      </AddButton>
 
-      <label>
-        <span className="pr-2">За день</span>
+      <HeaderLabel>
+        За день:
         <input type="text" name="dailyTotal" value={`${dailyTotal} кг`} readOnly />
-      </label>
+      </HeaderLabel>
     </div>
   );
 };
