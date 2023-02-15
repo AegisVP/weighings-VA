@@ -1,27 +1,27 @@
 import { WeighingsEntryForm } from 'components/WeighingEntryForm/WeighingEntryForm';
 import { WeighingsEntryHeader } from 'components/WeighingsEntryHeader/WeighingsEntryHeader';
 import { WeighingsList } from 'components/WeighingsList/WeighingsList';
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useGetConstantQuery } from 'redux/services/constantsAPI';
 import { useGetWeighingsQuery } from 'redux/services/weighingsAPI';
 import { date2Obj } from 'utils';
 
 const sourcesList = new Map();
 
-const WeighingsEntryPage = () => {
+const WeighingsPage = () => {
   const [dailyTotal, setDailyTotal] = useState(0);
   const [date, setDate] = useState(new Date());
-  const weighingEntries = [];
+  const weighingEntries = useRef([]);
+
   const { data: weighingsData = [], isLoading: weighingsIsLoading, isFetching: weighingsIsFetching } = useGetWeighingsQuery({ ...date2Obj(date) });
-
-  const { data: sourcesData } = useGetConstantQuery('sourcesList');
-  sourcesData?.forEach(i => sourcesList.set(String(i._id), { source: i.source, isHarvested: i.isHarvested }));
-
   const { data: destinationsList } = useGetConstantQuery('destinationsList');
   const { data: cropsList } = useGetConstantQuery('cropsList');
+  useGetConstantQuery('sourcesList')?.data?.forEach(i => sourcesList.set(String(i._id), { source: i.source, isHarvested: i.isHarvested }));
 
   const addNewWeighing = e => {
-    console.log(e);
+    weighingEntries.current.push({});
+    console.log(weighingEntries.current);
+    // console.log(e);
   };
 
   useLayoutEffect(() => {
@@ -38,10 +38,12 @@ const WeighingsEntryPage = () => {
         destinationsList={destinationsList}
         cropsList={cropsList}
       />
-      {/* <WeighingsEntryForm /> */}
+      {weighingEntries.current.map(entry => (
+        <WeighingsEntryForm key={entry?.id || entry} weighingEntry={entry} />
+      ))}
       <WeighingsList weighings={weighingsData} weighingsIsLoading={weighingsIsLoading} weighingsIsFetching={weighingsIsFetching} weighingEntries={weighingEntries} />
     </>
   );
 };
 
-export default WeighingsEntryPage;
+export default WeighingsPage;

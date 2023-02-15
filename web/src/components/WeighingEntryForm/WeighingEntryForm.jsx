@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGetConstantQuery } from 'redux/services/constantsAPI';
 
-export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
+export const WeighingsEntryForm = ({ weighingEntry, harverstersCount = 2 }) => {
   const [brutto, setBrutto] = useState();
   const [tare, setTare] = useState();
   const [netto, setNetto] = useState('нетто');
@@ -11,8 +11,12 @@ export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
   const { data: cropsList } = useGetConstantQuery('cropsList');
   const { data: autosList } = useGetConstantQuery('autosList');
   const { data: driversList } = useGetConstantQuery('driversList');
-  const { data: harvestersList } = useGetConstantQuery('harvestersList');
-  const cols = 6 + parseInt(harverstersCount || 0);
+
+  const harvestersList = new Map();
+  const { data: harvestersData } = useGetConstantQuery('harvestersList');
+  harvestersData?.forEach(i => harvestersList.set(String(i._id), i.harvester));
+
+  const cols = 6 + parseInt(harvestersList?.size || 0);
 
   const autoChangeHandler = e => {
     // const id = e.currentTarget.value;
@@ -32,10 +36,13 @@ export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
   return (
     <form style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }} className="grid gap-4 border py-2 bg-[#ffffee]">
       <button style={{ gridColumn: `${cols}`, gridRow: '1 / span 2' }}>add</button>
+      {/* Date */}
       <label>
         <span></span>
         <input placeholder="дата" type="text" name="date" className="w-full" />
       </label>
+
+      {/* Crop */}
       <label>
         <span></span>
         {!!cropsList && (
@@ -53,6 +60,8 @@ export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
           </select>
         )}
       </label>
+
+      {/* Destination */}
       <label>
         <span></span>
         {!!destinationsList && (
@@ -70,6 +79,8 @@ export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
           </select>
         )}
       </label>
+
+      {/* Sources */}
       <label>
         <span></span>
         {!!sourcesList && (
@@ -87,6 +98,8 @@ export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
           </select>
         )}
       </label>
+
+      {/* Driver */}
       <label className="col-start-1">
         <span></span>
         {!!driversList && (
@@ -104,6 +117,8 @@ export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
           </select>
         )}
       </label>
+
+      {/* Auto */}
       <label>
         <span></span>
         {!!autosList && (
@@ -124,18 +139,26 @@ export const WeighingsEntryForm = ({ weighingEntry, harverstersCount }) => {
           </>
         )}
       </label>
+
+      {/* Weight - Brutto */}
       <label>
         <span></span>
         <input placeholder="брутто" type="text" name="brutto" onBlur={e => setBrutto(e.target.value)} className="w-[110px]" />
       </label>
+
+      {/* Weight - Tare */}
       <label>
         <span></span>
         <input placeholder="тара" type="text" name="tare" onBlur={e => setTare(e.target.value)} className="w-[110px]" />
       </label>
+
+      {/* Weight - Netto */}
       <label>
         <span></span>
         <div className="border h-[1.75em] w-[110px] p-1" id="weightNetto"></div>
       </label>
+
+      {/* Harvesters list */}
       {harvestersList?.map((harvester, i) => (
         <label>
           <span></span>

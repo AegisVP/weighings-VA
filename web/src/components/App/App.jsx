@@ -9,7 +9,7 @@ import { selectUserIsLoggedIn, selectUserIsRefreshing, selectUserToken } from 'r
 import { CommonLayout } from 'components/CommonLayout/CommonLayout';
 
 const WelcomePage = lazy(() => import('pages/WelcomePage'));
-const WeighingsEntryPage = lazy(() => import('pages/WeighingsEntryPage'));
+const WeighingsPage = lazy(() => import('pages/WeighingsPage'));
 const WeighingsAnalyzePage = lazy(() => import('pages/WeighingsAnalyzePage'));
 const LoginPage = lazy(() => import('pages/LoginPage'));
 const ReportsPage = lazy(() => import('pages/ReportsPage'));
@@ -41,7 +41,7 @@ export const App = () => {
         <Route path="/" element={<CommonLayout />}>
           <Route index element={<WelcomePage />} />
           <Route path="login" element={<LoginPage />} />
-          <Route path="weighings" element={<WeighingsEntryPage />}>
+          <Route path="weighings" element={<WeighingsPage />}>
             <Route path=":params" element={<WeighingsAnalyzePage />} />
           </Route>
           <Route path="reports" element={<ReportsPage />}>
