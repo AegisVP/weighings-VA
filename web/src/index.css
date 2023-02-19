@@ -16,7 +16,6 @@ code {
 
 input,
 select {
-  min-width: 150px;
   width: 0;
   padding: 3px 10px;
   border: none;

@@ -5,10 +5,11 @@ import { constants } from 'constants';
 
 export const weighingsApi = createApi({
   reducerPath: 'weighings',
-  tagTypes: ['Weighing'],
-  keepUnusedDataFor: 60,
+  // tagTypes: ['Weighing'],
+  keepUnusedDataFor: 3600,
   baseQuery: fetchBaseQuery({
     baseUrl: `${constants.BASE_URL}/api/weighings`,
+    // providesTags: ['Weighing'],
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token;
       if (token) headers.set('authorization', `Bearer ${token}`);
@@ -17,13 +18,14 @@ export const weighingsApi = createApi({
   }),
   endpoints: builder => ({
     getWeighings: builder.query({
-      providesTags: ['Weighing'],
+      // providesTags: ['Weighing'],
       query: (inputSearchParams = date2Obj()) => ({
         url: `/?${new URLSearchParams(inputSearchParams).toString()}`,
         method: 'GET',
       }),
     }),
     addWeighing: builder.mutation({
+      // invalidatesTags: ['Weighing'],
       query: weighing => ({ url: '/', method: 'POST', body: weighing }),
     }),
   }),

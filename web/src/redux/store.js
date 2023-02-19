@@ -4,10 +4,11 @@ import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 
 import userReducer from 'redux/user/userSlice';
+import entriesReducer from 'redux/entries/entriesSlice';
 import { weighingsApi } from 'redux/services/weighingsAPI';
 import { constantsApi } from './services/constantsAPI';
 
-const presistedUserReducer = persistReducer(
+const persistedUserReducer = persistReducer(
   {
     key: 'auth',
     storage,
@@ -16,10 +17,20 @@ const presistedUserReducer = persistReducer(
   userReducer
 );
 
+const persistedEntriesReducer = persistReducer(
+  {
+    key: 'entries',
+    storage,
+    whitelist: ['items'],
+  },
+  entriesReducer
+);
+
 const rootReducer = combineReducers({
   constants: constantsApi.reducer,
   weighings: weighingsApi.reducer,
-  auth: presistedUserReducer,
+  entries: persistedEntriesReducer,
+  auth: persistedUserReducer,
 });
 
 export const store = configureStore({

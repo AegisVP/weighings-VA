@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const StyledTable = styled.table`
   min-width: 1200px;
-  margin: 12px auto 0;
+  margin: 0.5rem auto 0;
   /* border: ${p => p.theme.border.listTable}; */
 `;
 
@@ -57,4 +57,12 @@ export const HarvesterItem = styled.li`
   &:last-child {
     border-right: unset;
   }
+`;
+
+export const DailyTotal = styled.div`
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  margin: ${p => p.theme.mp(0, 2, 0, 0)};
+  font-weight: ${p => p.theme.fontWeights.normal};
 `;

@@ -40,5 +40,5 @@ export const AddButton = styled.button`
   margin: 0 15px 0 0;
   border: 1px solid black;
   border-radius: 5px;
-  background-color: rgb(50, 150, 50);
+  background-color: #b2e74e;
 `;

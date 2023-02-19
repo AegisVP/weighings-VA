@@ -1,32 +1,37 @@
 import { WeighingsEntryForm } from 'components/WeighingEntryForm/WeighingEntryForm';
 import { WeighingsEntryHeader } from 'components/WeighingsEntryHeader/WeighingsEntryHeader';
 import { WeighingsList } from 'components/WeighingsList/WeighingsList';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectEntries } from 'redux/selectors';
+import { addNewEntry } from 'redux/actions';
 import { useGetConstantQuery } from 'redux/services/constantsAPI';
 import { useGetWeighingsQuery } from 'redux/services/weighingsAPI';
 import { date2Obj } from 'utils';
 
-const sourcesList = new Map();
-
 const WeighingsPage = () => {
+  const dispatch = useDispatch();
   const [dailyTotal, setDailyTotal] = useState(0);
   const [date, setDate] = useState(new Date());
-  const weighingEntries = useRef([]);
+  const weighingEntries = useSelector(selectEntries);
 
   const { data: weighingsData = [], isLoading: weighingsIsLoading, isFetching: weighingsIsFetching } = useGetWeighingsQuery({ ...date2Obj(date) });
   const { data: destinationsList } = useGetConstantQuery('destinationsList');
   const { data: cropsList } = useGetConstantQuery('cropsList');
-  useGetConstantQuery('sourcesList')?.data?.forEach(i => sourcesList.set(String(i._id), { source: i.source, isHarvested: i.isHarvested }));
+  const { data: sourcesList } = useGetConstantQuery('sourcesList');
 
-  const addNewWeighing = e => {
-    weighingEntries.current.push({});
-    console.log(weighingEntries.current);
-    // console.log(e);
-  };
+  const addNewWeighing = newEntry => dispatch(addNewEntry(newEntry));
 
   useLayoutEffect(() => {
-    if (!!weighingsData?.length) setDailyTotal(weighingsData.reduce((acc, cur) => (acc += sourcesList.get(cur.crop.source)?.isHarvested ? parseInt(cur.weighing.netto) : 0), 0));
-  }, [weighingsData]);
+    if (!!weighingsData?.length)
+      setDailyTotal(
+        weighingsData.length > 0
+          ? weighingsData.reduce((acc, cur) => (acc += sourcesList.find(({ _id }) => _id === cur.crop.source)?.isHarvested ? parseInt(cur.weighing.netto) : 0), 0)
+          : 0
+      );
+  }, [weighingsData, sourcesList]);
+
+  useEffect(() => setDailyTotal(0), [date]);
 
   return (
     <>
@@ -36,12 +41,19 @@ const WeighingsPage = () => {
         searchDate={date}
         dailyTotal={dailyTotal}
         destinationsList={destinationsList}
+        sourcesList={sourcesList}
         cropsList={cropsList}
       />
-      {weighingEntries.current.map(entry => (
-        <WeighingsEntryForm key={entry?.id || entry} weighingEntry={entry} />
+      {weighingEntries.map((entry, i) => (
+        <WeighingsEntryForm key={i} id={i} weighingEntry={entry} />
       ))}
-      <WeighingsList weighings={weighingsData} weighingsIsLoading={weighingsIsLoading} weighingsIsFetching={weighingsIsFetching} weighingEntries={weighingEntries} />
+      <WeighingsList
+        weighings={weighingsData}
+        weighingsIsLoading={weighingsIsLoading}
+        weighingsIsFetching={weighingsIsFetching}
+        weighingEntries={weighingEntries}
+        dailyTotal={dailyTotal}
+      />
     </>
   );
 };
