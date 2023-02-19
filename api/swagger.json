@@ -903,10 +903,6 @@
               "brutto": {
                 "type": "number",
                 "example": 2222
-              },
-              "isIncoming": {
-                "type": "boolean",
-                "example": true
               }
             }
           },
@@ -994,10 +990,6 @@
                 "brutto": {
                   "type": "number",
                   "example": 2222
-                },
-                "isIncoming": {
-                  "type": "boolean",
-                  "example": true
                 }
               }
             },

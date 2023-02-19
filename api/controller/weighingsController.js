@@ -48,7 +48,6 @@ const getWeighings = async (req, res, next) => {
 const addWeighing = async (req, res, next) => {
   //
   // TODO:
-  // - implement "isIncoming"
   // - implement "isHarvested"
   //
 

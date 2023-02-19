@@ -65,11 +65,6 @@ const weighingDbSchema = new Schema(
         type: Number,
         required: true,
       },
-      isIncoming: {
-        type: Boolean,
-        default: true,
-        required: true,
-      },
     },
     harvesters: [
       {
@@ -113,7 +108,6 @@ const addSchema = Joi.object({
     tare: Joi.number().required(),
     brutto: Joi.number().required(),
     netto: Joi.number(),
-    isIncoming: Joi.boolean().required(),
   },
   harvesters: Joi.array().items(
     Joi.object({
