@@ -1,8 +1,10 @@
+import 'dotenv/config';
 import { API_PORT } from './config/constants.ts';
 import { verifySequelize } from './db/db.ts';
+import './db/sync.ts';
 import { app } from './app.ts';
 
-export const main = async () => {
+(async () => {
   const startupChecks = [verifySequelize];
 
   await Promise.all(startupChecks)
@@ -23,4 +25,4 @@ export const main = async () => {
     console.error('Error:', message);
     process.exit(1);
   }
-};
+})();
