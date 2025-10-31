@@ -1,22 +1,16 @@
 import { Sequelize } from 'sequelize';
+import { DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER } from '../config/constants.js';
+import type { Options } from 'sequelize';
 
-import { DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS } from '../config/constants.ts';
-
-import type { Dialect } from 'sequelize';
-
-const sequelizeDBOptions = {
-  dialect: 'mariadb' as Dialect,
+const sequelizeDBOptions: Options = {
+  dialect: 'postgres',
+  logging: false,
   host: DB_HOST,
   port: DB_PORT,
   username: DB_USER,
   password: DB_PASS,
   database: DB_NAME,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
+  dialectOptions: { ssl: false },
 };
 
 export const sequelize = new Sequelize(sequelizeDBOptions);
@@ -25,9 +19,10 @@ export const verifySequelize = new Promise((resolve, reject) => {
   sequelize
     .authenticate()
     .then(() => {
-      resolve('MariaDB connection established');
+      resolve('Database connection established');
     })
-    .catch(() => {
-      reject(new Error('MariaDB connection failed!'));
+    .catch((e) => {
+      console.error('Unable to connect to the database:', e);
+      reject(new Error('Database connection failed!'));
     });
 });

@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from '../db/db.ts';
-import { generateTimestampFields } from './generateTimestampFields.ts';
+import { sequelize } from '../db/db.js';
+import { generateTimestampFields } from './generateTimestampFields.js';
 
 export class MachineType extends Model {
   declare id: string;
@@ -31,5 +31,15 @@ MachineType.init(
     timestamps: true,
     paranoid: true,
     underscored: true,
+    indexes: [
+      {
+        unique: true,
+        name: 'machine_type_name_deleted_at_idx',
+        fields: ['name'],
+        where: {
+          deleted_at: null,
+        },
+      },
+    ],
   }
 );

@@ -1,8 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from '../db/db.ts';
-import { generateTimestampFields } from './generateTimestampFields.ts';
-import { MachineType } from './index.ts';
+import { sequelize } from '../db/db.js';
+import { generateTimestampFields } from './generateTimestampFields.js';
+import { MachineType } from './index.js';
 
 export class Machine extends Model {
   declare id: string;
@@ -31,21 +31,21 @@ Machine.init(
     make: {
       type: DataTypes.STRING,
       allowNull: true,
-      unique: true,
+      unique: false,
     },
     model: {
       type: DataTypes.STRING,
       allowNull: true,
-      unique: true,
+      unique: false,
     },
     description: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: true,
-      unique: true,
+      unique: false,
     },
     type: {
       type: DataTypes.UUID,
-      allowNull: true,
+      allowNull: false,
       unique: false,
       references: {
         model: MachineType,
@@ -60,5 +60,18 @@ Machine.init(
     timestamps: true,
     paranoid: true,
     underscored: true,
+    indexes: [
+      {
+        unique: true,
+        name: 'license_plate_deleted_at_idx',
+        fields: ['license_plate'],
+        where: {
+          deleted_at: null,
+        },
+      },
+    ],
   }
 );
+
+Machine.belongsTo(MachineType, { foreignKey: 'type', targetKey: 'id' });
+MachineType.hasMany(Machine, { foreignKey: 'type', sourceKey: 'id' });

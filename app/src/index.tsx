@@ -1,0 +1,28 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './api/api';
+// import { BrowserRouter } from 'react-router-dom';
+// import { RouterProvider } from 'react-router/dom';
+import { Provider } from 'react-redux';
+
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import './index.css';
+
+import { store } from './redux/store';
+import Router from './router.tsx';
+
+const containerElement = document.getElementById('root-page');
+if (!containerElement) {
+  throw new Error('Root container missing in index.html');
+}
+
+createRoot(containerElement).render(
+  <StrictMode>
+    <Provider store={store}>
+      <Router />
+    </Provider>
+  </StrictMode>
+);

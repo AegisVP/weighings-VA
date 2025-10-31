@@ -1,41 +1,36 @@
-const syncCondition = { alter: true, force: true };
-const doSync = true;
+import { MIGRATION_VERSION } from '../config/constants.js';
+import { MigrationVersion } from '../models/index.js';
+import { sequelize } from './db.js';
 
-import { User, Location, Crop, MachineType, Operator, Machine, Weighing } from '../models/index.ts';
+export const runMigrationIfNeeded = async () => {
+  let doMigrate = false;
+  let dbVersion = 0;
+  const syncCondition = { alter: true, force: false };
 
-Machine.belongsTo(MachineType, { foreignKey: 'type', targetKey: 'id' });
-MachineType.hasMany(Machine, { foreignKey: 'type', sourceKey: 'id' });
+  try {
+    const latestEntry = await MigrationVersion.findOne({
+      attributes: ['version'],
+      order: [['appliedAt', 'DESC']],
+      limit: 1,
+    });
 
-Weighing.belongsTo(Crop, { foreignKey: 'crop', targetKey: 'id' });
-Crop.hasMany(Weighing, { foreignKey: 'crop', sourceKey: 'id' });
+    dbVersion = latestEntry?.version || 0;
+    doMigrate = dbVersion < MIGRATION_VERSION;
 
-Weighing.belongsTo(Machine, { foreignKey: 'auto', targetKey: 'id' });
-Machine.hasMany(Weighing, { foreignKey: 'auto', sourceKey: 'id' });
+    console.log(`Database model is at version ${dbVersion}`);
+    console.log(`Latest migration version is at ${MIGRATION_VERSION}`);
+  } catch (_e) {
+    console.log('Error occurred when checking migration version');
+    await MigrationVersion.sync(syncCondition);
+    doMigrate = true;
+  }
 
-Weighing.belongsTo(Operator, { foreignKey: 'driver', targetKey: 'id' });
-Operator.hasMany(Weighing, { foreignKey: 'driver', sourceKey: 'id' });
+  if (doMigrate) {
+    // Perform necessary migration steps here
+    console.log(`Migrating database model from version ${dbVersion} to ${MIGRATION_VERSION}`);
+    await sequelize.sync(syncCondition);
 
-Weighing.belongsTo(Machine, { foreignKey: 'harvester', targetKey: 'id' });
-Machine.hasMany(Weighing, { foreignKey: 'harvester', sourceKey: 'id' });
-
-Weighing.belongsTo(Operator, { foreignKey: 'operator', targetKey: 'id' });
-Operator.hasMany(Weighing, { foreignKey: 'operator', sourceKey: 'id' });
-
-Weighing.belongsTo(Location, { foreignKey: 'source', targetKey: 'id' });
-Location.hasMany(Weighing, { foreignKey: 'source', sourceKey: 'id' });
-
-Weighing.belongsTo(Location, { foreignKey: 'destination', targetKey: 'id' });
-Location.hasMany(Weighing, { foreignKey: 'destination', sourceKey: 'id' });
-
-if (doSync) {
-  console.log('Syncing DB with condition:', syncCondition);
-  (async () => {
-    await User.sync(syncCondition);
-    await MachineType.sync(syncCondition);
-    await Location.sync(syncCondition);
-    await Crop.sync(syncCondition);
-    await Operator.sync(syncCondition);
-    await Machine.sync(syncCondition);
-    await Weighing.sync(syncCondition);
-  })();
-}
+    // After successful migration, update the migrations table
+    await MigrationVersion.create({ version: MIGRATION_VERSION });
+  }
+};

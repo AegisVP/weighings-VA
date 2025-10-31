@@ -1,9 +1,15 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from '../db/db.ts';
-import { generateTimestampFields } from './generateTimestampFields.ts';
+import { sequelize } from '../db/db.js';
+import { generateTimestampFields } from './generateTimestampFields.js';
 
-export class Crop extends Model {}
+export class Crop extends Model {
+  declare id: string;
+  declare name: string;
+  declare createdAt: Date;
+  declare updatedAt: Date;
+  declare deletedAt: Date | null;
+}
 
 Crop.init(
   {
@@ -25,5 +31,15 @@ Crop.init(
     timestamps: true,
     paranoid: true,
     underscored: true,
+    indexes: [
+      {
+        unique: true,
+        name: 'crops_name_deleted_at_idx',
+        fields: ['name'],
+        where: {
+          deleted_at: null,
+        },
+      },
+    ],
   }
 );

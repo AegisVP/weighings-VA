@@ -1,13 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { sequelize } from '../db/db.ts';
-import { generateTimestampFields } from './generateTimestampFields.ts';
+import { sequelize } from '../db/db.js';
+import { generateTimestampFields } from './generateTimestampFields.js';
 
 export class Location extends Model {
   declare id: string;
   declare name: string;
-  declare is_source: boolean;
-  declare is_destination: boolean;
+  declare isSource: boolean;
+  declare isDestination: boolean;
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
@@ -23,14 +23,13 @@ Location.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
-    is_source: {
+    isSource: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
     },
-    is_destination: {
+    isDestination: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
@@ -43,5 +42,15 @@ Location.init(
     timestamps: true,
     paranoid: true,
     underscored: true,
+    indexes: [
+      {
+        unique: true,
+        name: 'locations_name_idx',
+        fields: ['name'],
+        where: {
+          deleted_at: null,
+        },
+      },
+    ],
   }
 );

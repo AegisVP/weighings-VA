@@ -11,7 +11,7 @@ type timestampFields = {
   deletedAt?: timestampField;
 };
 type funcDef = (args?: { createdAt?: boolean; updatedAt?: boolean; deletedAt?: boolean }) => timestampFields;
-export const generateTimestampFields: funcDef = argv => {
+export const generateTimestampFields: funcDef = (argv) => {
   const { createdAt = true, updatedAt = true, deletedAt = true } = argv || {};
   const fields: timestampFields = {};
 

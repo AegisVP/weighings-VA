@@ -1,9 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
 import { v7 as uuidv7 } from 'uuid';
 
-import { sequelize } from '../db/db.ts';
-import { generateTimestampFields } from './generateTimestampFields.ts';
-import { Crop, Location, Machine, Operator, User } from './index.ts';
+import { sequelize } from '../db/db.js';
+import { generateTimestampFields } from './generateTimestampFields.js';
+import { Crop, Location, Machine, Operator, User } from './index.js';
 
 export class Weighing extends Model {
   declare id: string;
@@ -105,20 +105,41 @@ Weighing.init(
     paranoid: true,
     underscored: true,
     hooks: {
-      beforeValidate: async weighing => {
+      beforeValidate: async (weighing) => {
         if (weighing && 'source' in weighing && weighing.source) {
           const source = await Location.findByPk(weighing.source);
-          if (!source || !source.is_source) {
-            throw new Error('Invalid source location: must have is_source = true');
+          if (!source || !source.isSource) {
+            throw new Error('Ця локація не може бути використана як джерело');
           }
         }
         if (weighing && 'destination' in weighing && weighing.destination) {
           const destination = await Location.findByPk(weighing.destination);
-          if (!destination || !destination.is_destination) {
-            throw new Error('Invalid destination location: must have is_destination = true');
+          if (!destination || !destination.isDestination) {
+            throw new Error('Ця локація не може бути використана як призначення');
           }
         }
       },
     },
   }
 );
+
+Weighing.belongsTo(Crop, { foreignKey: 'crop', targetKey: 'id' });
+Crop.hasMany(Weighing, { foreignKey: 'crop', sourceKey: 'id' });
+
+Weighing.belongsTo(Machine, { foreignKey: 'auto', targetKey: 'id' });
+Machine.hasMany(Weighing, { foreignKey: 'auto', sourceKey: 'id' });
+
+Weighing.belongsTo(Operator, { foreignKey: 'driver', targetKey: 'id' });
+Operator.hasMany(Weighing, { foreignKey: 'driver', sourceKey: 'id' });
+
+Weighing.belongsTo(Machine, { foreignKey: 'harvester', targetKey: 'id' });
+Machine.hasMany(Weighing, { foreignKey: 'harvester', sourceKey: 'id' });
+
+Weighing.belongsTo(Operator, { foreignKey: 'operator', targetKey: 'id' });
+Operator.hasMany(Weighing, { foreignKey: 'operator', sourceKey: 'id' });
+
+Weighing.belongsTo(Location, { foreignKey: 'source', targetKey: 'id' });
+Location.hasMany(Weighing, { foreignKey: 'source', sourceKey: 'id' });
+
+Weighing.belongsTo(Location, { foreignKey: 'destination', targetKey: 'id' });
+Location.hasMany(Weighing, { foreignKey: 'destination', sourceKey: 'id' });
