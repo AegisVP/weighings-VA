@@ -121,19 +121,22 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
     const isNew = String(updatedRow.id).startsWith('temp-');
     
     try {
+      // Remove timestamp fields as they are managed on the backend
+      const rowData = updatedRow as Record<string, unknown>;
+      const cleanData: Record<string, unknown> = {};
+      Object.keys(rowData).forEach((key) => {
+        if (!['createdAt', 'updatedAt', 'deletedAt'].includes(key)) {
+          cleanData[key] = rowData[key];
+        }
+      });
+      
       if (isNew) {
-        // Remove temporary id and other metadata fields for new row
-        const rowData = updatedRow as Record<string, unknown>;
-        const newData: Record<string, unknown> = {};
-        Object.keys(rowData).forEach((key) => {
-          if (!['id', 'createdAt', 'updatedAt', 'deletedAt'].includes(key)) {
-            newData[key] = rowData[key];
-          }
-        });
+        // Remove temporary id for new row
+        const { id, ...newData } = cleanData;
         await config.actions.add(dispatch)(newData as Omit<T, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>);
         setSnackbar({ open: true, message: 'Запис успішно створено', severity: 'success' });
       } else {
-        await config.actions.modify(dispatch)(updatedRow);
+        await config.actions.modify(dispatch)(cleanData as Partial<T> & { id: string });
         setSnackbar({ open: true, message: 'Запис успішно оновлено', severity: 'success' });
       }
       return updatedRow;
