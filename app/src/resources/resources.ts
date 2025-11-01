@@ -23,8 +23,8 @@ import {
 import {
   selectCrop,
   selectLocation,
+  selectMachine,
   selectMachineType,
-  selectMachineWithTypeName,
   selectOperator,
 } from '../redux/resources/resourcesSelectors';
 
@@ -57,6 +57,7 @@ export type ResourceDef<T> = {
     remove: (dispatch: TypeAppDispatch) => (id: string) => void;
     load: (dispatch: TypeAppDispatch) => () => void;
   };
+  getColumnOptions?: (state: TypeRootReduxState, columnId: keyof T) => { value: string; label: string }[] | undefined;
 };
 
 const createResourceConfig = <T>(options: ResourceDef<T>): ResourceDef<T> => ({
@@ -136,17 +137,29 @@ export const RESOURCE_CONFIGS = [
       { id: 'description', label: 'Опис' },
       { id: 'make', label: 'Марка' },
       { id: 'model', label: 'Модель' },
-      { id: 'type', label: 'Тип' },
+      { id: 'type', label: 'Тип', type: 'singleSelect' },
     ],
-    selector: selectMachineWithTypeName,
+    selector: selectMachine,
     actions: {
-      add: (dispatch) => (item) => dispatch(addMachine(item as any)),
-      modify: (dispatch) => (item) => dispatch(modifyMachine(item as any)),
+      add: (dispatch) => (item) => {
+        const machineData = { ...item, type: (item as { type?: string }).type || '' };
+        dispatch(addMachine(machineData as Parameters<typeof addMachine>[0]));
+      },
+      modify: (dispatch) => (item) => {
+        const machineData = { ...item };
+        dispatch(modifyMachine(machineData as Parameters<typeof modifyMachine>[0]));
+      },
       remove: (dispatch) => (id) => dispatch(deleteMachine({ id })),
       load: (dispatch) => () => {
         dispatch(loadMachines());
         dispatch(loadMachineTypes());
       },
+    },
+    getColumnOptions: (state, columnId) => {
+      if (columnId === 'type') {
+        return state.resources.machineType.items.map((mt) => ({ value: mt.id, label: mt.name }));
+      }
+      return undefined;
     },
   }),
 ];

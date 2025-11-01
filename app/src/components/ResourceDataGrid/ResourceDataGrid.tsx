@@ -29,7 +29,8 @@ type SnackbarState = {
 
 export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceDataGridProps<T>) => {
   const dispatch = useDispatch();
-  const { items, count, isLoading, error } = useSelector((state: TypeRootReduxState) => config.selector(state));
+  const reduxState = useSelector((state: TypeRootReduxState) => state);
+  const { items, count, isLoading, error } = config.selector(reduxState);
   
   const [rows, setRows] = useState<T[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -62,7 +63,7 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
     try {
       await config.actions.remove(dispatch)(id as string);
       setSnackbar({ open: true, message: 'Запис успішно видалено', severity: 'success' });
-    } catch (err) {
+    } catch {
       setSnackbar({ open: true, message: 'Помилка при видаленні запису', severity: 'error' });
     }
   };
@@ -74,19 +75,20 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
     });
 
     const editedRow = rows.find((row) => row.id === id);
-    if (editedRow && editedRow.id.startsWith('temp-')) {
+    if (editedRow && String(editedRow.id).startsWith('temp-')) {
       setRows(rows.filter((row) => row.id !== id));
     }
   };
 
   const validateUniqueFields = useCallback((updatedRow: T): boolean => {
     const errors: Record<string, string> = {};
+    const rowData = updatedRow as Record<string, unknown>;
     
     // Check for 'name' field uniqueness
     if ('name' in updatedRow) {
-      const nameValue = (updatedRow as any).name;
+      const nameValue = rowData.name;
       const duplicate = items.find(
-        (item) => item.id !== updatedRow.id && (item as any).name === nameValue
+        (item) => item.id !== updatedRow.id && (item as Record<string, unknown>).name === nameValue
       );
       if (duplicate) {
         errors[updatedRow.id] = 'Назва має бути унікальною';
@@ -95,9 +97,9 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
 
     // Check for 'licensePlate' field uniqueness (for machines)
     if ('licensePlate' in updatedRow) {
-      const plateValue = (updatedRow as any).licensePlate;
+      const plateValue = rowData.licensePlate;
       const duplicate = items.find(
-        (item) => item.id !== updatedRow.id && (item as any).licensePlate === plateValue
+        (item) => item.id !== updatedRow.id && (item as Record<string, unknown>).licensePlate === plateValue
       );
       if (duplicate) {
         errors[updatedRow.id] = 'Номерний знак має бути унікальним';
@@ -116,13 +118,14 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
       throw new Error(uniqueFieldErrors[updatedRow.id] || 'Validation failed');
     }
 
-    const isNew = updatedRow.id.startsWith('temp-');
+    const isNew = String(updatedRow.id).startsWith('temp-');
     
     try {
       if (isNew) {
         // Remove temporary id and other metadata fields for new row
-        const { id, createdAt, updatedAt, deletedAt, ...newData } = updatedRow as any;
-        await config.actions.add(dispatch)(newData);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, createdAt, updatedAt, deletedAt, ...newData } = updatedRow as Record<string, unknown>;
+        await config.actions.add(dispatch)(newData as Omit<T, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>);
         setSnackbar({ open: true, message: 'Запис успішно створено', severity: 'success' });
       } else {
         await config.actions.modify(dispatch)(updatedRow);
@@ -141,16 +144,24 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
 
   const handleAddClick = () => {
     const id = `temp-${Date.now()}`;
-    const newRow: Partial<T> = { id } as Partial<T>;
+    const newRow: Record<string, unknown> = { id };
     
     // Initialize default values based on config columns
     config.columns.forEach((col) => {
       if (col.id === 'name') {
-        (newRow as any)[col.id] = '';
+        newRow[String(col.id)] = '';
       } else if (col.id === 'isSource' || col.id === 'isDestination') {
-        (newRow as any)[col.id] = false;
+        newRow[String(col.id)] = false;
+      } else if (col.type === 'singleSelect') {
+        // Get the first option for select fields
+        const options = config.getColumnOptions?.(reduxState, col.id) || col.valueOptions;
+        if (options && options.length > 0) {
+          newRow[String(col.id)] = options[0].value;
+        } else {
+          newRow[String(col.id)] = '';
+        }
       } else if (col.id !== 'id') {
-        (newRow as any)[col.id] = '';
+        newRow[String(col.id)] = '';
       }
     });
 
@@ -169,26 +180,38 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const handleRowDoubleClick = (params: any) => {
+  const handleRowDoubleClick = (params: { id: GridRowId }) => {
     setRowModesModel({ ...rowModesModel, [params.id]: { mode: GridRowModes.Edit } });
   };
 
   // Build column definitions from config
   const columns: GridColDef[] = [
     ...config.columns.map((col) => {
-      const colDef: GridColDef = {
+      const colDef: Record<string, unknown> = {
         field: String(col.id),
         headerName: col.label,
         flex: col.width ? col.width / 100 : 1,
         editable: true,
       };
 
-      // Handle boolean columns
-      if (col.id === 'isSource' || col.id === 'isDestination') {
+      // Handle different column types
+      if (col.type === 'boolean' || col.id === 'isSource' || col.id === 'isDestination') {
         colDef.type = 'boolean';
+      } else if (col.type === 'singleSelect') {
+        colDef.type = 'singleSelect';
+        // Get options from config function or column definition
+        const options = config.getColumnOptions?.(reduxState, col.id) || col.valueOptions;
+        if (options) {
+          colDef.valueOptions = options;
+          // Add valueGetter to display the label instead of the value
+          colDef.valueGetter = (value: string) => {
+            const option = options.find((opt) => opt.value === value);
+            return option ? option.label : value;
+          };
+        }
       }
 
-      return colDef;
+      return colDef as GridColDef;
     }),
     {
       field: 'actions',

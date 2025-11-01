@@ -28,6 +28,8 @@ export type ColumnDef<T> = {
   label: string;
   width?: number;
   renderer?: RendererDef<T>;
+  type?: 'text' | 'boolean' | 'singleSelect';
+  valueOptions?: { value: string; label: string }[];
 };
 
 export type RenderTableCellProps<T> =
