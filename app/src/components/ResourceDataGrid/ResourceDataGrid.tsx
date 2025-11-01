@@ -123,8 +123,13 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
     try {
       if (isNew) {
         // Remove temporary id and other metadata fields for new row
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { id, createdAt, updatedAt, deletedAt, ...newData } = updatedRow as Record<string, unknown>;
+        const rowData = updatedRow as Record<string, unknown>;
+        const newData: Record<string, unknown> = {};
+        Object.keys(rowData).forEach((key) => {
+          if (!['id', 'createdAt', 'updatedAt', 'deletedAt'].includes(key)) {
+            newData[key] = rowData[key];
+          }
+        });
         await config.actions.add(dispatch)(newData as Omit<T, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>);
         setSnackbar({ open: true, message: 'Запис успішно створено', severity: 'success' });
       } else {
@@ -205,13 +210,14 @@ export const ResourceDataGrid = <T extends { id: string }>({ config }: ResourceD
           colDef.valueOptions = options;
           // Add valueGetter to display the label instead of the value
           colDef.valueGetter = (value: string) => {
+            if (!value) return value;
             const option = options.find((opt) => opt.value === value);
             return option ? option.label : value;
           };
         }
       }
 
-      return colDef as GridColDef;
+      return colDef as unknown as GridColDef;
     }),
     {
       field: 'actions',

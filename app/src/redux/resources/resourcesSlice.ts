@@ -43,7 +43,7 @@ export type ResourceStore<T> = TypeDefaultLoadingTypes & {
   count?: number;
 };
 
-export type TypeMachineStateSchema = Omit<TypeMachineSchema, 'type'> & { type: string; id: string };
+export type TypeMachineStateSchema = Omit<TypeMachineSchema, 'type'> & { id: string; type: string };
 
 export type TypeResourcesReduxState = {
   crop: ResourceStore<TypeCropSchema>;

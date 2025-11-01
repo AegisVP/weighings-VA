@@ -66,6 +66,15 @@ const createResourceConfig = <T>(options: ResourceDef<T>): ResourceDef<T> => ({
 });
 
 const cardSize = { xs: 12, md: 6, lg: 4 };
+
+// Helper function to prepare machine data for API calls
+const prepareMachineData = (item: Partial<TypeMachineStateSchema> & { id?: string }) => {
+  return {
+    ...item,
+    type: item.type || '',
+  };
+};
+
 export const RESOURCE_CONFIGS = [
   createResourceConfig<TypeMachineTypeSchema>({
     key: 'machineType',
@@ -142,11 +151,11 @@ export const RESOURCE_CONFIGS = [
     selector: selectMachine,
     actions: {
       add: (dispatch) => (item) => {
-        const machineData = { ...item, type: (item as { type?: string }).type || '' };
+        const machineData = prepareMachineData(item as Partial<TypeMachineStateSchema>);
         dispatch(addMachine(machineData as Parameters<typeof addMachine>[0]));
       },
       modify: (dispatch) => (item) => {
-        const machineData = { ...item };
+        const machineData = prepareMachineData(item as Partial<TypeMachineStateSchema> & { id: string });
         dispatch(modifyMachine(machineData as Parameters<typeof modifyMachine>[0]));
       },
       remove: (dispatch) => (id) => dispatch(deleteMachine({ id })),
