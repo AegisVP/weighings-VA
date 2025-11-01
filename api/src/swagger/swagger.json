@@ -1,0 +1,1078 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GrainTrack Vital-AGRO",
+    "version": "1.0.1",
+    "description": "This is a description of Vital-AGRO's weghings API server, based on the OpenAPI 3.0 specification.\n\nSome useful links:\n- [repository](https://github.com/AegisVP/weighings-VA)"
+  },
+  "servers": [
+    {
+      "url": "https://vitalagro.onrender.com/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "user",
+      "description": "Operations with user"
+    },
+    {
+      "name": "weighings",
+      "description": "Weighing record and analysis"
+    },
+    {
+      "name": "constants",
+      "description": "Read constants"
+    }
+  ],
+  "paths": {
+    "/user/signup": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Create new user",
+        "operationId": "createUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Alex"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "example@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "a1b2c3"
+                  }
+                },
+                "required": ["name", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created"
+          },
+          "409": {
+            "description": "User with email already exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Logs user into the system",
+        "operationId": "loginUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "example@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "a1b2c3"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userAuthInfo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid email/password supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/user/logout": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Logs out current logged in user session",
+        "operationId": "logoutUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/user/current": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get current user details",
+        "operationId": "refreshUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/user": {
+      "patch": {
+        "tags": ["user"],
+        "summary": "Update user subscription level",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "example@email.com"
+                  },
+                  "subscription": {
+                    "type": "string",
+                    "example": "a01b02c03"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/weighings": {
+      "get": {
+        "tags": ["weighings"],
+        "summary": "Get weighings data",
+        "operationId": "getWeighings",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          },
+          {
+            "name": "date",
+            "description": "Date (in YYYY-MM-DD format)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "enddate",
+            "description": "End date to search a date range (in YYYY-MM-DD format)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "driver",
+            "description": "Driver (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "description": "Source of goods (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "destination",
+            "description": "Destination of goods (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "crop",
+            "description": "Type of crop (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "incoming",
+            "description": "All incoming transactions",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "harvester",
+            "description": "All transaction by harvester (ID)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeighingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["weighings"],
+        "summary": "Enter weighing data",
+        "operationId": "newWeighing",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeighingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeighingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/autosList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of autos",
+        "operationId": "getConstantAutos",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of autos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "model": {
+                        "type": "string",
+                        "example": "John Deere"
+                      },
+                      "licensePlate": {
+                        "type": "string",
+                        "example": "AA1111AA"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/cropsList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of crops",
+        "operationId": "getConstantCrops",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of crops",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "crop": {
+                        "type": "string",
+                        "example": "Кукурудза"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/destinationsList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of destinations",
+        "operationId": "getConstantDestinations",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of destinations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "destination": {
+                        "type": "string",
+                        "example": "Елеватор"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/driversList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of drivers",
+        "operationId": "getConstantDrivers",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of drivers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "driver": {
+                        "type": "string",
+                        "example": "Васілій"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/harvestersList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of harvesters",
+        "operationId": "getConstantHarvesters",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of harvesters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "harvester": {
+                        "type": "string",
+                        "example": "Кабак Є."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/sourcesList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of sources",
+        "operationId": "getConstantSources",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of sources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "source": {
+                        "type": "string",
+                        "example": "15-2"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/constants/subscriptionsList": {
+      "get": {
+        "tags": ["constants"],
+        "summary": "Get list of subscriptions",
+        "operationId": "getConstantSubscriptions",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "\\_token\\_ is the JWT token issued to the current user during login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer _token_"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns list of subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "a11b22c33"
+                      },
+                      "subscription": {
+                        "type": "string",
+                        "example": "basic"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidAuth"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "InvalidAuth": {
+        "description": "Invalid Authorization",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Not authorized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ServerMessage": {
+        "description": "Operation status message",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResponseMessage"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "WeighingRequest": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "number",
+                "example": 2023
+              },
+              "month": {
+                "type": "number",
+                "example": 2
+              },
+              "day": {
+                "type": "number",
+                "example": 15
+              }
+            }
+          },
+          "auto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "a01b02c03"
+              },
+              "driver": {
+                "type": "string",
+                "example": "a01b02c03"
+              }
+            }
+          },
+          "crop": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "a01b02c03"
+              },
+              "source": {
+                "type": "string",
+                "example": "a01b02c03"
+              },
+              "destination": {
+                "type": "string",
+                "example": "a01b02c03"
+              }
+            }
+          },
+          "weighing": {
+            "type": "object",
+            "properties": {
+              "tare": {
+                "type": "number",
+                "example": 1111
+              },
+              "brutto": {
+                "type": "number",
+                "example": 2222
+              }
+            }
+          },
+          "harvesters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                },
+                "weight": {
+                  "type": "number",
+                  "example": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "WeighingResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "example": "a11b22c33"
+            },
+            "date": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "number",
+                  "example": 2023
+                },
+                "month": {
+                  "type": "number",
+                  "example": 2
+                },
+                "day": {
+                  "type": "number",
+                  "example": 15
+                }
+              }
+            },
+            "auto": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                },
+                "driver": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                }
+              }
+            },
+            "crop": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                },
+                "source": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                },
+                "destination": {
+                  "type": "string",
+                  "example": "a01b02c03"
+                }
+              }
+            },
+            "weighing": {
+              "type": "object",
+              "properties": {
+                "tare": {
+                  "type": "number",
+                  "example": 1111
+                },
+                "brutto": {
+                  "type": "number",
+                  "example": 2222
+                }
+              }
+            },
+            "harvesters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "a01b02c03"
+                  },
+                  "weight": {
+                    "type": "number",
+                    "example": 500
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "UserInfo": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Alex"
+              },
+              "email": {
+                "type": "string",
+                "example": "example@email.com"
+              },
+              "subscription": {
+                "type": "string",
+                "example": "a01b02c03"
+              }
+            }
+          }
+        }
+      },
+      "userAuthInfo": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "aa11bb22cc33"
+          }
+        }
+      },
+      "ResponseMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operation status message"
+          }
+        }
+      },
+      "ServerErrorMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Internal server error"
+          },
+          "details": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Error title"
+              },
+              "message": {
+                "type": "string",
+                "example": "Error description"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
