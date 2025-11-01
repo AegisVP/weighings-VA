@@ -4,6 +4,21 @@ import {
   loadMachines,
   loadMachineTypes,
   loadOperators,
+  addCrop,
+  modifyCrop,
+  deleteCrop,
+  addLocation,
+  modifyLocation,
+  deleteLocation,
+  addMachine,
+  modifyMachine,
+  deleteMachine,
+  addMachineType,
+  modifyMachineType,
+  deleteMachineType,
+  addOperator,
+  modifyOperator,
+  deleteOperator,
 } from '../redux/resources/resourcesOperations';
 import {
   selectCrop,
@@ -37,9 +52,9 @@ export type ResourceDef<T> = {
     count?: number;
   };
   actions: {
-    // add: (dispatch: TypeAppDispatch) => (item: T) => void;
-    // update: (dispatch: TypeAppDispatch) => (item: T) => void;
-    // delete: (dispatch: TypeAppDispatch) => (id: string) => void;
+    add: (dispatch: TypeAppDispatch) => (item: Omit<T, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>) => void;
+    modify: (dispatch: TypeAppDispatch) => (item: Partial<T> & { id: string }) => void;
+    remove: (dispatch: TypeAppDispatch) => (id: string) => void;
     load: (dispatch: TypeAppDispatch) => () => void;
   };
 };
@@ -59,9 +74,9 @@ export const RESOURCE_CONFIGS = [
     columns: [{ id: 'name', label: 'Назва' }],
     selector: selectMachineType,
     actions: {
-      // add: (dispatch) => (item) => { dispatch(addCropSchema(item)); },
-      // update
-      // delete
+      add: (dispatch) => (item) => dispatch(addMachineType(item)),
+      modify: (dispatch) => (item) => dispatch(modifyMachineType(item)),
+      remove: (dispatch) => (id) => dispatch(deleteMachineType({ id })),
       load: (dispatch) => () => dispatch(loadMachineTypes()),
     },
   }),
@@ -73,6 +88,9 @@ export const RESOURCE_CONFIGS = [
     columns: [{ id: 'name', label: 'Імʼя' }],
     selector: selectOperator,
     actions: {
+      add: (dispatch) => (item) => dispatch(addOperator(item)),
+      modify: (dispatch) => (item) => dispatch(modifyOperator(item)),
+      remove: (dispatch) => (id) => dispatch(deleteOperator({ id })),
       load: (dispatch) => () => dispatch(loadOperators()),
     },
   }),
@@ -84,6 +102,9 @@ export const RESOURCE_CONFIGS = [
     columns: [{ id: 'name', label: 'Назва' }],
     selector: selectCrop,
     actions: {
+      add: (dispatch) => (item) => dispatch(addCrop(item)),
+      modify: (dispatch) => (item) => dispatch(modifyCrop(item)),
+      remove: (dispatch) => (id) => dispatch(deleteCrop({ id })),
       load: (dispatch) => () => dispatch(loadCrops()),
     },
   }),
@@ -99,6 +120,9 @@ export const RESOURCE_CONFIGS = [
     ],
     selector: selectLocation,
     actions: {
+      add: (dispatch) => (item) => dispatch(addLocation(item)),
+      modify: (dispatch) => (item) => dispatch(modifyLocation(item)),
+      remove: (dispatch) => (id) => dispatch(deleteLocation({ id })),
       load: (dispatch) => () => dispatch(loadLocations()),
     },
   }),
@@ -116,6 +140,9 @@ export const RESOURCE_CONFIGS = [
     ],
     selector: selectMachineWithTypeName,
     actions: {
+      add: (dispatch) => (item) => dispatch(addMachine(item as any)),
+      modify: (dispatch) => (item) => dispatch(modifyMachine(item as any)),
+      remove: (dispatch) => (id) => dispatch(deleteMachine({ id })),
       load: (dispatch) => () => {
         dispatch(loadMachines());
         dispatch(loadMachineTypes());
