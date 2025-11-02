@@ -62,11 +62,11 @@ export const userHasFeature = (feature: string, state?: TypeRootReduxState) => {
   const userFeatures = selectUserFeatures(state || store.getState());
   return Array.isArray(userFeatures) && (userFeatures.includes(feature) || userFeatures.includes('ADMIN'));
 };
-export const userHasAllFeatures = (features: string[]) => {
-  return features.every((feature) => userHasFeature(feature));
+export const userHasAllFeatures = (features: string[], state?: TypeRootReduxState) => {
+  return features.every((feature) => userHasFeature(feature, state));
 };
-export const userHasAnyFeature = (features: string[]) => {
-  return features.some((feature) => userHasFeature(feature));
+export const userHasAnyFeature = (features: string[], state?: TypeRootReduxState) => {
+  return features.some((feature) => userHasFeature(feature, state));
 };
 
 export const { resetError } = userSlice.actions;
