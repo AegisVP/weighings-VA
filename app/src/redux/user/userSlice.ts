@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { store } from '../store';
+import { store, type TypeRootReduxState } from '../store';
 
 import { loginUser, logoutUser, refreshUser, registerUser } from './userOperations';
 import { selectUserFeatures } from './userSelectors';
@@ -58,8 +58,8 @@ const userSlice = createSlice({
   },
 });
 
-export const userHasFeature = (feature: string) => {
-  const userFeatures = selectUserFeatures(store.getState());
+export const userHasFeature = (feature: string, state?: TypeRootReduxState) => {
+  const userFeatures = selectUserFeatures(state || store.getState());
   return Array.isArray(userFeatures) && (userFeatures.includes(feature) || userFeatures.includes('ADMIN'));
 };
 export const userHasAllFeatures = (features: string[]) => {

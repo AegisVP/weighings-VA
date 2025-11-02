@@ -13,7 +13,7 @@ import { loadMachine } from './redux/resources/resourcesOperations/machineOperat
 import { loadMachineType } from './redux/resources/resourcesOperations/machineTypeOperations';
 import { loadOperator } from './redux/resources/resourcesOperations/operatorOperations';
 import { refreshUser } from './redux/user/userOperations';
-import { selectUserFeatures } from './redux/user/userSelectors';
+import { userHasFeature } from './redux/user/userSlice';
 
 const ProtectedRoute = () => {
   const { isLoggedIn, isRefreshing } = useAuth();
@@ -78,13 +78,8 @@ const router = createBrowserRouter([
               const { dispatch, getState } = store;
               await waitForRehydration(persistor);
 
-              // Get user features from the rehydrated state
-              const userFeatures = selectUserFeatures(getState());
-              const hasSettingsAccess = 
-                Array.isArray(userFeatures) && 
-                (userFeatures.includes('SETTINGS_READ') || userFeatures.includes('ADMIN'));
-
-              if (!hasSettingsAccess) return redirect('/');
+              // Check user features using the rehydrated state
+              if (!userHasFeature('SETTINGS_READ', getState())) return redirect('/');
 
               // dispatch the loads in parallel and wait for all to settle
               await Promise.all([
