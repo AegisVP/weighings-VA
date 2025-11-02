@@ -1,22 +1,21 @@
 import { Alert, Box, Button, Card, TextField } from '@mui/material';
 import { useNavigate } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Loader } from '../components/Loader/Loader';
 import { loginUser } from '../redux/user/userOperations';
 import { selectUserError, selectUserIsLoading } from '../redux/user/userSelectors';
 import { userLoginRequestSchema } from '../schema/userSchema';
 import { resetError } from '../redux/user/userSlice';
 
-import type { TypeAppDispatch } from '../redux/store';
 import type { TypeUserLoginRequestBody } from '../schema/userSchema';
 
 export const LoginPage = () => {
-  const defaultValues = { username: '', password: '' };
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const dispatch = useDispatch<TypeAppDispatch>();
+  const defaultValues = { username: '', password: '' };
 
   const {
     control,
@@ -27,8 +26,8 @@ export const LoginPage = () => {
     defaultValues,
   });
 
-  const isLoading = useSelector(selectUserIsLoading);
-  const error = useSelector(selectUserError);
+  const isLoading = useAppSelector(selectUserIsLoading);
+  const error = useAppSelector(selectUserError);
 
   const onSubmit = async (data: TypeUserLoginRequestBody): Promise<void> => {
     const username = data.username.trim();

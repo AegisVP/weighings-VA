@@ -63,7 +63,6 @@ export const waitForRehydration = (p: Persistor) =>
 
 setupListeners(store.dispatch);
 
-// Infer the `RootState`,  `AppDispatch`, and `AppStore` types from the store itself
 export type TypeRootReduxState = ReturnType<typeof store.getState>;
 export type TypeAppDispatch = typeof store.dispatch;
 export type TypeAppStore = typeof store;

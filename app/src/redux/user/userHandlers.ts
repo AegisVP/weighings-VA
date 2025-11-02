@@ -14,8 +14,8 @@ export const handleRegisterUser: HandleRegisterUserDef = (state, { payload }) =>
 
 export const handleRefreshUser: HandleRefreshUserDef = (state, { payload }) => ({ ...state, ...payload });
 
-export const handlePending: CaseReducer<TypeUserReduxState> = (state) => ({ ...state, isLoading: true, error: null });
+export const handlePending: CaseReducer<TypeUserReduxState> = (state) => ({ ...state, isLoading: true, error: undefined });
 
-export const handleFulfill: CaseReducer<TypeUserReduxState> = (state) => ({ ...state, isLoading: false, error: null });
+export const handleFulfill: CaseReducer<TypeUserReduxState> = (state) => ({ ...state, isLoading: false, error: undefined });
 
 export const handleReject: HandleRejectedDef = (state, { payload }) => ({ ...state, isLoading: false, error: payload });

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { store } from '../store';
 
 import { loginUser, logoutUser, refreshUser, registerUser } from './userOperations';
 import {
@@ -41,7 +42,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    resetError: (state: TypeUserReduxState) => ({ ...state, error: null }),
+    resetError: (state: TypeUserReduxState) => ({ ...state, error: undefined }),
   },
   extraReducers: (builder) => {
     builder
@@ -55,6 +56,17 @@ const userSlice = createSlice({
       .addMatcher((action) => action.type.endsWith('/rejected'), handleReject);
   },
 });
+
+export const userHasFeature = (feature: string) => {
+  const userFeatures = store.getState().auth.user?.features;
+  return userFeatures && (userFeatures.includes(feature) || userFeatures.includes('ADMIN'));
+};
+export const userHasAllFeatures = (features: string[]) => {
+  return features.every((feature) => userHasFeature(feature));
+};
+export const userHasAnyFeature = (features: string[]) => {
+  return features.some((feature) => userHasFeature(feature));
+};
 
 export const { resetError } = userSlice.actions;
 

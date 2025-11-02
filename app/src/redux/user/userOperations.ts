@@ -59,15 +59,13 @@ export const logoutUser = createAsyncThunk('user/logout', async (_, { rejectWith
 export const refreshUser = createAsyncThunk('user/refresh', async (_, { rejectWithValue, getState }) => {
   try {
     const token = (getState() as TypeRootReduxState).auth.token;
-    console.log('setting header', { token });
+    if (!token) throw new Error('No token found');
     authHeader.set(token);
     const { user } = (await axios.get<TypeUserRefreshResponsePayload>('/user/current')).data;
-    console.log('got user', { user });
     const { name, username } = user;
     const features = parseFeatures(getActiveFeatures(user));
     return { user: { name, username, features }, token };
   } catch (err) {
-    console.log('clearing header', err);
     authHeader.clear();
     return rejectWithValue(handleError(err));
   }

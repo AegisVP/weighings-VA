@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, redirect } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth'; // Your auth hook
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -7,14 +7,13 @@ import { MainMenuPage } from './pages/MainMenuPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { CommonLayout } from './layouts/CommonLayout';
 import { store, persistor, waitForRehydration } from './redux/store';
-import {
-  loadCrops,
-  loadLocations,
-  loadMachines,
-  loadMachineTypes,
-  loadOperators,
-} from './redux/resources/resourcesOperations';
+import { loadCrop } from './redux/resources/resourcesOperations/cropOperations';
+import { loadLocation } from './redux/resources/resourcesOperations/locationOperations';
+import { loadMachine } from './redux/resources/resourcesOperations/machineOperations';
+import { loadMachineType } from './redux/resources/resourcesOperations/machineTypeOperations';
+import { loadOperator } from './redux/resources/resourcesOperations/operatorOperations';
 import { refreshUser } from './redux/user/userOperations';
+import { userHasFeature } from './redux/user/userSlice';
 
 const ProtectedRoute = () => {
   const { isLoggedIn, isRefreshing } = useAuth();
@@ -79,13 +78,15 @@ const router = createBrowserRouter([
               const { dispatch } = store;
               await waitForRehydration(persistor);
 
+              if (!userHasFeature('SETTINGS_READ')) redirect('/');
+
               // dispatch the loads in parallel and wait for all to settle
               await Promise.all([
-                dispatch(loadCrops()),
-                dispatch(loadOperators()),
-                dispatch(loadLocations()),
-                dispatch(loadMachineTypes()),
-                dispatch(loadMachines()),
+                dispatch(loadCrop()),
+                dispatch(loadOperator()),
+                dispatch(loadLocation()),
+                dispatch(loadMachineType()),
+                dispatch(loadMachine()),
               ]);
               return null;
             },

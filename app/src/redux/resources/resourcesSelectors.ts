@@ -1,6 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { TypeRootReduxState } from '../store';
-import type { ResourceStore, TypeMachineStateSchema } from './resourcesSlice';
 
 export const selectLocation = (store: TypeRootReduxState) => store.resources.location;
 
@@ -10,8 +9,7 @@ export const selectOperator = (store: TypeRootReduxState) => store.resources.ope
 
 export const selectMachineType = (store: TypeRootReduxState) => store.resources.machineType;
 
-export const selectMachine = (store: TypeRootReduxState): ResourceStore<TypeMachineStateSchema> =>
-  store.resources.machine;
+export const selectMachine = (store: TypeRootReduxState) => store.resources.machine;
 
 export const selectMachineWithTypeName = createSelector([selectMachine, selectMachineType], (machine, machineType) => {
   const typeMap = new Map(machineType.items?.map((mt) => [mt.id, mt.name]));
