@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { store } from '../store';
 
 import { loginUser, logoutUser, refreshUser, registerUser } from './userOperations';
+import { selectUserFeatures } from './userSelectors';
 import {
   handlePending,
   handleLoginUser,
@@ -58,8 +59,8 @@ const userSlice = createSlice({
 });
 
 export const userHasFeature = (feature: string) => {
-  const userFeatures = store.getState().auth.user?.features;
-  return userFeatures && (userFeatures.includes(feature) || userFeatures.includes('ADMIN'));
+  const userFeatures = selectUserFeatures(store.getState());
+  return Array.isArray(userFeatures) && (userFeatures.includes(feature) || userFeatures.includes('ADMIN'));
 };
 export const userHasAllFeatures = (features: string[]) => {
   return features.every((feature) => userHasFeature(feature));

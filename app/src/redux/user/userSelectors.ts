@@ -8,6 +8,8 @@ export const selectUserError = (store: TypeRootReduxState) => store.auth.error;
 
 export const selectUserIsLoading = (store: TypeRootReduxState) => store.auth.isLoading;
 
+export const selectUserFeatures = (store: TypeRootReduxState) => store.auth.user?.features || [];
+
 export const selectUserIsLoggedIn = (store: TypeRootReduxState) => {
   const { username } = selectUserInfo(store);
   const token = selectUserToken(store);

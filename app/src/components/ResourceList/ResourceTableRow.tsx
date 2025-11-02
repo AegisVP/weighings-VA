@@ -32,6 +32,7 @@ export const ResourceTableRow = <T extends { id: string }>({
     return acc;
   }, [columns, row]);
 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [rowData, setRowData] =
@@ -64,8 +65,10 @@ export const ResourceTableRow = <T extends { id: string }>({
   };
 
   const handleModify = async () => {
+    setIsSubmitting(true);
     setIsEditing(false);
     await onModify({ ...(rowData as unknown as ModifyResourcePayload<T>), id: row.id } as ModifyResourcePayload<T>);
+    setIsSubmitting(false);
   };
 
   const cancelModify = () => {
@@ -102,19 +105,19 @@ export const ResourceTableRow = <T extends { id: string }>({
       >
         {isEditing ? (
           <>
-            <IconButton onClick={handleModify}>
+            <IconButton onClick={handleModify} disabled={isSubmitting} loading={isSubmitting}>
               <SaveOutlinedIcon />
             </IconButton>
-            <IconButton onClick={cancelModify}>
+            <IconButton onClick={cancelModify} disabled={isSubmitting}>
               <CloseOutlinedIcon />
             </IconButton>
           </>
         ) : (
           <>
-            <IconButton disabled={isDeleting || isEditing} loading={isEditing} onClick={startModify}>
+            <IconButton disabled={isDeleting} onClick={startModify}>
               <EditOutlinedIcon />
             </IconButton>
-            <IconButton disabled={isDeleting || isEditing} loading={isDeleting} onClick={handleDelete}>
+            <IconButton disabled={isDeleting} loading={isDeleting} onClick={handleDelete}>
               <DeleteOutlineOutlinedIcon />
             </IconButton>
           </>
