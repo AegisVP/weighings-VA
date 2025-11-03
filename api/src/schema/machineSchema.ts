@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { idSchemaField, timestampSchemaFields } from './defaults.js';
-import { machineTypeSchema } from './machineTypeSchema.js';
 
 export const machineSchema = z.object({
   ...idSchemaField(),
@@ -8,7 +7,7 @@ export const machineSchema = z.object({
   make: z.string(),
   model: z.string(),
   description: z.string(),
-  type: machineTypeSchema,
+  type: z.string(),
   ...timestampSchemaFields(),
 });
 

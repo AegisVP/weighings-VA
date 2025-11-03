@@ -1,17 +1,15 @@
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
 
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Loader } from '../components/Loader/Loader';
 import { logoutUser } from '../redux/user/userOperations';
 import { selectUserIsLoading } from '../redux/user/userSelectors';
 
-import type { TypeAppDispatch } from '../redux/store';
-
 export const LogoutPage = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const dispatch = useDispatch<TypeAppDispatch>();
-  const isLoading = useSelector(selectUserIsLoading);
+  const isLoading = useAppSelector(selectUserIsLoading);
 
   const onSubmit = async (): Promise<void> => {
     await dispatch(logoutUser());

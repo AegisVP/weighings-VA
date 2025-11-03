@@ -8,7 +8,7 @@ import { featureSchema } from '../../../api/src/schema/featureSchema';
 import { userSchema } from '../schema/userSchema';
 import { weighingSchema } from '../schema/weighingSchema';
 
-export type TypeApiError = string | null | undefined;
+export type TypeApiError = string;
 export type TypeCropSchema = z.infer<typeof cropSchema>;
 export type TypeLocationSchema = z.infer<typeof locationSchema>;
 export type TypeMachineTypeSchema = z.infer<typeof machineTypeSchema>;

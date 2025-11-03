@@ -1,18 +1,17 @@
+import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router';
 import { Container, Skeleton } from '@mui/material';
 
+import { useAppDispatch, useAppSelector } from '../redux/hooks.ts';
 import { HeaderBar } from '../components/HeaderBar/HeaderBar.tsx';
 import { useAuth } from '../hooks/useAuth.ts';
-import { useDispatch, useSelector } from 'react-redux';
 import { selectUserIsLoading } from '../redux/user/userSelectors.ts';
-import { useEffect } from 'react';
 import { refreshUser } from '../redux/user/userOperations.ts';
-import type { TypeAppDispatch } from '../redux/store.ts';
 
 export const CommonLayout = () => {
-  const isLoading = useSelector(selectUserIsLoading);
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(selectUserIsLoading);
   const { isLoggedIn, isRefreshing } = useAuth();
-  const dispatch = useDispatch<TypeAppDispatch>();
 
   useEffect(() => {
     if (isLoggedIn || !isRefreshing) return;

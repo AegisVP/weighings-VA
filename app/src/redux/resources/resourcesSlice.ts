@@ -8,60 +8,51 @@ import type {
   TypeOperatorSchema,
 } from '../types';
 import {
-  loadCrops,
-  loadLocations,
-  loadMachines,
-  loadMachineTypes,
-  loadOperators,
-  // saveCrops,
-  // saveLocations,
-  // saveMachines,
-  // saveMachineTypes,
-  // saveOperators,
-} from './resourcesOperations';
-import { handlePending, handleReject, handleResourceLoaded } from './resourcesHandlers';
+  buildMatcherFulfilledHandler,
+  buildMatcherPendingHandler,
+  buildMatcherRejectedHandler,
+  handleResourceAdded,
+  handleResourceDeleted,
+  handleResourceLoaded,
+  handleResourceModified,
+} from './resourcesHandlers';
+import { addCrop, deleteCrop, loadCrop, modifyCrop } from './resourcesOperations/cropOperations';
+import { addLocation, deleteLocation, loadLocation, modifyLocation } from './resourcesOperations/locationOperations';
+import { addOperator, deleteOperator, loadOperator, modifyOperator } from './resourcesOperations/operatorOperations';
+import { addMachine, deleteMachine, loadMachine, modifyMachine } from './resourcesOperations/machineOperations';
+import {
+  addMachineType,
+  deleteMachineType,
+  loadMachineType,
+  modifyMachineType,
+} from './resourcesOperations/machineTypeOperations';
 
 export type ResourceStore<T> = TypeDefaultLoadingTypes & {
   items: T[];
   count?: number;
 };
 
-export type TypeMachineStateSchema = Omit<TypeMachineSchema, 'type'> & { type: string };
+const resState = <T>(): ResourceStore<T> => ({
+  isLoading: false,
+  error: undefined,
+  items: [],
+  count: undefined,
+});
 
 export type TypeResourcesReduxState = {
   crop: ResourceStore<TypeCropSchema>;
   operator: ResourceStore<TypeOperatorSchema>;
   machineType: ResourceStore<TypeMachineTypeSchema>;
-  machine: ResourceStore<TypeMachineStateSchema>;
+  machine: ResourceStore<TypeMachineSchema>;
   location: ResourceStore<TypeLocationSchema>;
 };
 
 const initialState: TypeResourcesReduxState = {
-  crop: {
-    isLoading: false,
-    error: null,
-    items: [],
-  },
-  operator: {
-    isLoading: false,
-    error: null,
-    items: [],
-  },
-  machineType: {
-    isLoading: false,
-    error: null,
-    items: [],
-  },
-  machine: {
-    isLoading: false,
-    error: null,
-    items: [],
-  },
-  location: {
-    isLoading: false,
-    error: null,
-    items: [],
-  },
+  crop: resState<TypeCropSchema>(),
+  operator: resState<TypeOperatorSchema>(),
+  machineType: resState<TypeMachineTypeSchema>(),
+  machine: resState<TypeMachineSchema>(),
+  location: resState<TypeLocationSchema>(),
 };
 
 const resourcesSlice = createSlice({
@@ -70,31 +61,47 @@ const resourcesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // .addCase(saveLocations.pending, handlePending('location'))
-      // .addCase(saveLocations.rejected, handleReject('location'))
-      .addCase(loadLocations.pending, handlePending('location'))
-      .addCase(loadLocations.fulfilled, handleResourceLoaded<TypeLocationSchema>('location'))
-      .addCase(loadLocations.rejected, handleReject('location'))
-      // .addCase(saveCrops.pending, handlePending('crop'))
-      // .addCase(saveCrops.rejected, handleReject('crop'))
-      .addCase(loadCrops.pending, handlePending('crop'))
-      .addCase(loadCrops.fulfilled, handleResourceLoaded<TypeCropSchema>('crop'))
-      .addCase(loadCrops.rejected, handleReject('crop'))
-      // .addCase(saveMachineTypes.pending, handlePending('machineType'))
-      // .addCase(saveMachineTypes.rejected, handleReject('machineType'))
-      .addCase(loadMachineTypes.pending, handlePending('machineType'))
-      .addCase(loadMachineTypes.fulfilled, handleResourceLoaded<TypeMachineTypeSchema>('machineType'))
-      .addCase(loadMachineTypes.rejected, handleReject('machineType'))
-      // .addCase(saveOperators.pending, handlePending('operator'))
-      // .addCase(saveOperators.rejected, handleReject('operator'))
-      .addCase(loadOperators.pending, handlePending('operator'))
-      .addCase(loadOperators.fulfilled, handleResourceLoaded<TypeOperatorSchema>('operator'))
-      .addCase(loadOperators.rejected, handleReject('operator'))
-      // .addCase(saveMachines.pending, handlePending('machine'))
-      // .addCase(saveMachines.rejected, handleReject('machine'))
-      .addCase(loadMachines.pending, handlePending('machine'))
-      .addCase(loadMachines.fulfilled, handleResourceLoaded<TypeMachineStateSchema>('machine'))
-      .addCase(loadMachines.rejected, handleReject('machine'));
+      // Location operations
+      .addCase(loadLocation.fulfilled, handleResourceLoaded<TypeLocationSchema>('location'))
+      .addCase(addLocation.fulfilled, handleResourceAdded<TypeLocationSchema>('location'))
+      .addCase(modifyLocation.fulfilled, handleResourceModified<TypeLocationSchema>('location'))
+      .addCase(deleteLocation.fulfilled, handleResourceDeleted('location'))
+      // Crop operations
+      .addCase(loadCrop.fulfilled, handleResourceLoaded<TypeCropSchema>('crop'))
+      .addCase(addCrop.fulfilled, handleResourceAdded<TypeCropSchema>('crop'))
+      .addCase(modifyCrop.fulfilled, handleResourceModified<TypeCropSchema>('crop'))
+      .addCase(deleteCrop.fulfilled, handleResourceDeleted('crop'))
+      // MachineType operations
+      .addCase(loadMachineType.fulfilled, handleResourceLoaded<TypeMachineTypeSchema>('machineType'))
+      .addCase(addMachineType.fulfilled, handleResourceAdded<TypeMachineTypeSchema>('machineType'))
+      .addCase(modifyMachineType.fulfilled, handleResourceModified<TypeMachineTypeSchema>('machineType'))
+      .addCase(deleteMachineType.fulfilled, handleResourceDeleted('machineType'))
+      // Operator operations
+      .addCase(loadOperator.fulfilled, handleResourceLoaded<TypeOperatorSchema>('operator'))
+      .addCase(addOperator.fulfilled, handleResourceAdded<TypeOperatorSchema>('operator'))
+      .addCase(modifyOperator.fulfilled, handleResourceModified<TypeOperatorSchema>('operator'))
+      .addCase(deleteOperator.fulfilled, handleResourceDeleted('operator'))
+      // Machine operations
+      .addCase(loadMachine.fulfilled, handleResourceLoaded<TypeMachineSchema>('machine'))
+      .addCase(addMachine.fulfilled, handleResourceAdded<TypeMachineSchema>('machine'))
+      .addCase(modifyMachine.fulfilled, handleResourceModified<TypeMachineSchema>('machine'))
+      .addCase(deleteMachine.fulfilled, handleResourceDeleted('machine'))
+      // General matchers
+      .addMatcher(...buildMatcherPendingHandler('crop'))
+      .addMatcher(...buildMatcherFulfilledHandler('crop'))
+      .addMatcher(...buildMatcherRejectedHandler('crop'))
+      .addMatcher(...buildMatcherPendingHandler('location'))
+      .addMatcher(...buildMatcherFulfilledHandler('location'))
+      .addMatcher(...buildMatcherRejectedHandler('location'))
+      .addMatcher(...buildMatcherPendingHandler('operator'))
+      .addMatcher(...buildMatcherFulfilledHandler('operator'))
+      .addMatcher(...buildMatcherRejectedHandler('operator'))
+      .addMatcher(...buildMatcherPendingHandler('machineType'))
+      .addMatcher(...buildMatcherFulfilledHandler('machineType'))
+      .addMatcher(...buildMatcherRejectedHandler('machineType'))
+      .addMatcher(...buildMatcherPendingHandler('machine'))
+      .addMatcher(...buildMatcherFulfilledHandler('machine'))
+      .addMatcher(...buildMatcherRejectedHandler('machine'));
   },
 });
 
