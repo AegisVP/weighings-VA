@@ -75,10 +75,11 @@ const router = createBrowserRouter([
             path: 'settings',
             element: <SettingsPage />,
             loader: async () => {
-              const { dispatch } = store;
+              const { dispatch, getState } = store;
               await waitForRehydration(persistor);
 
-              if (!userHasFeature('SETTINGS_READ')) return redirect('/');
+              // Check user features using the rehydrated state
+              if (!userHasFeature('SETTINGS_READ', getState())) return redirect('/');
 
               // dispatch the loads in parallel and wait for all to settle
               await Promise.all([
