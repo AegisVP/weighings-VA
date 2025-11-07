@@ -10,6 +10,9 @@ export class Feature extends Model {
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
+  declare UserHasFeature: {
+    expires: Date;
+  };
 }
 
 Feature.init(
