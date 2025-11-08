@@ -1,6 +1,6 @@
-import type { RequestHandler } from 'express';
 import { z } from 'zod';
 import { requestError } from '../utils/requrestError.js';
+import type { RequestHandler } from 'express';
 
 const validate = (val: 'body' | 'params' | 'query', schema: z.ZodSchema) => {
   const func: RequestHandler = async (req, _, next) => {

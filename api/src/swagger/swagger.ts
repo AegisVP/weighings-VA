@@ -15,7 +15,6 @@ const options = {
       { name: 'User', description: 'User management and authentication' },
       { name: 'Crops', description: 'Crop management' },
       { name: 'Locations', description: 'Location management' },
-      { name: 'MachineTypes', description: 'Machine type management' },
       { name: 'Machines', description: 'Machine management' },
       { name: 'Operators', description: 'Operator management' },
       { name: 'Weighings', description: 'Weighing records and search' },
@@ -45,13 +44,6 @@ const options = {
             name: { type: 'string' },
           },
         },
-        MachineType: {
-          type: 'object',
-          properties: {
-            id: { type: 'string', format: 'uuid' },
-            name: { type: 'string' },
-          },
-        },
         Machine: {
           type: 'object',
           properties: {
@@ -60,7 +52,8 @@ const options = {
             make: { type: 'string' },
             model: { type: 'string' },
             description: { type: 'string' },
-            type: { type: 'string', format: 'uuid' },
+            canDeliver: { type: 'boolean' },
+            canHarvest: { type: 'boolean' },
           },
         },
       },

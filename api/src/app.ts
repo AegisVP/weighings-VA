@@ -10,7 +10,6 @@ import { authService } from './middlewares/authService.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { machineRouter } from './router/machineRouter.js';
 import { userRouter } from './router/userRouter.js';
-import { machinetypeRouter } from './router/machineTypeRouter.js';
 import { cropRouter } from './router/cropRouter.js';
 import { operatorRouter } from './router/operatorRouter.js';
 import { locationRouter } from './router/locationRouter.js';
@@ -40,7 +39,6 @@ app.use(
 
 app.use(authService);
 
-app.use('/api/machine-types', machinetypeRouter);
 app.use('/api/machines', machineRouter);
 app.use('/api/crops', cropRouter);
 app.use('/api/operators', operatorRouter);

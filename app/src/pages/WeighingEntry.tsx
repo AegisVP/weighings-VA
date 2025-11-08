@@ -1,5 +1,6 @@
-import React from 'react';
+import { WeighingEntryForm } from '../components/WeighingEntryForm/WeighingEntryForm';
 
 export const WeighingEntry = () => {
-  return <div>Weighing Entry</div>;
+  // const weighings = useAppSelector(selectWeighings);
+  return <WeighingEntryForm />;
 };

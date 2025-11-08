@@ -1,5 +1,4 @@
-import { createBrowserRouter, RouterProvider, Navigate, Outlet, redirect } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth'; // Your auth hook
+import { createBrowserRouter, RouterProvider, Navigate, redirect } from 'react-router-dom';
 import { CommonLayout } from '../layouts/CommonLayout';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
@@ -11,23 +10,25 @@ import { store, persistor, waitForRehydration } from '../redux/store';
 import { loadCrop } from '../redux/resources/resourcesOperations/cropOperations';
 import { loadLocation } from '../redux/resources/resourcesOperations/locationOperations';
 import { loadMachine } from '../redux/resources/resourcesOperations/machineOperations';
-import { loadMachineType } from '../redux/resources/resourcesOperations/machineTypeOperations';
 import { loadOperator } from '../redux/resources/resourcesOperations/operatorOperations';
 import { refreshUser } from '../redux/user/userOperations';
 import { userHasFeature } from '../redux/user/userSlice';
+import { PublicOnlyRoute } from './PublicOnlyRoute';
+import { ProtectedRoute } from './ProtectedRoute';
 import { menuLinks } from './sections';
 
-const ProtectedRoute = () => {
-  const { isLoggedIn, isRefreshing } = useAuth();
-  return isLoggedIn || isRefreshing ? <Outlet /> : <Navigate to="/login" />;
-};
-
-const PublicOnlyRoute = () => {
-  const { isLoggedIn, isRefreshing } = useAuth();
-  return isLoggedIn || isRefreshing ? <Navigate to="/" /> : <Outlet />;
-};
-
 const { getState, dispatch } = store;
+
+const waitForLoginRefresh = async () => {
+  console.log('waiting for rehydration');
+  await waitForRehydration(persistor);
+
+  console.log('setting token and refreshing user');
+  const token = getState().auth.token;
+  if (token) {
+    await dispatch(refreshUser());
+  }
+};
 
 // Create the router
 const router = createBrowserRouter([
@@ -49,18 +50,14 @@ const router = createBrowserRouter([
     // Protected routes with CommonLayout
     element: <ProtectedRoute />,
     loader: async () => {
-      await waitForRehydration(persistor);
+      console.log('Router loader called');
+      await waitForLoginRefresh();
 
-      const token = getState().auth.token;
-      if (token) {
-        await dispatch(refreshUser());
-      }
-
+      console.log('getting resources data');
       await Promise.all([
         dispatch(loadCrop()),
         dispatch(loadOperator()),
         dispatch(loadLocation()),
-        dispatch(loadMachineType()),
         dispatch(loadMachine()),
       ]);
 
@@ -79,6 +76,9 @@ const router = createBrowserRouter([
             path: 'weighing',
             element: <WeighingEntry />,
             loader: async () => {
+              console.log('weighing loader called');
+              await waitForLoginRefresh();
+
               if (!userHasFeature(menuLinks.weighing.feature, getState())) return redirect('/');
             },
           },
@@ -86,6 +86,9 @@ const router = createBrowserRouter([
             path: 'reporting',
             element: <div>Reporting page</div>,
             loader: async () => {
+              console.log('reporting loader called');
+              await waitForLoginRefresh();
+
               if (!userHasFeature(menuLinks.reporting.feature, getState())) return redirect('/');
             },
           },
@@ -93,7 +96,14 @@ const router = createBrowserRouter([
             path: 'settings',
             element: <SettingsPage />,
             loader: async () => {
-              if (!userHasFeature(menuLinks.settings.feature, getState())) return redirect('/');
+              console.log('settings loader called');
+              await waitForLoginRefresh();
+
+              console.log('Checking access to settings page');
+              if (!userHasFeature(menuLinks.settings.feature, getState())) {
+                console.log('access failed, redirecting');
+                return redirect('/');
+              }
             },
           },
           {

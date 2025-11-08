@@ -7,16 +7,18 @@ export const machineSchema = z.object({
   make: z.string(),
   model: z.string(),
   description: z.string(),
-  type: z.string(),
+  canDeliver: z.boolean(),
+  canHarvest: z.boolean(),
   ...timestampSchemaFields(),
 });
 
 export const addMachineSchema = z.strictObject({
   licensePlate: z.string('Номерний знак обовʼязковий'),
-  type: z.uuid('Тип обовʼязковий'),
   make: z.string().optional(),
   model: z.string().optional(),
   description: z.string().optional(),
+  canDeliver: z.boolean().default(false),
+  canHarvest: z.boolean().default(false),
 });
 export type TypeAddMachineSchema = z.infer<typeof addMachineSchema>;
 
