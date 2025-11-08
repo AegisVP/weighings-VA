@@ -1,8 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './api/api';
-// import { BrowserRouter } from 'react-router-dom';
-// import { RouterProvider } from 'react-router/dom';
 import { Provider } from 'react-redux';
 
 import '@fontsource/roboto/300.css';
@@ -12,7 +10,7 @@ import '@fontsource/roboto/700.css';
 import './index.css';
 
 import { store } from './redux/store';
-import Router from './router.tsx';
+import Router from './router/router.tsx';
 
 const containerElement = document.getElementById('root-page');
 if (!containerElement) {

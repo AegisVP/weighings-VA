@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import type { TypeUserReduxState } from '../redux/user/userSlice';
 import { featureSchema } from '../../../api/src/schema/featureSchema';
+import type { TypeUserReduxState } from '../redux/user/userSlice';
 
 export const userSchema = z.object({
   name: z.string(),
@@ -22,9 +22,8 @@ export type TypeUserLoginResponsePayload = z.infer<typeof userLoginResponseSchem
 export type TypeUserLoginAction = Pick<TypeUserReduxState, 'refreshToken' | 'token'>;
 
 // #########  USER REGISTER SCHEMAS  #########
-export const userRegisterRequestSchema = z.object({
+export const userRegisterRequestSchema = userLoginRequestSchema.extend({
   name: z.string().min(1, 'Імʼя не може бути пустим'),
-  ...userLoginRequestSchema.shape,
 });
 export const userRegisterResponseSchema = z.strictObject({
   token: z.jwt(),
