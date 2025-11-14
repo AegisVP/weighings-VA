@@ -32,8 +32,9 @@ export const authService: RequestHandler = async (req, _, next) => {
   const dbUser = await User.findByPk(decodedUser.id);
   if (!dbUser) return next(requestError(401, NOT_AUTHORIZED_MSG, 'NoTokenUser'));
   dbUser.username = dbUser.username.toLocaleLowerCase();
-  if (dbUser.username !== `${decodedUser.username}`.toLocaleLowerCase())
+  if (dbUser.username !== `${decodedUser.username}`.toLocaleLowerCase()) {
     return next(requestError(401, NOT_AUTHORIZED_MSG, 'TokenUsernameMismatch'));
+  }
 
   if (dbUser.token !== token) {
     await dbUser.update({ token: null, refreshToken: null });
@@ -43,7 +44,14 @@ export const authService: RequestHandler = async (req, _, next) => {
     return next(requestError(401, NOT_AUTHORIZED_MSG, 'TokenMismatch'));
   }
 
-  req.user = dbUser;
+  const validFeatures = dbUser.features
+    .filter((f) => f.enabled)
+    .filter((f) => f.UserHasFeature.expires === null || f.UserHasFeature.expires > new Date());
+
+  req.user = {
+    ...dbUser.get(),
+    features: validFeatures,
+  };
 
   return next();
 };

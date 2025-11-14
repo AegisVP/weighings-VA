@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs';
 import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
@@ -8,18 +9,24 @@ import { CROSS_ENV, ENVIRONMENT_DEV } from './config/constants.js';
 import { swaggerRouter } from './swagger/swagger.js';
 import { authService } from './middlewares/authService.js';
 import { errorHandler } from './middlewares/errorHandler.js';
-import { machineRouter } from './router/machineRouter.js';
 import { userRouter } from './router/userRouter.js';
-import { machinetypeRouter } from './router/machineTypeRouter.js';
-import { cropRouter } from './router/cropRouter.js';
-import { operatorRouter } from './router/operatorRouter.js';
-import { locationRouter } from './router/locationRouter.js';
-import { weighingRouter } from './router/weighingRouter.js';
 import { healthCheckRouter } from './router/healthCheckRouter.js';
+import { apiRouter } from './router/apiRouter.js';
 
 export const app = express();
 
-// Middleware
+const publicPath = path.resolve('../public');
+const publicHtmlPath = path.resolve('../public/index.html');
+
+export const pathsExist = new Promise((resolve, reject) => {
+  if (fs.existsSync(publicPath) && fs.existsSync(publicHtmlPath)) {
+    resolve('Public path exists');
+  } else {
+    if (CROSS_ENV === ENVIRONMENT_DEV) console.log({ publicHtmlPath, publicPath });
+    reject(new Error('Public path does not exist'));
+  }
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(morgan(CROSS_ENV === ENVIRONMENT_DEV ? 'dev' : 'short'));
@@ -38,18 +45,11 @@ app.use(
   })
 );
 
-app.use(authService);
+app.use('/api', authService, apiRouter);
 
-app.use('/api/machine-types', machinetypeRouter);
-app.use('/api/machines', machineRouter);
-app.use('/api/crops', cropRouter);
-app.use('/api/operators', operatorRouter);
-app.use('/api/locations', locationRouter);
-app.use('/api/weighings', weighingRouter);
+app.get('/{*any}', express.static(path.resolve(publicPath)));
+app.get('/{*any}', (_, res) => res.sendFile(path.resolve(publicHtmlPath)));
 
-// app.get('/favicon.ico', express.static(path.resolve('../public')));
-app.get('/{*any}', express.static(path.resolve('../public')));
-app.all('/', (_, res) => res.sendFile(path.resolve('../public/index.html')));
 app.use((_, res) => res.status(404).send());
 
 app.use(errorHandler);

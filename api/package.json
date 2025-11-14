@@ -9,9 +9,8 @@
   "scripts": {
     "dev": "tsx --watch src/server.ts dotenv_config_path=../.env",
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "build:ai": "tsc -p tsconfig.build.json",
-    "start": "npm run build && CROSS_ENV=prod node dist/server.js dotenv_config_path=../.env"
+    "build": "tsc -p tsconfig.build.json",
+    "start": "CROSS_ENV=prod node server.js"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

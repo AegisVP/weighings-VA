@@ -15,6 +15,7 @@ import { defaultLoadingTypes } from '../defaults/const';
 
 import type { TypeDefaultLoadingTypes } from '../defaults/const';
 import type { TypeUserLoginResponsePayload } from '../../schema/userSchema';
+import type { TypeFeatureSchema } from '../types';
 
 export type TypeUserReduxState = TypeDefaultLoadingTypes & {
   isLoggedIn: boolean;
@@ -22,7 +23,7 @@ export type TypeUserReduxState = TypeDefaultLoadingTypes & {
   user: {
     name: string;
     username: string;
-    features: string[];
+    features: TypeFeatureSchema[];
   };
 } & TypeUserLoginResponsePayload;
 
@@ -58,15 +59,17 @@ const userSlice = createSlice({
   },
 });
 
-export const userHasFeature = (feature: string, state?: TypeRootReduxState) => {
+export const userHasFeature = (feature?: string, state?: TypeRootReduxState) => {
   const userFeatures = selectUserFeatures(state || store.getState());
-  return Array.isArray(userFeatures) && (userFeatures.includes(feature) || userFeatures.includes('ADMIN'));
+  return userFeatures.some(({ name }) => name === (feature || 'ADMIN') || name === 'ADMIN');
 };
 export const userHasAllFeatures = (features: string[], state?: TypeRootReduxState) => {
-  return features.every((feature) => userHasFeature(feature, state));
+  const currentState = state || store.getState();
+  return features.every((feature) => userHasFeature(feature, currentState));
 };
 export const userHasAnyFeature = (features: string[], state?: TypeRootReduxState) => {
-  return features.some((feature) => userHasFeature(feature, state));
+  const currentState = state || store.getState();
+  return features.some((feature) => userHasFeature(feature, currentState));
 };
 
 export const { resetError } = userSlice.actions;

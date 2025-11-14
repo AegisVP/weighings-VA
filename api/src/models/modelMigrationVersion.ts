@@ -27,5 +27,3 @@ MigrationVersion.init(
     underscored: true,
   }
 );
-
-// MigrationVersion.sync({ alter: true, force: true });

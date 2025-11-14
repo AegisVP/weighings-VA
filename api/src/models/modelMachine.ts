@@ -2,7 +2,6 @@ import { DataTypes, Model } from 'sequelize';
 
 import { sequelize } from '../db/db.js';
 import { generateTimestampFields } from './generateTimestampFields.js';
-import { MachineType } from './index.js';
 
 export class Machine extends Model {
   declare id: string;
@@ -10,7 +9,8 @@ export class Machine extends Model {
   declare make: string;
   declare model: string;
   declare description: string;
-  declare type: string;
+  declare canDeliver: boolean;
+  declare canHarvest: boolean;
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
@@ -38,19 +38,20 @@ Machine.init(
       allowNull: true,
       unique: false,
     },
+    canDeliver: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    canHarvest: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     description: {
       type: DataTypes.STRING,
       allowNull: true,
       unique: false,
-    },
-    type: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      unique: false,
-      references: {
-        model: MachineType,
-        key: 'id',
-      },
     },
     ...generateTimestampFields(),
   },
@@ -72,6 +73,3 @@ Machine.init(
     ],
   }
 );
-
-Machine.belongsTo(MachineType, { foreignKey: 'type', targetKey: 'id' });
-MachineType.hasMany(Machine, { foreignKey: 'type', sourceKey: 'id' });

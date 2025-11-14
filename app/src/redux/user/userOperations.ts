@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { parseFeatures, getActiveFeatures } from '../../utils/getFeatures';
 import { authHeader } from '../../utils/authHeader';
 import { handleError } from '../../utils/handleError';
 
@@ -55,15 +54,13 @@ export const logoutUser = createAsyncThunk('user/logout', async (_, { rejectWith
   }
 });
 
-// type RefreshUserResp = Pick<TypeUserReduxState, 'user' | 'token'>;
 export const refreshUser = createAsyncThunk('user/refresh', async (_, { rejectWithValue, getState }) => {
   try {
     const token = (getState() as TypeRootReduxState).auth.token;
     if (!token) throw new Error('No token found');
     authHeader.set(token);
     const { user } = (await axios.get<TypeUserRefreshResponsePayload>('/user/current')).data;
-    const { name, username } = user;
-    const features = parseFeatures(getActiveFeatures(user));
+    const { features, name, username } = user;
     return { user: { name, username, features }, token };
   } catch (err) {
     authHeader.clear();

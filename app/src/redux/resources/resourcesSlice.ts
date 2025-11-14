@@ -1,12 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { TypeDefaultLoadingTypes } from '../defaults/const';
-import type {
-  TypeCropSchema,
-  TypeLocationSchema,
-  TypeMachineSchema,
-  TypeMachineTypeSchema,
-  TypeOperatorSchema,
-} from '../types';
+import type { TypeCropSchema, TypeLocationSchema, TypeMachineSchema, TypeOperatorSchema } from '../types';
 import {
   buildMatcherFulfilledHandler,
   buildMatcherPendingHandler,
@@ -20,12 +14,6 @@ import { addCrop, deleteCrop, loadCrop, modifyCrop } from './resourcesOperations
 import { addLocation, deleteLocation, loadLocation, modifyLocation } from './resourcesOperations/locationOperations';
 import { addOperator, deleteOperator, loadOperator, modifyOperator } from './resourcesOperations/operatorOperations';
 import { addMachine, deleteMachine, loadMachine, modifyMachine } from './resourcesOperations/machineOperations';
-import {
-  addMachineType,
-  deleteMachineType,
-  loadMachineType,
-  modifyMachineType,
-} from './resourcesOperations/machineTypeOperations';
 
 export type ResourceStore<T> = TypeDefaultLoadingTypes & {
   items: T[];
@@ -42,7 +30,6 @@ const resState = <T>(): ResourceStore<T> => ({
 export type TypeResourcesReduxState = {
   crop: ResourceStore<TypeCropSchema>;
   operator: ResourceStore<TypeOperatorSchema>;
-  machineType: ResourceStore<TypeMachineTypeSchema>;
   machine: ResourceStore<TypeMachineSchema>;
   location: ResourceStore<TypeLocationSchema>;
 };
@@ -50,7 +37,6 @@ export type TypeResourcesReduxState = {
 const initialState: TypeResourcesReduxState = {
   crop: resState<TypeCropSchema>(),
   operator: resState<TypeOperatorSchema>(),
-  machineType: resState<TypeMachineTypeSchema>(),
   machine: resState<TypeMachineSchema>(),
   location: resState<TypeLocationSchema>(),
 };
@@ -71,11 +57,6 @@ const resourcesSlice = createSlice({
       .addCase(addCrop.fulfilled, handleResourceAdded<TypeCropSchema>('crop'))
       .addCase(modifyCrop.fulfilled, handleResourceModified<TypeCropSchema>('crop'))
       .addCase(deleteCrop.fulfilled, handleResourceDeleted('crop'))
-      // MachineType operations
-      .addCase(loadMachineType.fulfilled, handleResourceLoaded<TypeMachineTypeSchema>('machineType'))
-      .addCase(addMachineType.fulfilled, handleResourceAdded<TypeMachineTypeSchema>('machineType'))
-      .addCase(modifyMachineType.fulfilled, handleResourceModified<TypeMachineTypeSchema>('machineType'))
-      .addCase(deleteMachineType.fulfilled, handleResourceDeleted('machineType'))
       // Operator operations
       .addCase(loadOperator.fulfilled, handleResourceLoaded<TypeOperatorSchema>('operator'))
       .addCase(addOperator.fulfilled, handleResourceAdded<TypeOperatorSchema>('operator'))
@@ -96,9 +77,6 @@ const resourcesSlice = createSlice({
       .addMatcher(...buildMatcherPendingHandler('operator'))
       .addMatcher(...buildMatcherFulfilledHandler('operator'))
       .addMatcher(...buildMatcherRejectedHandler('operator'))
-      .addMatcher(...buildMatcherPendingHandler('machineType'))
-      .addMatcher(...buildMatcherFulfilledHandler('machineType'))
-      .addMatcher(...buildMatcherRejectedHandler('machineType'))
       .addMatcher(...buildMatcherPendingHandler('machine'))
       .addMatcher(...buildMatcherFulfilledHandler('machine'))
       .addMatcher(...buildMatcherRejectedHandler('machine'));

@@ -26,11 +26,9 @@ export const runMigrationIfNeeded = async () => {
   }
 
   if (doMigrate) {
-    // Perform necessary migration steps here
     console.log(`Migrating database model from version ${dbVersion} to ${MIGRATION_VERSION}`);
     await sequelize.sync(syncCondition);
 
-    // After successful migration, update the migrations table
     await MigrationVersion.create({ version: MIGRATION_VERSION });
   }
 };

@@ -2,7 +2,6 @@ import type { RequestHandler } from 'express';
 import { Op } from 'sequelize';
 
 import { Machine } from '../models/modelMachine.js';
-import { MachineType } from '../models/modelMachineType.js';
 import { requestError } from '../utils/requrestError.js';
 
 import type { TypeGetById } from '../schema/defaults.js';
@@ -26,18 +25,21 @@ const get: TypedRequestHandler<TypeGetById> = async ({ params: { id }, query: { 
 };
 
 const add: TypedRequestHandler<TypeAddMachineSchema> = async (
-  { body: { licensePlate, make, model, description, type } },
+  { body: { licensePlate, make, model, description, canDeliver, canHarvest } },
   res
 ) => {
   const savedMachine = (
-    await Machine.findOrCreate({ where: { licensePlate }, defaults: { licensePlate, make, model, description, type } })
+    await Machine.findOrCreate({
+      where: { licensePlate },
+      defaults: { licensePlate, make, model, description, canDeliver, canHarvest },
+    })
   )[0];
 
   res.json(savedMachine.dataValues);
 };
 
 const modify: TypedRequestHandler<TypeModifyMachineSchema> = async (
-  { body: { id, licensePlate, make, model, description, type } },
+  { body: { id, licensePlate, make, model, description, canDeliver, canHarvest } },
   res,
   next
 ) => {
@@ -48,12 +50,8 @@ const modify: TypedRequestHandler<TypeModifyMachineSchema> = async (
     return next(requestError(400, 'Така машина вже існує'));
   }
 
-  if (!(await MachineType.findByPk(type))) {
-    return next(requestError(404, 'Такого типу не існує'));
-  }
-
   const foundMachine = machine[0];
-  foundMachine.update({ licensePlate, make, model, description, type });
+  foundMachine.update({ licensePlate, make, model, description, canDeliver, canHarvest });
 
   res.json(foundMachine.dataValues);
 };

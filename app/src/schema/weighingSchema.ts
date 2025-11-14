@@ -1,23 +1,34 @@
 import z from 'zod';
-import { idSchemaField, timestampSchemaFields } from '../../../api/src/schema/defaults';
-import { locationSchema } from '../../../api/src/schema/locationSchema';
-import { machineSchema } from '../../../api/src/schema/machineSchema';
-import { operatorSchema } from '../../../api/src/schema/operatorSchema';
-import { cropSchema } from '../../../api/src/schema/cropSchema';
 
 export const weighingSchema = z.object({
-  ...idSchemaField(),
-  source: locationSchema,
-  destination: locationSchema,
-  transport: z.object({
-    machine: machineSchema,
-    operator: operatorSchema,
-  }),
-  harvester: z.object({
-    machine: machineSchema,
-    operator: operatorSchema,
-  }),
-  crop: cropSchema,
+  deliveryMachine: z.string(),
+  deliveryOperator: z.string(),
+  harvesterMachine: z.string(),
+  harvesterOperator: z.string(),
+  sourceLocation: z.string(),
+  destinationLocation: z.string(),
+  crop: z.string(),
+  weightNetto: z.number(),
+  dateTime: z.string(),
+});
+
+export const weighingApiSchema = z.object({
+  id: z.uuid(),
+  source: z.uuid(),
+  destination: z.uuid(),
+  auto: z.uuid(),
+  driver: z.uuid(),
+  harvester: z.uuid(),
+  operator: z.uuid(),
+  crop: z.uuid(),
   weight: z.number(),
-  ...timestampSchemaFields(),
+  createdBy: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const weighingApiResponseSchema = z.object({
+  items: z.array(weighingApiSchema),
+  isLoading: z.boolean(),
+  error: z.string().optional(),
 });

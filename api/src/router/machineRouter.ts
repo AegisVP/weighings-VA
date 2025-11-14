@@ -99,9 +99,10 @@ machineRouter.get(
  *                 type: string
  *               description:
  *                 type: string
- *               type:
- *                 type: string
- *                 format: uuid
+ *               canDeliver:
+ *                 type: boolean
+ *               canHarvest:
+ *                 type: boolean
  *     responses:
  *       200:
  *         description: Machine details
@@ -140,9 +141,10 @@ machineRouter.post('/', validateBody(addMachineSchema), tryCatchWrapper(machineC
  *                 type: string
  *               description:
  *                 type: string
- *               type:
- *                 type: string
- *                 format: uuid
+ *               canDeliver:
+ *                 type: boolean
+ *               canHarvest:
+ *                 type: boolean
  *     responses:
  *       200:
  *         description: Machine details

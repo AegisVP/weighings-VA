@@ -25,11 +25,6 @@ export const SettingsPage = () => {
             key={config.key}
             config={config as ResourceDef<typeof config.schemaType>}
           />
-          // <Grid key={config.key} size={config.cardSize}>
-          //   <ResourceDataGrid<typeof config.schemaType>
-          //     config={config as ResourceDef<typeof config.schemaType>}
-          //   />
-          // </Grid>
         ))}
       </Grid>
     </Container>

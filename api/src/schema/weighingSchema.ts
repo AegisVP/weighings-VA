@@ -9,9 +9,19 @@ export const addWeighingSchema = z.strictObject({
   operator: z.uuid('Вкажіть оператора'),
   crop: z.uuid('Вкажіть культуру'),
   weight: z.number('Вкажіть вагу'),
-  createBy: z.uuid('Вкажіть хто створив запис'),
+  createdBy: z.string('Вкажіть хто створив запис'),
 });
 export type TypeAddWeighingSchema = z.infer<typeof addWeighingSchema>;
 
-export const searchQuerySchema = z.strictObject({ ...addWeighingSchema.partial().shape });
-export type TypeSearchQuery = z.infer<typeof searchQuerySchema>;
+export const searchWeighingQuerySchema = z.strictObject({
+  sourceId: z.uuid().optional(),
+  destinationId: z.uuid().optional(),
+  deliveryMachineId: z.uuid().optional(),
+  deliveryOperatorId: z.uuid().optional(),
+  harvesterMachineId: z.uuid().optional(),
+  harvesterOperatorId: z.uuid().optional(),
+  cropId: z.uuid().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+export type TypeSearchWeighingQuery = z.infer<typeof searchWeighingQuerySchema>;

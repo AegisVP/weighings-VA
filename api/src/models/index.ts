@@ -2,7 +2,6 @@ export { MigrationVersion } from './modelMigrationVersion.js';
 export { generateTimestampFields } from './generateTimestampFields.js';
 export { Crop } from './modelCrop.js';
 export { Location } from './modelLocation.js';
-export { MachineType } from './modelMachineType.js';
 export { Operator } from './modelOperator.js';
 export { Machine } from './modelMachine.js';
 export { Feature } from './modelFeature.js';
