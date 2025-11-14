@@ -31,19 +31,17 @@ const waitForLoginRefresh = async () => {
   }
 };
 
-const loadTodayWeighings = async () => {
+const loadTodaysWeighings = async () => {
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
-  const todayEnd = new Date();
+  const todayEnd = new Date(todayStart);
   todayEnd.setHours(23, 59, 59, 999);
 
   await dispatch(searchWeighing({ startDate: todayStart.toISOString(), endDate: todayEnd.toISOString() }));
 };
 
-// Create the router
 const router = createBrowserRouter([
   {
-    // Public-only routes (login/register)
     element: <PublicOnlyRoute />,
     children: [
       {
@@ -57,7 +55,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    // Protected routes with CommonLayout
     element: <ProtectedRoute />,
     loader: async () => {
       await waitForLoginRefresh();
@@ -88,7 +85,8 @@ const router = createBrowserRouter([
 
               if (!userHasFeature(menuLinks.weighing.feature, getState())) return redirect('/');
 
-              await loadTodayWeighings();
+              await loadTodaysWeighings();
+              return null;
             },
           },
           {
@@ -99,7 +97,8 @@ const router = createBrowserRouter([
 
               if (!userHasFeature(menuLinks.reporting.feature, getState())) return redirect('/');
 
-              await loadTodayWeighings();
+              await loadTodaysWeighings();
+              return null;
             },
           },
           {
@@ -109,6 +108,7 @@ const router = createBrowserRouter([
               await waitForLoginRefresh();
 
               if (!userHasFeature(menuLinks.settings.feature, getState())) return redirect('/');
+              return null;
             },
           },
           {
@@ -120,7 +120,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    // Catch-all route - redirect to root
     path: '*',
     element: <Navigate to="/" />,
   },

@@ -1,6 +1,5 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
-// import swaggerDocument from './swagger.json' with { type: 'json' };
 import swaggerJsdoc from 'swagger-jsdoc';
 
 const options = {

@@ -20,7 +20,6 @@ export const AnalyzePage = () => {
   const machines = useAppSelector(selectMachine);
   const operators = useAppSelector(selectOperator);
 
-  // Date range state
   const [startDate, setStartDate] = useState<Date | null>(() => {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -32,14 +31,12 @@ export const AnalyzePage = () => {
     return date;
   });
 
-  // Filter state
   const [filterCrop, setFilterCrop] = useState<string>('');
   const [filterSource, setFilterSource] = useState<string>('');
   const [filterDestination, setFilterDestination] = useState<string>('');
   const [filterDeliveryOperator, setFilterDeliveryOperator] = useState<string>('');
   const [filterHarvesterOperator, setFilterHarvesterOperator] = useState<string>('');
 
-  // Handle date range change - triggers API call
   const handleDateChange = (newStartDateRaw: Date | null, newEndDateRaw: Date | null) => {
     let newStartDate = startDate;
     let newEndDate = endDate;
@@ -64,11 +61,9 @@ export const AnalyzePage = () => {
     }
   };
 
-  // Filter weighings (client-side)
   const filteredWeighings = useMemo(() => {
     let result = [...weighings];
 
-    // Apply filters
     if (filterCrop) result = result.filter((w) => w.crop === filterCrop);
     if (filterSource) result = result.filter((w) => w.sourceLocation === filterSource);
     if (filterDestination) result = result.filter((w) => w.destinationLocation === filterDestination);
@@ -78,31 +73,24 @@ export const AnalyzePage = () => {
     return result;
   }, [weighings, filterCrop, filterSource, filterDestination, filterDeliveryOperator, filterHarvesterOperator]);
 
-  // Calculate total weight
   const totalWeight = useMemo(() => {
     return filteredWeighings.reduce((sum, weighing) => sum + weighing.weightNetto, 0);
   }, [filteredWeighings]);
 
-  // Helper to get name by id
   const getLocationName = (id: string) => locations.items.find((l) => l.id === id)?.name || id;
   const getOperatorName = (id: string) => operators.items.find((o) => o.id === id)?.name || id;
   const getMachineDescription = (id: string) => machines.items.find((m) => m.id === id)?.description || id;
 
-  // Date range preset handlers
   const setToday = () => {
     const start = new Date();
-    // start.setHours(0, 0, 0, 0);
     const end = new Date();
-    // end.setHours(23, 59, 59, 999);
     handleDateChange(start, end);
   };
 
   const setYesterday = () => {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    // start.setHours(0, 0, 0, 0);
     const end = new Date(start);
-    // end.setHours(23, 59, 59, 999);
     handleDateChange(start, end);
   };
 
@@ -111,40 +99,31 @@ export const AnalyzePage = () => {
     const start = new Date(now);
     const diff = (start.getDay() || 7) - 1; // Monday as first day
     start.setDate(start.getDate() - diff);
-    // start.setHours(0, 0, 0, 0);
     const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
-    // end.setHours(23, 59, 59, 999);
     handleDateChange(start, end);
   };
 
   const setThisMonth = () => {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    // start.setHours(0, 0, 0, 0);
     const end = new Date();
-    // end.setHours(23, 59, 59, 999);
     handleDateChange(start, end);
   };
 
   const setLastMonth = () => {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    // start.setHours(0, 0, 0, 0);
     const end = new Date(now.getFullYear(), now.getMonth(), 0);
-    // end.setHours(23, 59, 59, 999);
     handleDateChange(start, end);
   };
 
   const setThisYear = () => {
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 1);
-    // start.setHours(0, 0, 0, 0);
     const end = new Date(now.getFullYear(), 11, 31);
-    // end.setHours(23, 59, 59, 999);
     handleDateChange(start, end);
   };
 
-  // Reset all filters
   const resetAllFilters = () => {
     setFilterCrop('');
     setFilterSource('');

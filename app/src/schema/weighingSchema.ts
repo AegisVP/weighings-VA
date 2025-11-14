@@ -9,7 +9,7 @@ export const weighingSchema = z.object({
   destinationLocation: z.string(),
   crop: z.string(),
   weightNetto: z.number(),
-  dateTime: z.string(), // Keep as string for Redux serialization - convert to Date in components
+  dateTime: z.string(),
 });
 
 export const weighingApiSchema = z.object({

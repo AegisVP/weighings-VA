@@ -21,7 +21,7 @@ node_modules/
 .eslintcache
 build/
 dist/
-*/public/
+public/
 
 # dotenv environment variables file
 .env

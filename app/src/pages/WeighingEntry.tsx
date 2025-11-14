@@ -37,7 +37,6 @@ export const WeighingEntry = () => {
   const machines = useAppSelector(selectMachine).items;
   const operators = useAppSelector(selectOperator).items;
 
-  // Helper functions for table
   const getCropName = (id: string) => crops.find((c) => c.id === id)?.name || id;
   const getLocationName = (id: string) => locations.find((l) => l.id === id)?.name || id;
   const getOperatorName = (id: string) => operators.find((o) => o.id === id)?.name || id;
@@ -70,11 +69,19 @@ export const WeighingEntry = () => {
       <Card sx={{ width: '100%' }}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid size={9}>
-              <Typography variant="h6">Історія зважувань ({sortedWeighings.length})</Typography>
+            <Grid size={{ xs: 6, md: 9 }}>
+              <Typography variant="h6" whiteSpace="nowrap">
+                Історія зважувань ({sortedWeighings.length})
+              </Typography>
             </Grid>
-            <Grid size={3}>
-              <Button variant="contained" color="primary" sx={{ height: 40 }} fullWidth onClick={() => newWeighing()}>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ height: 40, whiteSpace: 'nowrap' }}
+                fullWidth
+                onClick={() => newWeighing()}
+              >
                 Нове зважування
               </Button>
             </Grid>

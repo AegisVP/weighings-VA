@@ -22,7 +22,6 @@ export const ResourceTableRow = <T extends { id: string }>({
   onDelete,
   onModify,
 }: ResourceTableRowProps<T>) => {
-  // build initial editable values indexed by the column ids (string keys)
   const resetRowData = useCallback(() => {
     const acc = {} as Partial<Record<Extract<keyof T, string>, string | number | boolean>>;
     for (const column of columns) {
@@ -39,10 +38,8 @@ export const ResourceTableRow = <T extends { id: string }>({
     useState<Partial<Record<Extract<keyof T, string>, string | number | boolean>>>(resetRowData);
 
   const handleChange: RendererProps<T>['onChange'] = (e) => {
-    // prevent default if available
     if ('preventDefault' in e && typeof e.preventDefault === 'function') e.preventDefault();
 
-    // normalize event target to extract name/value/checked/type
     const target = e.target as EventTarget & {
       name?: string;
       value?: string | number | boolean;

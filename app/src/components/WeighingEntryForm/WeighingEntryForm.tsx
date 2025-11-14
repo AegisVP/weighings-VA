@@ -60,9 +60,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
     }
   };
 
-  // select all text when an input receives focus
   const selectAllOnFocus = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // e.target is an HTML input or textarea — select its content
     e.target.select();
   };
 
@@ -71,13 +69,9 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
   const machines = useAppSelector(selectMachine);
   const operators = useAppSelector(selectOperator);
 
-  // watch selected operators so we can exclude one from the other's list
   const selectedDeliveryOperator = watch('deliveryOperator');
   const selectedHarvesterOperator = watch('harvesterOperator');
 
-  // if user selects the same operator for both roles, clear the other role
-  // keep fields as empty string when cleared to satisfy zod uuid() validation later
-  // (we only clear when a conflict is detected)
   useEffect(() => {
     if (
       selectedDeliveryOperator &&

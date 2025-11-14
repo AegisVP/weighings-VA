@@ -36,7 +36,6 @@ export const WeighingTable = ({
   const [sortField, setSortField] = useState<SortField>('dateTime');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
-  // Handle sort
   const handleSort = (field: SortField) => {
     if (field === sortField) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -46,7 +45,6 @@ export const WeighingTable = ({
     }
   };
 
-  // Sort weighings
   const sortedWeighings = useMemo(() => {
     const result = [...weighings];
 
@@ -55,19 +53,16 @@ export const WeighingTable = ({
         const aVal = a[sortField];
         const bVal = b[sortField];
 
-        // Handle date strings
         if (sortField === 'dateTime') {
           const aTime = new Date(aVal as string).getTime();
           const bTime = new Date(bVal as string).getTime();
           return sortOrder === 'asc' ? aTime - bTime : bTime - aTime;
         }
 
-        // Handle numbers
         if (typeof aVal === 'number' && typeof bVal === 'number') {
           return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
         }
 
-        // Handle strings
         const aStr = String(aVal);
         const bStr = String(bVal);
         return sortOrder === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
@@ -77,7 +72,6 @@ export const WeighingTable = ({
     return result;
   }, [weighings, sortField, sortOrder]);
 
-  // Format date for display
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleString('uk-UA', {

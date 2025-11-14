@@ -33,7 +33,8 @@ export const addWeighing = createAsyncThunk<TypeWeighingSchema, TypeAddPayload<T
         createdBy: user.username,
       };
 
-      return (await axios.post('/weighings', weighingData)).data;
+      await axios.post('/weighings', weighingData);
+      return weighing;
     } catch (err) {
       return rejectWithValue(handleError(err));
     }

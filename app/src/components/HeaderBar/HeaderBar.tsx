@@ -16,10 +16,6 @@ import {
   type CircularProgressProps,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import HomeIcon from '@mui/icons-material/Home';
-import ScaleIcon from '@mui/icons-material/Scale';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import { Loader } from '../Loader/Loader';
@@ -28,21 +24,6 @@ import { menuLinks } from '../../router/sections';
 import { MenuButtonWithFeatureCheck } from './MenuButton';
 
 import type { TypeMenuItemDefinition } from '../../router/sections';
-
-const getMenuIcon = (pageName: string) => {
-  switch (pageName) {
-    case 'Головна':
-      return <HomeIcon />;
-    case 'Зважування':
-      return <ScaleIcon />;
-    case 'Звітність':
-      return <AssessmentIcon />;
-    case 'Налаштування':
-      return <SettingsIcon />;
-    default:
-      return null;
-  }
-};
 
 export const HeaderBar = () => {
   const [open, setOpen] = React.useState(false);
@@ -106,7 +87,7 @@ export const HeaderBar = () => {
                                 flexWrap: 'nowrap',
                               })}
                             >
-                              <ListItemIcon color="inherit">{getMenuIcon(page.name)}</ListItemIcon>
+                              {page.icon && <ListItemIcon color="inherit">{page.icon}</ListItemIcon>}
                               <ListItemText primary={page.name} style={{ textDecoration: 'inherit' }} />
                             </NavLink>
                           </ListItem>

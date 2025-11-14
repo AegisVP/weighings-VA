@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { TypeCustomError } from '../utils/requrestError.js';
 
-// Centralized error handling middleware
 export function errorHandler(err: TypeCustomError, _req: Request, res: Response, _next: NextFunction) {
   console.error(`App error handler: [${err.name}] - ${err.message}`);
 

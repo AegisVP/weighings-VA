@@ -26,9 +26,7 @@ export const initialState: TypeWeighingReduxState = {
 const weighingsSlice = createSlice({
   name: 'weighings',
   initialState,
-  reducers: {
-    // addWeighing: (state, { payload }) => [...state, { ...payload, dateTime: new Date(payload.dateTime) }],
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(addWeighing.fulfilled, handleAddWeighing)
@@ -38,7 +36,5 @@ const weighingsSlice = createSlice({
       .addMatcher((action) => action.type.endsWith('/rejected'), handleReject);
   },
 });
-
-// export const { addWeighing } = weighingsSlice.actions;
 
 export default weighingsSlice.reducer;

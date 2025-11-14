@@ -50,7 +50,7 @@ export const waitForRehydration = (p: Persistor) =>
       const state = p.getState();
       if (state && state.bootstrapped) return resolve();
     } catch {
-      // ignore and subscribe
+      // ignore
     }
     const unsub = p.subscribe(() => {
       const s = p.getState();

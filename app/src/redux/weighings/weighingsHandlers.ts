@@ -18,7 +18,6 @@ export const handleSearchWeighing: CaseReducer<TypeWeighingReduxState, PayloadAc
   { payload }
 ) => ({
   ...state,
-  // Keep dateTime as string (serializable) - convert to Date in components when needed
   items: payload,
 });
 

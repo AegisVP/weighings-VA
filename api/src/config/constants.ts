@@ -1,6 +1,4 @@
 import 'dotenv/config';
-// import dotenv from 'dotenv';
-// dotenv.config({ path: '../.env' });
 
 export const ENVIRONMENT_DEV = 'dev';
 export const ENVIRONMENT_PROD = 'prod';

@@ -1,12 +1,13 @@
+import { pathsExist } from './app.js';
 import { API_PORT } from './config/constants.js';
 import { verifySequelize } from './db/db.js';
 import { runMigrationIfNeeded } from './db/sync.js';
 
 (async () => {
-  const startupChecks = [verifySequelize];
+  const startupChecks = [verifySequelize, pathsExist];
 
   try {
-    for (const msg in await Promise.all(startupChecks)) console.info(msg);
+    for (const msg of await Promise.all(startupChecks)) console.info(` -- ${msg}`);
   } catch (err) {
     console.error('Fatal error during startup:', err);
     process.exit(1);
