@@ -1,11 +1,16 @@
 import { createBrowserRouter, RouterProvider, Navigate, redirect } from 'react-router-dom';
+
+import { menuLinks } from './sections';
 import { CommonLayout } from '../layouts/CommonLayout';
+import { PublicOnlyRoute } from './PublicOnlyRoute';
+import { ProtectedRoute } from './ProtectedRoute';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { LogoutPage } from '../pages/LogoutPage';
 import { MainMenuPage } from '../pages/MainMenuPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { WeighingEntry } from '../pages/WeighingEntry';
+import { AnalyzePage } from '../pages/AnalyzePage';
 import { store, persistor, waitForRehydration } from '../redux/store';
 import { loadCrop } from '../redux/resources/resourcesOperations/cropOperations';
 import { loadLocation } from '../redux/resources/resourcesOperations/locationOperations';
@@ -13,21 +18,26 @@ import { loadMachine } from '../redux/resources/resourcesOperations/machineOpera
 import { loadOperator } from '../redux/resources/resourcesOperations/operatorOperations';
 import { refreshUser } from '../redux/user/userOperations';
 import { userHasFeature } from '../redux/user/userSlice';
-import { PublicOnlyRoute } from './PublicOnlyRoute';
-import { ProtectedRoute } from './ProtectedRoute';
-import { menuLinks } from './sections';
+import { searchWeighing } from '../redux/weighings/weighingsOperations';
 
 const { getState, dispatch } = store;
 
 const waitForLoginRefresh = async () => {
-  console.log('waiting for rehydration');
   await waitForRehydration(persistor);
 
-  console.log('setting token and refreshing user');
   const token = getState().auth.token;
   if (token) {
     await dispatch(refreshUser());
   }
+};
+
+const loadTodayWeighings = async () => {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  await dispatch(searchWeighing({ startDate: todayStart.toISOString(), endDate: todayEnd.toISOString() }));
 };
 
 // Create the router
@@ -50,10 +60,8 @@ const router = createBrowserRouter([
     // Protected routes with CommonLayout
     element: <ProtectedRoute />,
     loader: async () => {
-      console.log('Router loader called');
       await waitForLoginRefresh();
 
-      console.log('getting resources data');
       await Promise.all([
         dispatch(loadCrop()),
         dispatch(loadOperator()),
@@ -76,34 +84,31 @@ const router = createBrowserRouter([
             path: 'weighing',
             element: <WeighingEntry />,
             loader: async () => {
-              console.log('weighing loader called');
               await waitForLoginRefresh();
 
               if (!userHasFeature(menuLinks.weighing.feature, getState())) return redirect('/');
+
+              await loadTodayWeighings();
             },
           },
           {
             path: 'reporting',
-            element: <div>Reporting page</div>,
+            element: <AnalyzePage />,
             loader: async () => {
-              console.log('reporting loader called');
               await waitForLoginRefresh();
 
               if (!userHasFeature(menuLinks.reporting.feature, getState())) return redirect('/');
+
+              await loadTodayWeighings();
             },
           },
           {
             path: 'settings',
             element: <SettingsPage />,
             loader: async () => {
-              console.log('settings loader called');
               await waitForLoginRefresh();
 
-              console.log('Checking access to settings page');
-              if (!userHasFeature(menuLinks.settings.feature, getState())) {
-                console.log('access failed, redirecting');
-                return redirect('/');
-              }
+              if (!userHasFeature(menuLinks.settings.feature, getState())) return redirect('/');
             },
           },
           {

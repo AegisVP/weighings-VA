@@ -1,5 +1,5 @@
 import z from 'zod';
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { FocusEvent } from 'react';
 import { Button, Card, Container, Grid, TextField } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
@@ -22,26 +22,16 @@ const weighingInputSchema = z.object({
   crop: z.uuid(),
   weightGross: z.coerce.number().min(0, 'Перевірте значення'),
   weightTare: z.coerce.number().min(0, 'Перевірте значення'),
-  weightNetto: z.coerce.number().min(10, 'Перевірте брутто та тару'),
-  dateTime: z.date(),
+  weightNetto: z.coerce.number().min(1, 'Перевірте брутто та тару'),
+  dateTime: z.string(),
 });
 export type TypeWeighingInput = z.infer<typeof weighingInputSchema>;
 
-export const WeighingEntryForm = () => {
-  const defaultValues = useRef<TypeWeighingInput>({
-    deliveryMachine: '',
-    deliveryOperator: '',
-    harvesterMachine: '',
-    harvesterOperator: '',
-    sourceLocation: '',
-    destinationLocation: '',
-    crop: '',
-    weightGross: 0,
-    weightTare: 0,
-    weightNetto: 0,
-    dateTime: new Date(),
-  }).current;
-
+type WeighingEntryFormProps = {
+  defaultValues?: TypeWeighingInput;
+  onSubmit: SubmitHandler<TypeWeighingInput>;
+};
+export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryFormProps) => {
   const {
     control,
     handleSubmit,
@@ -74,10 +64,6 @@ export const WeighingEntryForm = () => {
   const selectAllOnFocus = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // e.target is an HTML input or textarea — select its content
     e.target.select();
-  };
-
-  const onSubmit: SubmitHandler<TypeWeighingInput> = (data) => {
-    console.log('Weighing Entry Submitted:', data);
   };
 
   const crops = useAppSelector(selectCrop);
@@ -297,14 +283,10 @@ export const WeighingEntryForm = () => {
             </Grid>
           </Grid>
           <Grid size={3}>
-            <Card title="Службове" sx={{ p: 2, width: '100%' }}>
-              службова інформація
-            </Card>
+            <Button variant="contained" color="primary" sx={{ mb: 2, height: 40 }} fullWidth type="submit">
+              Зберегти
+            </Button>
           </Grid>
-
-          <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth type="submit">
-            Зберегти
-          </Button>
         </Grid>
       </Card>
     </Container>

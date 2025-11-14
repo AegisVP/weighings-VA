@@ -1,7 +1,5 @@
-import { Button } from '@mui/material';
-
+import { NavLink } from 'react-router';
 import { userHasFeature } from '../../redux/user/userSlice';
-
 import type { TypeMenuItemDefinition } from '../../router/sections';
 
 type MenuButtonProps = {
@@ -18,13 +16,22 @@ export const MenuButton = ({ page, handleMenuNavigation, children }: MenuButtonP
   children ? (
     children
   ) : (
-    <Button
+    <NavLink
       key={page.name}
-      component="a"
-      href={page.link ?? '#'}
+      to={page.link ?? '#'}
       onClick={handleMenuNavigation(page)}
-      sx={{ my: 0, color: 'white', display: 'block' }}
+      style={({ isActive }) => ({
+        margin: '0',
+        padding: '0.5rem 0.75rem',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '1.25rem',
+        display: 'flex',
+        alignItems: 'center',
+        textDecorationLine: 'none',
+        boxShadow: isActive ? 'inset 0 -2px 0 0 white' : 'none',
+      })}
     >
       {page.name}
-    </Button>
+    </NavLink>
   );

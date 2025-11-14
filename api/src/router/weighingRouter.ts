@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import { weighingController } from '../controller/weighingController.js';
-import { validateParams, validateBody, validateQuery } from '../middlewares/validation.js';
+import { validateBody } from '../middlewares/validation.js';
 import { tryCatchWrapper } from '../utils/tryCatchWrapper.js';
-import { getByIdSchema } from '../schema/defaults.js';
-import { addWeighingSchema, searchQuerySchema } from '../schema/weighingSchema.js';
+import { addWeighingSchema } from '../schema/weighingSchema.js';
 
 export const weighingRouter = Router();
 
@@ -13,63 +12,6 @@ export const weighingRouter = Router();
  *   name: Weighings
  *   description: Weighing management endpoints
  */
-
-/**
- * @openapi
- * /api/weighings/{id}:
- *   get:
- *     tags: [Weighings]
- *     summary: Get weighing by ID
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Weighing details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   format: uuid
- *                 dateTime:
- *                   type: string
- *                   format: date-time
- *                 ticketNo:
- *                   type: string
- *                 firstWeight:
- *                   type: number
- *                 secondWeight:
- *                   type: number
- *                 netWeight:
- *                   type: number
- *                 machineId:
- *                   type: string
- *                   format: uuid
- *                 operatorId:
- *                   type: string
- *                   format: uuid
- *                 cropId:
- *                   type: string
- *                   format: uuid
- *                 locationFromId:
- *                   type: string
- *                   format: uuid
- *                 locationToId:
- *                   type: string
- *                   format: uuid
- *       404:
- *         description: Weighing not found
- */
-weighingRouter.get('/:id', validateParams(getByIdSchema), tryCatchWrapper(weighingController.get));
 
 /**
  * @openapi
@@ -192,18 +134,18 @@ weighingRouter.post('/', validateBody(addWeighingSchema), tryCatchWrapper(weighi
  *                   dateTime:
  *                     type: string
  *                     format: date-time
- *                   ticketNo:
- *                     type: string
- *                   firstWeight:
- *                     type: number
- *                   secondWeight:
- *                     type: number
  *                   netWeight:
  *                     type: number
- *                   machineId:
+ *                   deliveryMachineId:
  *                     type: string
  *                     format: uuid
- *                   operatorId:
+ *                   deliveryOperatorId:
+ *                     type: string
+ *                     format: uuid
+ *                   harvesterMachineId:
+ *                     type: string
+ *                     format: uuid
+ *                   harvesterOperatorId:
  *                     type: string
  *                     format: uuid
  *                   cropId:
@@ -216,4 +158,4 @@ weighingRouter.post('/', validateBody(addWeighingSchema), tryCatchWrapper(weighi
  *                     type: string
  *                     format: uuid
  */
-weighingRouter.get('/', validateQuery(searchQuerySchema), tryCatchWrapper(weighingController.search));
+weighingRouter.get('/', tryCatchWrapper(weighingController.search));

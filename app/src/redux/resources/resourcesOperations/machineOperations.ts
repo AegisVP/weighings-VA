@@ -28,14 +28,11 @@ export const addMachine = createAsyncThunk<TypeMachineSchema, TypeAddPayload<Typ
   'machines/add',
   async (machine, { rejectWithValue }) => {
     try {
-      console.log('Adding machine:', machine);
       const machineData = machineSchema
         .partial({ id: true, createdAt: true, updatedAt: true, deletedAt: true })
         .parse(machine);
-      console.log({ machineData });
       return (await axios.post('/machines', machineData)).data;
     } catch (err) {
-      console.log({ err });
       return rejectWithValue(handleError(err));
     }
   }

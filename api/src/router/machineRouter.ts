@@ -99,7 +99,7 @@ machineRouter.get(
  *                 type: string
  *               description:
  *                 type: string
- *              canDeliver:
+ *               canDeliver:
  *                 type: boolean
  *               canHarvest:
  *                 type: boolean
@@ -141,7 +141,7 @@ machineRouter.post('/', validateBody(addMachineSchema), tryCatchWrapper(machineC
  *                 type: string
  *               description:
  *                 type: string
- *              canDeliver:
+ *               canDeliver:
  *                 type: boolean
  *               canHarvest:
  *                 type: boolean

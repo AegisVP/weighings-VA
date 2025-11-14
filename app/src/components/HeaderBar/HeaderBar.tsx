@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link, Navigate, NavLink, useNavigate } from 'react-router';
 import {
   AppBar,
   Box,
@@ -6,23 +7,42 @@ import {
   IconButton,
   Typography,
   Container,
-  Button,
   Drawer,
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
   Tooltip,
   type CircularProgressProps,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Navigate, NavLink, useNavigate } from 'react-router';
+import HomeIcon from '@mui/icons-material/Home';
+import ScaleIcon from '@mui/icons-material/Scale';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import { Loader } from '../Loader/Loader';
 import { useAuth } from '../../hooks/useAuth';
 import { menuLinks } from '../../router/sections';
+import { MenuButtonWithFeatureCheck } from './MenuButton';
 
 import type { TypeMenuItemDefinition } from '../../router/sections';
-import { MenuButtonWithFeatureCheck } from './MenuButton';
+
+const getMenuIcon = (pageName: string) => {
+  switch (pageName) {
+    case 'Головна':
+      return <HomeIcon />;
+    case 'Зважування':
+      return <ScaleIcon />;
+    case 'Звітність':
+      return <AssessmentIcon />;
+    case 'Налаштування':
+      return <SettingsIcon />;
+    default:
+      return null;
+  }
+};
 
 export const HeaderBar = () => {
   const [open, setOpen] = React.useState(false);
@@ -74,9 +94,20 @@ export const HeaderBar = () => {
                           page={page}
                           handleMenuNavigation={handleMenuNavigation}
                         >
-                          <ListItem key={page.name} disablePadding>
-                            <NavLink to={page.link}>
-                              <ListItemText primary={page.name} />
+                          <ListItem key={page.name}>
+                            <NavLink
+                              to={page.link}
+                              style={({ isActive }) => ({
+                                textDecoration: isActive ? 'underline' : 'none',
+                                fontWeight: isActive ? 'bold' : 'normal',
+                                display: 'flex',
+                                alignItems: 'center',
+                                color: isActive ? 'blue' : 'inherit',
+                                flexWrap: 'nowrap',
+                              })}
+                            >
+                              <ListItemIcon color="inherit">{getMenuIcon(page.name)}</ListItemIcon>
+                              <ListItemText primary={page.name} style={{ textDecoration: 'inherit' }} />
                             </NavLink>
                           </ListItem>
                         </MenuButtonWithFeatureCheck>
@@ -120,17 +151,11 @@ export const HeaderBar = () => {
                 {Object.values(menuLinks)
                   .filter((p) => p.showOnMenu)
                   .map((page) => (
-                    <MenuButtonWithFeatureCheck key={page.name} page={page} handleMenuNavigation={handleMenuNavigation}>
-                      <Button
-                        key={page.name}
-                        component="a"
-                        href={page.link ?? '#'}
-                        onClick={handleMenuNavigation(page)}
-                        sx={{ my: 0, color: 'white', display: 'block' }}
-                      >
-                        {page.name}
-                      </Button>
-                    </MenuButtonWithFeatureCheck>
+                    <MenuButtonWithFeatureCheck
+                      key={page.name}
+                      page={page}
+                      handleMenuNavigation={handleMenuNavigation}
+                    />
                   ))}
               </Box>
             ) : null}
@@ -139,11 +164,15 @@ export const HeaderBar = () => {
           {/* User menu */}
           {isLoggedIn ? (
             <Tooltip title={menuLinks.logout.name}>
-              <NavLink to={menuLinks.logout.link}>
-                <Typography variant="h6" color="white" noWrap sx={{ textDecoration: 'none', cursor: 'pointer' }}>
+              <Link
+                to={menuLinks.logout.link}
+                style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                <Typography variant="h6" color="white" noWrap sx={{ cursor: 'pointer' }}>
                   {user.name}
                 </Typography>
-              </NavLink>
+                <LogoutIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
+              </Link>
             </Tooltip>
           ) : isRefreshing ? (
             <Loader color={'white' as CircularProgressProps['color']} size={24} />
