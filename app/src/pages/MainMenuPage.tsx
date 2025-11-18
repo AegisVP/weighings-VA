@@ -1,4 +1,11 @@
-import { Box, Card, Container, Typography, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import {
   Scale as ScaleIcon,
   Assessment as AssessmentIcon,

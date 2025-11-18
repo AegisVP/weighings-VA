@@ -1,20 +1,17 @@
 import * as React from 'react';
 import { Link, Navigate, NavLink, useNavigate } from 'react-router';
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  Container,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Tooltip,
-  type CircularProgressProps,
-} from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -24,6 +21,7 @@ import { menuLinks } from '../../router/sections';
 import { MenuButtonWithFeatureCheck } from './MenuButton';
 
 import type { TypeMenuItemDefinition } from '../../router/sections';
+import type { CircularProgressProps } from '@mui/material/CircularProgress';
 
 export const HeaderBar = () => {
   const [open, setOpen] = React.useState(false);

@@ -1,5 +1,5 @@
 import { MIGRATION_VERSION } from '../config/constants.js';
-import { MigrationVersion } from '../models/index.js';
+import { Feature, MigrationVersion } from '../models/index.js';
 import { sequelize } from './db.js';
 
 export const runMigrationIfNeeded = async () => {
@@ -28,7 +28,27 @@ export const runMigrationIfNeeded = async () => {
   if (doMigrate) {
     console.log(`Migrating database model from version ${dbVersion} to ${MIGRATION_VERSION}`);
     await sequelize.sync(syncCondition);
+    try {
+      await Feature.create({ name: 'ADMIN', description: '', enabled: true });
+    } catch (error) {
+      console.log('ADMIN feature already exists');
+    }
+    try {
+      await Feature.create({ name: 'WEIGHING_ADD', description: '', enabled: true });
+    } catch (error) {
+      console.log('WEIGHING_ADD feature already exists');
+    }
+    try {
+      await Feature.create({ name: 'DATA_ANALYZE', description: '', enabled: true });
+    } catch (error) {
+      console.log('DATA_ANALYZE feature already exists');
+    }
+    try {
+      await Feature.create({ name: 'SETTINGS_CHANGE', description: '', enabled: true });
+    } catch (error) {
+      console.log('SETTINGS_CHANGE feature already exists');
+    }
 
-    await MigrationVersion.create({ version: MIGRATION_VERSION });
+    await MigrationVersion.upsert({ version: MIGRATION_VERSION });
   }
 };

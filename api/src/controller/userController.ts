@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/constants.js';
-import { User } from '../models/index.js';
+import { Feature, User, UserHasFeature } from '../models/index.js';
 import { cryptPassword } from '../utils/crypt.js';
 import { requestError } from '../utils/requrestError.js';
 
@@ -29,13 +29,26 @@ const registerUser: TypedRequestHandler<TypeUserRegisterRequestBody> = async (re
 
   const newUser = new User(req.body);
   const { id, name } = newUser;
-  const { token, refreshToken } = issueToken({ id, name, username });
+  const { token, refreshToken } = issueToken({ id, name, username: newUser.username });
 
   newUser.username = newUser.username.toLocaleLowerCase();
   newUser.password = cryptPassword(newUser.password);
   newUser.token = token;
   newUser.refreshToken = refreshToken;
+  newUser.features = [];
+
+  const userCount = await User.count();
   await newUser.save();
+
+  if (userCount === 0) {
+    const adminFeature = await Feature.findOne({ where: { name: 'ADMIN' } });
+    if (adminFeature) {
+      await UserHasFeature.create({
+        user_id: newUser.id,
+        feature_id: adminFeature.id,
+      });
+    }
+  }
 
   res.json({ token, refreshToken });
 };

@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import type { SelectChangeEvent } from '@mui/material/Select';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 
 import { useAppSelector } from '../../redux/hooks';
 import { ResourceTable } from './ResourceTable';
 
+import type { SelectChangeEvent } from '@mui/material/Select';
 import type { ResourceDef } from '../../resources/resources';
 
 export type TypeOnChangeDef = (

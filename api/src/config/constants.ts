@@ -9,7 +9,7 @@ export const DB_NAME = process.env.POSTGRES_DB || '';
 export const DB_USER = process.env.POSTGRES_USER || '';
 export const DB_PASS = process.env.POSTGRES_PASSWORD || '';
 
-export const API_PORT = Number(process.env.API_PORT) || 8080;
+export const API_PORT = Number(process.env.API_PORT) || 8040;
 export const JWT_SECRET = process.env.JWT_SECRET || 'JWT secret message';
 export const CROSS_ENV = process.env.CROSS_ENV || ENVIRONMENT_PROD;
 
