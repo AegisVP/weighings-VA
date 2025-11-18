@@ -1,14 +1,16 @@
 import { useCallback, useState } from 'react';
-import { IconButton, TableCell, TableRow } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import IconButton from '@mui/material/IconButton';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
 import { ResourceTableCell } from './ResourceTableCell';
 
 import type { ColumnDef, RendererProps } from './ResourceList';
 import type { ModifyResourcePayload } from '../../resources/resources';
-import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 type ResourceTableRowProps<T extends { id: string }> = {
   columns: ColumnDef<T>[];

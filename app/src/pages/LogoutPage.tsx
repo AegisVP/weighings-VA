@@ -1,4 +1,7 @@
-import { Box, Button, Card, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from '../redux/hooks';

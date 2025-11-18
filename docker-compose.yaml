@@ -4,8 +4,6 @@ services:
     container_name: sql
     env_file:
       - .env
-    # ports:
-    #   - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
@@ -30,7 +28,7 @@ services:
       - POSTGRES_HOST=postgres
       - CROSS_ENV=prod
     ports:
-      - '8080:${API_PORT:-80}'
+      - '${API_PORT:-80}:${API_PORT:-8040}'
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,7 +41,7 @@ services:
 
 volumes:
   postgres-data:
-    name: graintrack-postgres-data
+    name: ${COMPOSE_PROJECT_NAME}-postgres-data
     external: true
 
 networks:

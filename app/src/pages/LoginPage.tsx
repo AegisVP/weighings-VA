@@ -1,7 +1,11 @@
-import { Alert, Box, Button, Card, TextField } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import TextField from '@mui/material/TextField';
 
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Loader } from '../components/Loader/Loader';

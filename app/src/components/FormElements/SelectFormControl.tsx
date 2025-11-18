@@ -1,4 +1,7 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 import type { ControllerRenderProps, FieldError } from 'react-hook-form';
 import type { TypeWeighingInput } from '../WeighingEntryForm/WeighingEntryForm';

@@ -1,4 +1,8 @@
-import { Box, Checkbox, Input, TableCell } from '@mui/material';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Input from '@mui/material/Input';
+import TableCell from '@mui/material/TableCell';
+
 import type { ColumnDef, RendererDef, RendererProps } from './ResourceList';
 
 type ResourceTableCellProps<T> = {

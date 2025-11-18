@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router';
-import { Container, Skeleton } from '@mui/material';
+import Container from '@mui/material/Container';
+import Skeleton from '@mui/material/Skeleton';
 
 import { useAppDispatch, useAppSelector } from '../redux/hooks.ts';
 import { HeaderBar } from '../components/HeaderBar/HeaderBar.tsx';

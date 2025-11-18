@@ -1,4 +1,5 @@
-import { Container, Grid } from '@mui/material';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
 
 import { ResourceList } from '../components/ResourceList/ResourceList';
