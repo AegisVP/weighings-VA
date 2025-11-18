@@ -54,7 +54,7 @@ const registerUser: TypedRequestHandler<TypeUserRegisterRequestBody> = async (re
 };
 
 const loginUser: TypedRequestHandler<TypeUserLoginRequestBody> = async (req, res, next) => {
-  const username = req.body.username.toLowerCase();
+  const username = req.body.username.toLocaleLowerCase();
   const password = req.body.password;
   const user = await User.findOne({ where: { username } });
 
