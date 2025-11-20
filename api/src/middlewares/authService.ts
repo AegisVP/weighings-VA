@@ -22,7 +22,7 @@ export const authService: RequestHandler = async (req, _, next) => {
   let decodedUser: TypeJwtPayload | null = null;
   try {
     decodedUser = jwt.verify(token, JWT_SECRET) as TypeJwtPayload;
-    decodedUser.username = decodedUser.username.toLocaleLowerCase();
+    decodedUser.username = decodedUser.username.toLowerCase();
   } catch (_) {
     return next(requestError(401, NOT_AUTHORIZED_MSG, 'TokenVerifyFailed'));
   }
@@ -31,8 +31,8 @@ export const authService: RequestHandler = async (req, _, next) => {
 
   const dbUser = await User.findByPk(decodedUser.id);
   if (!dbUser) return next(requestError(401, NOT_AUTHORIZED_MSG, 'NoTokenUser'));
-  dbUser.username = dbUser.username.toLocaleLowerCase();
-  if (dbUser.username !== `${decodedUser.username}`.toLocaleLowerCase()) {
+  dbUser.username = dbUser.username.toLowerCase();
+  if (dbUser.username !== `${decodedUser.username}`.toLowerCase()) {
     return next(requestError(401, NOT_AUTHORIZED_MSG, 'TokenUsernameMismatch'));
   }
 

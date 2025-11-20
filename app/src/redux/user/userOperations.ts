@@ -18,7 +18,7 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await axios.post<TypeUserLoginResponsePayload>('/user/register', {
         name: data.name.trim(),
-        username: data.username.trim().toLocaleLowerCase(),
+        username: data.username.trim().toLowerCase(),
         password: data.password.trim(),
       });
 
