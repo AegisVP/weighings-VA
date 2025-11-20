@@ -31,7 +31,7 @@ const registerUser: TypedRequestHandler<TypeUserRegisterRequestBody> = async (re
   const { id, name } = newUser;
   const { token, refreshToken } = issueToken({ id, name, username: newUser.username });
 
-  newUser.username = newUser.username.toLocaleLowerCase();
+  newUser.username = newUser.username.toLowerCase();
   newUser.password = cryptPassword(newUser.password);
   newUser.token = token;
   newUser.refreshToken = refreshToken;
@@ -54,7 +54,7 @@ const registerUser: TypedRequestHandler<TypeUserRegisterRequestBody> = async (re
 };
 
 const loginUser: TypedRequestHandler<TypeUserLoginRequestBody> = async (req, res, next) => {
-  const username = req.body.username.toLocaleLowerCase();
+  const username = req.body.username.toLowerCase();
   const password = req.body.password;
   const user = await User.findOne({ where: { username } });
 
