@@ -18,6 +18,10 @@ class SyncRunner {
   private consecutiveFailures = 0;
   private syncTimer: NodeJS.Timeout | null = null;
   private isRunning = false;
+  private isSyncing = false;
+  private lastSyncTime: Date | null = null;
+  private lastSyncStatus: 'success' | 'failed' | 'pending' = 'pending';
+  private lastSyncError: string | null = null;
   private static instance: SyncRunner;
 
   public static getInstance(): SyncRunner {
@@ -50,7 +54,7 @@ class SyncRunner {
         username: REMOTE_DB_USER,
         password: REMOTE_DB_PASS,
         dialect: 'postgres',
-        dialectOptions: { ssl: false },
+        dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
         logging: false,
         pool: {
           max: 5,
@@ -102,13 +106,19 @@ class SyncRunner {
   }
 
   private async performSync() {
+    if (this.isSyncing) {
+      console.log('[Sync] Sync already in progress, skipping scheduled sync');
+      return;
+    }
+
     try {
+      this.registerStartOfSync();
+
       // Check if there's data to sync
       const hasDataToSync = await this.checkForUnsyncedData();
 
       if (!hasDataToSync) {
-        // No data to sync, check again in 1 minute
-        this.currentRetryInterval = INITIAL_RETRY_INTERVAL;
+        this.registerSuccess();
         return;
       }
 
@@ -121,27 +131,125 @@ class SyncRunner {
       // Perform synchronization
       await this.syncData();
 
-      // Reset failure counter on success
-      this.consecutiveFailures = 0;
-      this.currentRetryInterval = INITIAL_RETRY_INTERVAL;
+      this.registerSuccess();
       console.log('[Sync] Synchronization completed successfully');
     } catch (error) {
-      this.consecutiveFailures++;
-      this.currentRetryInterval = Math.min(
-        INITIAL_RETRY_INTERVAL * Math.pow(2, this.consecutiveFailures - 1),
-        MAX_RETRY_INTERVAL
-      );
+      this.registerError(error);
 
       console.warn(
         `[Sync] Synchronization failed (attempt ${this.consecutiveFailures}). ` +
           `Next retry in ${this.currentRetryInterval / 1000}s`,
-        error instanceof Error ? error.message : error
+        this.lastSyncError
       );
+    } finally {
+      this.isSyncing = false;
     }
   }
 
+  public async triggerManualSync(): Promise<{
+    triggered: boolean;
+    message: string;
+    recordsSynced?: number;
+  }> {
+    if (!SYNC_ENABLED || !this.remoteDb) {
+      return {
+        triggered: false,
+        message: 'Sync is not enabled or remote database not configured',
+      };
+    }
+
+    if (this.isSyncing) {
+      return {
+        triggered: false,
+        message: 'Sync is already in progress',
+      };
+    }
+
+    console.log('[Sync] Manual sync triggered');
+
+    try {
+      this.registerStartOfSync();
+
+      // Check if there's data to sync
+      const hasDataToSync = await this.checkForUnsyncedData();
+
+      if (!hasDataToSync) {
+        this.registerSuccess();
+        return {
+          triggered: true,
+          message: 'No data to synchronize',
+          recordsSynced: 0,
+        };
+      }
+
+      // Test connection
+      await this.remoteDb.authenticate();
+      console.log('[Sync] Connected to remote database');
+
+      // Perform synchronization
+      const recordsSynced = await this.syncData();
+
+      this.registerSuccess();
+
+      console.log('[Sync] Manual synchronization completed successfully');
+
+      return {
+        triggered: true,
+        message: 'Synchronization completed successfully',
+        recordsSynced,
+      };
+    } catch (error) {
+      this.registerError(error);
+
+      console.error('[Sync] Manual synchronization failed:', this.lastSyncError);
+
+      throw error;
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+
+  public getStatus() {
+    return {
+      enabled: SYNC_ENABLED,
+      isRunning: this.isRunning,
+      isSyncing: this.isSyncing,
+      lastSyncTime: this.lastSyncTime,
+      lastSyncStatus: this.lastSyncStatus,
+      lastSyncError: this.lastSyncError,
+      consecutiveFailures: this.consecutiveFailures,
+      nextCheckIn: this.syncTimer ? Math.round(this.currentRetryInterval / 1000) : null,
+      remoteDbConfigured: !!this.remoteDb,
+    };
+  }
+
+  private registerStartOfSync() {
+    this.isSyncing = true;
+    this.lastSyncStatus = 'pending';
+    this.lastSyncError = null;
+  }
+
+  private registerSuccess() {
+    this.consecutiveFailures = 0;
+    this.currentRetryInterval = INITIAL_RETRY_INTERVAL;
+    this.lastSyncStatus = 'success';
+    this.lastSyncTime = new Date();
+    this.lastSyncError = null;
+  }
+
+  private registerError(error: unknown) {
+    this.consecutiveFailures++;
+    this.currentRetryInterval = Math.min(
+      INITIAL_RETRY_INTERVAL * Math.pow(1.2, this.consecutiveFailures - 1),
+      MAX_RETRY_INTERVAL
+    );
+    this.lastSyncStatus = 'failed';
+    this.lastSyncTime = new Date();
+    this.lastSyncError = error instanceof Error ? error.message : 'Unknown error';
+  }
+
   private async checkForUnsyncedData(): Promise<boolean> {
-    const models = [Crop, Feature, Location, Machine, Operator, User, UserHasFeature, Weighing];
+    const models = [Feature, User, UserHasFeature, Crop, Location, Machine, Operator, Weighing];
 
     for (const model of models) {
       const count = await (model as any).count({
@@ -150,7 +258,7 @@ class SyncRunner {
             { syncedAt: null },
             {
               syncedAt: {
-                [Op.lt]: Sequelize.col('updated_at'),
+                [Op.lt]: Sequelize.col(`${model.name}.updated_at`),
               },
             },
           ],
@@ -165,24 +273,29 @@ class SyncRunner {
     return false;
   }
 
-  private async syncData() {
+  private async syncData(): Promise<number> {
     const models = [
-      { model: Crop, name: 'crops' },
       { model: Feature, name: 'features' },
+      { model: User, name: 'users' },
+      { model: UserHasFeature, name: 'user_has_feature' },
+      { model: Crop, name: 'crops' },
       { model: Location, name: 'locations' },
       { model: Machine, name: 'machines' },
       { model: Operator, name: 'operators' },
-      { model: User, name: 'users' },
-      { model: UserHasFeature, name: 'user_has_feature' },
       { model: Weighing, name: 'weighings' },
     ];
 
+    let totalRecordsSynced = 0;
+
     for (const { model, name } of models) {
-      await this.syncModel(model, name);
+      const count = await this.syncModel(model, name);
+      totalRecordsSynced += count;
     }
+
+    return totalRecordsSynced;
   }
 
-  private async syncModel(model: any, tableName: string) {
+  private async syncModel(model: any, tableName: string): Promise<number> {
     try {
       // Find records that need syncing
       const records = await model.findAll({
@@ -191,7 +304,7 @@ class SyncRunner {
             { syncedAt: null },
             {
               syncedAt: {
-                [Op.lt]: Sequelize.col('updated_at'),
+                [Op.lt]: Sequelize.col(`${model.name}.updated_at`),
               },
             },
           ],
@@ -200,7 +313,7 @@ class SyncRunner {
       });
 
       if (records.length === 0) {
-        return;
+        return 0;
       }
 
       console.log(`[Sync] Syncing ${records.length} records from ${tableName}`);
@@ -211,6 +324,7 @@ class SyncRunner {
       }
 
       console.log(`[Sync] Successfully synced ${tableName}`);
+      return records.length;
     } catch (error) {
       console.error(`[Sync] Error syncing ${tableName}:`, error);
       throw error;
@@ -218,25 +332,42 @@ class SyncRunner {
   }
 
   private async syncRecord(record: any, tableName: string) {
-    const data = record.toJSON();
+    const data = record.get({ plain: true });
     const now = new Date();
 
+    // Helper function to convert camelCase to snake_case
+    const toSnakeCase = (str: string): string => {
+      return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    };
+
+    // Filter out associated models/arrays (like 'features')
+    const snakeCaseData: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data)) {
+      // Skip arrays and objects that are associations
+      if (Array.isArray(value) || (typeof value === 'object' && value !== null && !(value instanceof Date))) {
+        continue;
+      }
+      snakeCaseData[toSnakeCase(key)] = value;
+    }
+
     try {
+      const columns = Object.keys(snakeCaseData);
+      const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
+      const updateSet = columns
+        .filter((col) => col !== 'id')
+        .map((col) => `${col} = EXCLUDED.${col}`)
+        .join(', ');
+
       // Use raw query to upsert data to remote database
       await this.remoteDb!.query(
         `
-        INSERT INTO ${tableName} (${Object.keys(data).join(', ')})
-        VALUES (${Object.keys(data)
-          .map((_, i) => `$${i + 1}`)
-          .join(', ')})
+        INSERT INTO ${tableName} (${columns.join(', ')})
+        VALUES (${placeholders})
         ON CONFLICT (id) DO UPDATE SET
-          ${Object.keys(data)
-            .filter((key) => key !== 'id')
-            .map((key) => `${key} = EXCLUDED.${key}`)
-            .join(', ')}
+          ${updateSet}
         `,
         {
-          bind: Object.values(data),
+          bind: Object.values(snakeCaseData),
         }
       );
 

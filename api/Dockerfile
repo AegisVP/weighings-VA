@@ -4,6 +4,8 @@ FROM node:24-alpine AS frontend-builder
 WORKDIR /build/api
 
 # Copy API schemas first (needed for TypeScript imports in frontend)
+COPY --from=api-builder /build/src/schema ./src/schema
+COPY --from=api-builder /build/dist/schema ./dist/schema
 COPY ./api/package*.json ./
 RUN npm install
 
@@ -17,7 +19,6 @@ RUN npm install
 
 # Copy frontend source and build
 COPY ./app ./
-
 RUN npm run build
 
 # Stage 2: Build API

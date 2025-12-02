@@ -17,6 +17,11 @@ export class UserHasFeature extends Model {
 
 UserHasFeature.init(
   {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
     userId: {
       type: DataTypes.UUID,
       references: {

@@ -12,7 +12,7 @@ export class User extends Model {
   declare username: string;
   declare password: string;
   declare token: string | null;
-  declare refreshToken: string | null;
+  // declare refreshToken: string | null;
   declare features: Feature[];
   declare createdAt: Date;
   declare updatedAt: Date;
@@ -41,13 +41,13 @@ User.init(
       allowNull: false,
     },
     token: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
-    refreshToken: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    // refreshToken: {
+    //   type: DataTypes.TEXT,
+    //   allowNull: true,
+    // },
     ...generateTimestampFields(),
   },
   {
@@ -74,5 +74,5 @@ export const userSchema = z.object({
   username: z.string(),
   password: z.string(),
   token: z.string().optional(),
-  refreshToken: z.string().optional(),
+  // refreshToken: z.string().optional(),
 });

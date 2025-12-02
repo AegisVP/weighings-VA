@@ -25,7 +25,7 @@ public/
 
 # dotenv environment variables file
 .env
-.env.test
+.env.*
 
 # docker override file
 docker-compose.override.yaml
