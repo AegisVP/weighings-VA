@@ -72,7 +72,7 @@ const renderInputField = <T,>(column: ColumnDef<T>, control: Control<FieldValues
   );
 };
 
-type ResourceTableProps<T extends { id: string }> = {
+type ResourceTableProps<T> = {
   title: string;
   type: ResourceDefKey;
   entries: T[];
@@ -97,10 +97,10 @@ export const ResourceTable = <T extends { id: string }>({
 }: ResourceTableProps<T>) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const defaultValues = columns.reduce((acc, column) => {
-    acc[column.id as string] = column.type === 'boolean' ? false : '';
+  const defaultValues = columns.reduce<FieldValues>((acc, column) => {
+    acc[column.id] = column.type === 'boolean' ? false : '';
     return acc;
-  }, {} as FieldValues);
+  }, {});
   const { control, handleSubmit, formState, reset } = useForm({ defaultValues });
   const { errors: addErrors } = formState;
 

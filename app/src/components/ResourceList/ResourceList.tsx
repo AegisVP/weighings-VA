@@ -5,7 +5,7 @@ import { useAppSelector } from '../../redux/hooks';
 import { ResourceTable } from './ResourceTable';
 
 import type { SelectChangeEvent } from '@mui/material/Select';
-import type { ResourceDef } from '../../resources/resources';
+import type { ResourceDef, TypeAllResourceDefs } from '../../resources/resources';
 
 export type TypeOnChangeDef = (
   e: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<string | number | boolean> | React.SyntheticEvent,
@@ -28,10 +28,11 @@ export type ColumnDef<T> = {
   valueOptions?: { value: string; label: string }[];
 };
 
-type ResourceListProps<T extends { id: string }> = {
+export const ResourceList = <T extends Pick<TypeAllResourceDefs['schemaType'], 'id' | 'deletedAt'>>({
+  config,
+}: {
   config: ResourceDef<T>;
-};
-export const ResourceList = <T extends { id: string }>({ config }: ResourceListProps<T>) => {
+}) => {
   const { items, count, isLoading, error } = useAppSelector((state) => config.selector(state));
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export const ResourceList = <T extends { id: string }>({ config }: ResourceListP
       <ResourceTable<T>
         title={config.label}
         type={config.key}
-        entries={items}
+        entries={items.filter((item) => !item.deletedAt)}
         count={count}
         error={error}
         columns={config.columns}

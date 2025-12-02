@@ -10,7 +10,7 @@ import { WeighingEntryForm } from '../components/WeighingEntryForm/WeighingEntry
 import { WeighingTable } from '../components/WeighingTable/WeighingTable';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { selectWeighings } from '../redux/weighings/weighingsSelectors';
-import { selectCrop, selectLocation, selectMachine, selectOperator } from '../redux/resources/resourcesSelectors';
+import { selectCrops, selectLocations, selectMachines, selectOperators } from '../redux/resources/resourcesSelectors';
 import { addWeighing } from '../redux/weighings/weighingsOperations';
 
 import type { SubmitHandler } from 'react-hook-form';
@@ -37,10 +37,10 @@ export const WeighingEntry = () => {
   const sortedWeighings = [...weighings].sort(
     (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
   );
-  const crops = useAppSelector(selectCrop).items;
-  const locations = useAppSelector(selectLocation).items;
-  const machines = useAppSelector(selectMachine).items;
-  const operators = useAppSelector(selectOperator).items;
+  const crops = useAppSelector(selectCrops());
+  const locations = useAppSelector(selectLocations());
+  const machines = useAppSelector(selectMachines());
+  const operators = useAppSelector(selectOperators());
 
   const getCropName = (id: string) => crops.find((c) => c.id === id)?.name || id;
   const getLocationName = (id: string) => locations.find((l) => l.id === id)?.name || id;
@@ -76,7 +76,7 @@ export const WeighingEntry = () => {
           <Grid container spacing={2}>
             <Grid size={{ xs: 6, md: 9 }}>
               <Typography variant="h6" whiteSpace="nowrap">
-                Історія зважувань ({sortedWeighings.length})
+                Зважувань сьогодні ({sortedWeighings.length})
               </Typography>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>

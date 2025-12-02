@@ -43,7 +43,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 
 # API
-API_PORT=8040
+API_PORT=80
 JWT_SECRET=your_jwt_secret
 CROSS_ENV=dev
 
@@ -61,7 +61,7 @@ npm install
 npm run dev
 ```
 
-- The API listens on `API_PORT` (default `8040`).
+- The API listens on `API_PORT` (default `80`).
 - The dev server runs the TypeScript sources (using `tsx --watch`).
 
 Useful API commands (inside `api/`):

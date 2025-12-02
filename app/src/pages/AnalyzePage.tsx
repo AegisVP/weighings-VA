@@ -139,6 +139,9 @@ export const AnalyzePage = () => {
     setFilterHarvesterOperator('');
   };
 
+  const markDeleted = (c: { id: string; name: string; deletedAt?: unknown }) =>
+    c.deletedAt ? { id: c.id, name: c.name + ' (видалено)' } : { id: c.id, name: c.name };
+
   const isFilterSet =
     !!filterCrop || !!filterSource || !!filterDestination || !!filterDeliveryOperator || !!filterHarvesterOperator;
 
@@ -200,7 +203,7 @@ export const AnalyzePage = () => {
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...crops.items]}
+                options={[{ id: '', name: 'Всі' }, ...crops.items].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
                 value={crops.items.find((c) => c.id === filterCrop) || { id: '', name: 'Всі' }}
                 onChange={(_, newValue) => setFilterCrop(newValue?.id || '')}
@@ -211,7 +214,7 @@ export const AnalyzePage = () => {
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...locations.items.filter((l) => l.isSource)]}
+                options={[{ id: '', name: 'Всі' }, ...locations.items.filter((l) => l.isSource)].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
                 value={locations.items.find((l) => l.id === filterSource) || { id: '', name: 'Всі' }}
                 onChange={(_, newValue) => setFilterSource(newValue?.id || '')}
@@ -222,7 +225,7 @@ export const AnalyzePage = () => {
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...locations.items.filter((l) => l.isDestination)]}
+                options={[{ id: '', name: 'Всі' }, ...locations.items.filter((l) => l.isDestination)].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
                 value={locations.items.find((l) => l.id === filterDestination) || { id: '', name: 'Всі' }}
                 onChange={(_, newValue) => setFilterDestination(newValue?.id || '')}
@@ -233,7 +236,7 @@ export const AnalyzePage = () => {
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...operators.items]}
+                options={[{ id: '', name: 'Всі' }, ...operators.items].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
                 value={operators.items.find((o) => o.id === filterDeliveryOperator) || { id: '', name: 'Всі' }}
                 onChange={(_, newValue) => setFilterDeliveryOperator(newValue?.id || '')}

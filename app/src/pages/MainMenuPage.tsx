@@ -6,12 +6,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import {
-  Scale as ScaleIcon,
-  Assessment as AssessmentIcon,
-  Settings as SettingsIcon,
-  People as PeopleIcon,
-} from '@mui/icons-material';
+import { Scale as ScaleIcon, Assessment as AssessmentIcon, Settings as SettingsIcon } from '@mui/icons-material';
+import { menuLinks } from '../router/sections';
 
 export const MainMenuPage = () => {
   const today = new Date();
@@ -54,8 +50,8 @@ export const MainMenuPage = () => {
                 }
                 secondary={
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    Перейдіть до розділу &quot;Зважування&quot; у верхньому меню для створення нових записів. Введіть
-                    дані про культуру, джерело, призначення, вагу та операторів.
+                    Перейдіть до розділу &quot;{menuLinks.weighing.name}&quot; у верхньому меню для створення нових
+                    записів. Введіть дані про культуру, джерело, призначення, вагу та операторів.
                   </Typography>
                 }
               />
@@ -73,8 +69,8 @@ export const MainMenuPage = () => {
                 }
                 secondary={
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    У розділі &quot;Аналіз&quot; ви можете переглядати всі зважування, фільтрувати за різними
-                    параметрами, сортувати та переглядати загальну вагу.
+                    У розділі &quot;{menuLinks.reporting.name}&quot; ви можете переглядати всі зважування, фільтрувати
+                    за різними параметрами, сортувати та переглядати загальну вагу.
                   </Typography>
                 }
               />
@@ -87,31 +83,13 @@ export const MainMenuPage = () => {
               <ListItemText
                 primary={
                   <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                    3. Налаштування
+                    3. Налаштування довідників
                   </Typography>
                 }
                 secondary={
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    У розділі &quot;Налаштування&quot; налаштуйте довідники: культури, локації, машини та оператори. Це
-                    необхідно для коректної роботи системи.
-                  </Typography>
-                }
-              />
-            </ListItem>
-
-            <ListItem sx={{ alignItems: 'flex-start' }}>
-              <ListItemIcon>
-                <PeopleIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                    4. Керування користувачами
-                  </Typography>
-                }
-                secondary={
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    Адміністратори можуть керувати користувачами системи у відповідному розділі налаштувань.
+                    У розділі &quot;{menuLinks.settings.name}&quot; налаштуйте довідники: культури, локації, машини та
+                    оператори. Це необхідно для коректної роботи системи.
                   </Typography>
                 }
               />

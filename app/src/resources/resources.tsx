@@ -36,10 +36,10 @@ export type ResourceDef<T> = {
   columns: ColumnDef<T>[];
   selector: (state: TypeRootReduxState) => ResourceStore<T>;
   actions: {
-    add: (item: AddResourcePayload<T>) => void;
-    modify: (item: ModifyResourcePayload<T>) => void;
-    remove: (id: string) => void;
-    load: () => void;
+    add: (item: AddResourcePayload<T>) => Promise<void> | void;
+    modify: (item: ModifyResourcePayload<T>) => Promise<void> | void;
+    remove: (id: string) => Promise<void> | void;
+    load: () => Promise<void> | void;
   };
   getColumnOptions?: (state: TypeRootReduxState, columnId: keyof T) => { value: string; label: string }[] | undefined;
 };
@@ -77,9 +77,15 @@ export const getResourceConfigs = async (): Promise<TypeAllResourceDefs[]> => {
       ],
       selector: selectMachine,
       actions: {
-        add: (item: AddResourcePayload<TypeMachineSchema>) => dispatch(addMachine(item)),
-        modify: (item: ModifyResourcePayload<TypeMachineSchema>) => dispatch(modifyMachine(item)),
-        remove: (id) => dispatch(deleteMachine({ id })),
+        add: async (item: AddResourcePayload<TypeMachineSchema>) => {
+          await dispatch(addMachine(item));
+        },
+        modify: async (item: ModifyResourcePayload<TypeMachineSchema>) => {
+          await dispatch(modifyMachine(item));
+        },
+        remove: async (id) => {
+          await dispatch(deleteMachine({ id }));
+        },
         load: () => {
           dispatch(loadMachine());
         },
@@ -93,10 +99,18 @@ export const getResourceConfigs = async (): Promise<TypeAllResourceDefs[]> => {
       columns: [{ id: 'name', label: 'Імʼя' }],
       selector: selectOperator,
       actions: {
-        add: (item: AddResourcePayload<TypeOperatorSchema>) => dispatch(addOperator(item)),
-        modify: (item: ModifyResourcePayload<TypeOperatorSchema>) => dispatch(modifyOperator(item)),
-        remove: (id) => dispatch(deleteOperator({ id })),
-        load: () => dispatch(loadOperator()),
+        add: async (item: AddResourcePayload<TypeOperatorSchema>) => {
+          await dispatch(addOperator(item));
+        },
+        modify: async (item: ModifyResourcePayload<TypeOperatorSchema>) => {
+          await dispatch(modifyOperator(item));
+        },
+        remove: async (id) => {
+          await dispatch(deleteOperator({ id }));
+        },
+        load: async () => {
+          await dispatch(loadOperator());
+        },
       },
     }),
     createResourceConfig<TypeLocationSchema>({
@@ -111,10 +125,18 @@ export const getResourceConfigs = async (): Promise<TypeAllResourceDefs[]> => {
       ],
       selector: selectLocation,
       actions: {
-        add: (item: AddResourcePayload<TypeLocationSchema>) => dispatch(addLocation(item)),
-        modify: (item: ModifyResourcePayload<TypeLocationSchema>) => dispatch(modifyLocation(item)),
-        remove: (id) => dispatch(deleteLocation({ id })),
-        load: () => dispatch(loadLocation()),
+        add: async (item: AddResourcePayload<TypeLocationSchema>) => {
+          await dispatch(addLocation(item));
+        },
+        modify: async (item: ModifyResourcePayload<TypeLocationSchema>) => {
+          await dispatch(modifyLocation(item));
+        },
+        remove: async (id) => {
+          await dispatch(deleteLocation({ id }));
+        },
+        load: async () => {
+          await dispatch(loadLocation());
+        },
       },
     }),
     createResourceConfig<TypeCropSchema>({
@@ -125,10 +147,18 @@ export const getResourceConfigs = async (): Promise<TypeAllResourceDefs[]> => {
       columns: [{ id: 'name', label: 'Назва' }],
       selector: selectCrop,
       actions: {
-        add: (item: AddResourcePayload<TypeCropSchema>) => dispatch(addCrop(item)),
-        modify: (item: ModifyResourcePayload<TypeCropSchema>) => dispatch(modifyCrop(item)),
-        remove: (id) => dispatch(deleteCrop({ id })),
-        load: () => dispatch(loadCrop()),
+        add: async (item: AddResourcePayload<TypeCropSchema>) => {
+          await dispatch(addCrop(item));
+        },
+        modify: async (item: ModifyResourcePayload<TypeCropSchema>) => {
+          await dispatch(modifyCrop(item));
+        },
+        remove: async (id) => {
+          await dispatch(deleteCrop({ id }));
+        },
+        load: async () => {
+          await dispatch(loadCrop());
+        },
       },
     }),
   ];

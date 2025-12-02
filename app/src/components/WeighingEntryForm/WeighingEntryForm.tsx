@@ -1,6 +1,7 @@
 import z from 'zod';
 import { useEffect } from 'react';
 import type { FocusEvent } from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
@@ -10,11 +11,14 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useAppSelector } from '../../redux/hooks';
-import { selectCrop, selectLocation, selectMachine, selectOperator } from '../../redux/resources/resourcesSelectors';
-import { SelectFormControl } from '../FormElements/SelectFormControl';
+import {
+  selectCrops,
+  selectLocations,
+  selectMachines,
+  selectOperators,
+} from '../../redux/resources/resourcesSelectors';
 
 import type { Resolver, SubmitHandler } from 'react-hook-form';
-import type { TypeCropSchema, TypeLocationSchema, TypeMachineSchema, TypeOperatorSchema } from '../../redux/types';
 
 const weighingInputSchema = z.object({
   deliveryMachine: z.uuid(),
@@ -68,10 +72,10 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
     e.target.select();
   };
 
-  const crops = useAppSelector(selectCrop);
-  const locations = useAppSelector(selectLocation);
-  const machines = useAppSelector(selectMachine);
-  const operators = useAppSelector(selectOperator);
+  const crops = useAppSelector(selectCrops());
+  const locations = useAppSelector(selectLocations());
+  const machines = useAppSelector(selectMachines());
+  const operators = useAppSelector(selectOperators());
 
   const selectedDeliveryOperator = watch('deliveryOperator');
   const selectedHarvesterOperator = watch('harvesterOperator');
@@ -107,11 +111,16 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
               name="crop"
               control={control}
               render={({ field }) => (
-                <SelectFormControl<TypeCropSchema, 'crop'>
-                  error={errors.crop}
-                  label="Культура"
-                  field={field}
-                  items={crops.items}
+                <Autocomplete
+                  size="small"
+                  options={crops}
+                  getOptionLabel={(option) => option.name}
+                  value={crops.find((c) => c.id === field.value) || null}
+                  onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Культура" error={!!errors.crop} helperText={errors.crop?.message} />
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
               )}
             />
@@ -121,11 +130,21 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
               name="sourceLocation"
               control={control}
               render={({ field }) => (
-                <SelectFormControl<TypeLocationSchema, 'sourceLocation'>
-                  error={errors.sourceLocation}
-                  label="Джерело"
-                  field={field}
-                  items={locations.items.filter((l) => l.isSource)}
+                <Autocomplete
+                  size="small"
+                  options={locations.filter((l) => l.isSource)}
+                  getOptionLabel={(option) => option.name}
+                  value={locations.find((l) => l.id === field.value) || null}
+                  onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Джерело"
+                      error={!!errors.sourceLocation}
+                      helperText={errors.sourceLocation?.message}
+                    />
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
               )}
             />
@@ -135,11 +154,21 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
               name="destinationLocation"
               control={control}
               render={({ field }) => (
-                <SelectFormControl<TypeLocationSchema, 'destinationLocation'>
-                  error={errors.destinationLocation}
-                  label="Місце призначення"
-                  field={field}
-                  items={locations.items.filter((l) => l.isDestination)}
+                <Autocomplete
+                  size="small"
+                  options={locations.filter((l) => l.isDestination)}
+                  getOptionLabel={(option) => option.name}
+                  value={locations.find((l) => l.id === field.value) || null}
+                  onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Місце призначення"
+                      error={!!errors.destinationLocation}
+                      helperText={errors.destinationLocation?.message}
+                    />
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
               )}
             />
@@ -152,16 +181,34 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   name="deliveryMachine"
                   control={control}
                   render={({ field }) => (
-                    <SelectFormControl<TypeMachineSchema, 'deliveryMachine'>
-                      error={errors.deliveryMachine}
-                      label="Привіз"
-                      field={field}
-                      items={machines.items
+                    <Autocomplete
+                      size="small"
+                      options={machines
                         .filter((l) => l.canDeliver)
                         .map(({ id, licensePlate, description, make, model }) => ({
                           id,
                           name: `[${licensePlate}] ${make}, ${model} (${description})`,
                         }))}
+                      getOptionLabel={(option) => option.name}
+                      value={
+                        machines
+                          .filter((l) => l.canDeliver)
+                          .map(({ id, licensePlate, description, make, model }) => ({
+                            id,
+                            name: `[${licensePlate}] ${make}, ${model} (${description})`,
+                          }))
+                          .find((m) => m.id === field.value) || null
+                      }
+                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Привіз"
+                          error={!!errors.deliveryMachine}
+                          helperText={errors.deliveryMachine?.message}
+                        />
+                      )}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                   )}
                 />
@@ -171,11 +218,21 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   name="deliveryOperator"
                   control={control}
                   render={({ field }) => (
-                    <SelectFormControl<TypeOperatorSchema, 'deliveryOperator'>
-                      error={errors.deliveryOperator}
-                      label="Водій"
-                      field={field}
-                      items={operators.items.filter((op) => op.id !== selectedHarvesterOperator)}
+                    <Autocomplete
+                      size="small"
+                      options={operators.filter((op) => op.id !== selectedHarvesterOperator)}
+                      getOptionLabel={(option) => option.name}
+                      value={operators.find((o) => o.id === field.value) || null}
+                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Водій"
+                          error={!!errors.deliveryOperator}
+                          helperText={errors.deliveryOperator?.message}
+                        />
+                      )}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                   )}
                 />
@@ -189,16 +246,34 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   name="harvesterMachine"
                   control={control}
                   render={({ field }) => (
-                    <SelectFormControl<TypeMachineSchema, 'harvesterMachine'>
-                      error={errors.harvesterMachine}
-                      label="Зібрав"
-                      field={field}
-                      items={machines.items
+                    <Autocomplete
+                      size="small"
+                      options={machines
                         .filter((l) => l.canHarvest)
                         .map(({ id, licensePlate, description, make, model }) => ({
                           id,
                           name: `[${licensePlate}] ${make}, ${model} (${description})`,
                         }))}
+                      getOptionLabel={(option) => option.name}
+                      value={
+                        machines
+                          .filter((l) => l.canHarvest)
+                          .map(({ id, licensePlate, description, make, model }) => ({
+                            id,
+                            name: `[${licensePlate}] ${make}, ${model} (${description})`,
+                          }))
+                          .find((m) => m.id === field.value) || null
+                      }
+                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Зібрав"
+                          error={!!errors.harvesterMachine}
+                          helperText={errors.harvesterMachine?.message}
+                        />
+                      )}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                   )}
                 />
@@ -208,11 +283,21 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   name="harvesterOperator"
                   control={control}
                   render={({ field }) => (
-                    <SelectFormControl<TypeOperatorSchema, 'harvesterOperator'>
-                      error={errors.harvesterOperator}
-                      label="Комбайнер"
-                      field={field}
-                      items={operators.items.filter((op) => op.id !== selectedDeliveryOperator)}
+                    <Autocomplete
+                      size="small"
+                      options={operators.filter((op) => op.id !== selectedDeliveryOperator)}
+                      getOptionLabel={(option) => option.name}
+                      value={operators.find((o) => o.id === field.value) || null}
+                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Комбайнер"
+                          error={!!errors.harvesterOperator}
+                          helperText={errors.harvesterOperator?.message}
+                        />
+                      )}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                   )}
                 />

@@ -37,7 +37,7 @@ RUN npm run build
 FROM node:24-alpine
 
 # Declare built-time ARG with a default
-ARG API_PORT=8040
+ARG API_PORT=80
 ENV API_PORT=${API_PORT}
 
 # Copy built frontend assets to public directory
