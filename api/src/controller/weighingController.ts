@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import { CROSS_ENV, ENVIRONMENT_CLOUD } from '../config/constants.js';
 import { requestError } from '../utils/requrestError.js';
 import { Weighing } from '../models/modelWeighing.js';
 import { Location } from '../models/modelLocation.js';
@@ -18,6 +19,10 @@ const get: TypedRequestHandler<TypeGetById> = async ({ params: { id } }, res, ne
 };
 
 const add: TypedRequestHandler<TypeAddWeighingSchema, any, any> = async (req, res, next) => {
+  if (CROSS_ENV === ENVIRONMENT_CLOUD) {
+    return next(requestError(403, 'Додавання зважувань заборонено в хмарній версії'));
+  }
+
   const { source, destination, auto, driver, harvester, operator, crop, weight } = req.body;
   const newWeighing = new Weighing();
 

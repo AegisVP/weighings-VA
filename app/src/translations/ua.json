@@ -71,6 +71,7 @@
   "resource.machine.columns.can_harvest": "Може збирати",
   "resource.operator.label": "Оператор",
   "resource.operator.columns.name": "Імʼя",
+  "weighing_entry_form.close_button": "Видалити",
   "weighing_entry_form.crop": "Культура",
   "weighing_entry_form.source_location": "Джерело",
   "weighing_entry_form.destination_location": "Призначення",

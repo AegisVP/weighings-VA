@@ -71,6 +71,7 @@
   "resource.machine.columns.can_harvest": "Can Harvest",
   "resource.operator.label": "Operator",
   "resource.operator.columns.name": "Name",
+  "weighing_entry_form.close_button": "Delete",
   "weighing_entry_form.crop": "Crop",
   "weighing_entry_form.source_location": "Source",
   "weighing_entry_form.destination_location": "Destination",

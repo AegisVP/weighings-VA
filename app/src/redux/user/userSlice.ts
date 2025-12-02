@@ -32,7 +32,7 @@ export const initialState: TypeUserReduxState = {
   ...defaultLoadingTypes,
   isLoggedIn: false,
   isRefreshing: false,
-  locale: 'en',
+  locale: 'ua',
   token: '',
   // refreshToken: '',
   user: {

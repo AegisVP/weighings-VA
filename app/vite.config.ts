@@ -34,5 +34,11 @@ export default defineConfig({
     emptyOutDir: true,
     assetsDir: 'assets',
     chunkSizeWarningLimit: 2048,
+    sourcemap: true,
+  },
+  server: {
+    sourcemapIgnoreList: (sourcePath) => {
+      return sourcePath.includes('node_modules');
+    },
   },
 });

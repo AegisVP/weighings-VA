@@ -1,6 +1,6 @@
 import z from 'zod';
 import { useIntl } from 'react-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -25,6 +25,7 @@ import { editWeighingInProgress, removeWeighingInProgress } from '../../redux/we
 
 import type { FocusEvent } from 'react';
 import type { ControllerRenderProps, Resolver, SubmitHandler } from 'react-hook-form';
+import type { TypeMachineSchema } from '../../redux/types';
 
 const weighingInputSchema = z.object({
   deliveryMachine: z.uuid(),
@@ -41,6 +42,8 @@ const weighingInputSchema = z.object({
 });
 export type TypeWeighingInput = z.infer<typeof weighingInputSchema>;
 
+const SHOW_DELETE_BUTTON_DELAY = 5000;
+
 type WeighingEntryFormProps = {
   dateTime: string;
   defaultValues: TypeWeighingInput;
@@ -51,6 +54,8 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
   const dispatch = useAppDispatch();
   const [apiError, setApiError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showDeleteButton, setShowDeleteButton] = useState<boolean>(false);
+  const showDeleteButtonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const {
     control,
     handleSubmit,
@@ -64,7 +69,12 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
     resolver: zodResolver(weighingInputSchema) as unknown as Resolver<TypeWeighingInput>,
     defaultValues: { ...defaultValues, dateTime },
   });
+
   const { username } = useAppSelector(selectUserInfo);
+  const deliveryMachine = watch('deliveryMachine');
+  const harvesterMachine = watch('harvesterMachine');
+  const deliveredByHarvester = deliveryMachine === harvesterMachine;
+  console.log({ deliveryMachine, harvesterMachine, deliveredByHarvester });
 
   const onCalculateNetto = () => {
     const gross = getValues('weightGross') || 0;
@@ -96,6 +106,10 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
     }
   };
 
+  const handleRemoveWeighingInProgress = () => {
+    dispatch(removeWeighingInProgress(dateTime));
+  };
+
   const handleChange =
     (field: ControllerRenderProps<TypeWeighingInput>) =>
     async (_: React.SyntheticEvent, value: Record<string, string | boolean | number> | null): Promise<void> => {
@@ -104,13 +118,26 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
       if (['crop', 'sourceLocation', 'destinationLocation'].includes(field.name)) {
         setDefaultValues(payload);
       }
-      console.log({ payload });
       dispatch(editWeighingInProgress(payload));
       return field.onChange(valueStr);
     };
 
   const selectAllOnFocus = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.target.select();
+  };
+
+  const handleMouseEnter = () => {
+    showDeleteButtonTimeoutRef.current = setTimeout(() => {
+      setShowDeleteButton(true);
+    }, SHOW_DELETE_BUTTON_DELAY);
+  };
+
+  const handleMouseLeave = () => {
+    if (showDeleteButtonTimeoutRef.current) {
+      clearTimeout(showDeleteButtonTimeoutRef.current);
+      showDeleteButtonTimeoutRef.current = null;
+    }
+    setShowDeleteButton(false);
   };
 
   const crops = useAppSelector(selectCrops());
@@ -121,8 +148,18 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
   const selectedDeliveryOperator = watch('deliveryOperator');
   const selectedHarvesterOperator = watch('harvesterOperator');
 
+  const mappedMachines = useMemo<(TypeMachineSchema & { name: string })[]>(
+    () =>
+      machines.map((m: TypeMachineSchema) => {
+        const { licensePlate, make, model, description } = m;
+        return { ...m, name: `[${licensePlate}] ${make}, ${model} (${description})` };
+      }),
+    [machines]
+  );
+
   useEffect(() => {
     if (
+      !deliveredByHarvester &&
       selectedDeliveryOperator &&
       selectedDeliveryOperator === getValues('harvesterOperator') &&
       selectedDeliveryOperator !== ''
@@ -130,10 +167,11 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
       setValue('harvesterOperator', '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDeliveryOperator]);
+  }, [selectedDeliveryOperator, deliveredByHarvester]);
 
   useEffect(() => {
     if (
+      !deliveredByHarvester &&
       selectedHarvesterOperator &&
       selectedHarvesterOperator === getValues('deliveryOperator') &&
       selectedHarvesterOperator !== ''
@@ -141,7 +179,7 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
       setValue('deliveryOperator', '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedHarvesterOperator]);
+  }, [selectedHarvesterOperator, deliveredByHarvester]);
 
   return (
     <Container maxWidth="xl" disableGutters>
@@ -229,22 +267,9 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
                   render={({ field }) => (
                     <Autocomplete
                       size="small"
-                      options={machines
-                        .filter((l) => l.canDeliver)
-                        .map(({ id, licensePlate, description, make, model }) => ({
-                          id,
-                          name: `[${licensePlate}] ${make}, ${model} (${description})`,
-                        }))}
+                      options={mappedMachines.filter((l) => l.canDeliver)}
                       getOptionLabel={(option) => option.name}
-                      value={
-                        machines
-                          .filter((l) => l.canDeliver)
-                          .map(({ id, licensePlate, description, make, model }) => ({
-                            id,
-                            name: `[${licensePlate}] ${make}, ${model} (${description})`,
-                          }))
-                          .find((m) => m.id === field.value) || null
-                      }
+                      value={mappedMachines.filter((l) => l.canDeliver).find((m) => m.id === field.value) || null}
                       onChange={handleChange(field)}
                       renderInput={(params) => (
                         <TextField
@@ -266,7 +291,9 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
                   render={({ field }) => (
                     <Autocomplete
                       size="small"
-                      options={operators.filter((op) => op.id !== selectedHarvesterOperator)}
+                      options={
+                        deliveredByHarvester ? operators : operators.filter((op) => op.id !== selectedHarvesterOperator)
+                      }
                       getOptionLabel={(option) => option.name}
                       value={operators.find((o) => o.id === field.value) || null}
                       onChange={handleChange(field)}
@@ -294,22 +321,9 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
                   render={({ field }) => (
                     <Autocomplete
                       size="small"
-                      options={machines
-                        .filter((l) => l.canHarvest)
-                        .map(({ id, licensePlate, description, make, model }) => ({
-                          id,
-                          name: `[${licensePlate}] ${make}, ${model} (${description})`,
-                        }))}
+                      options={mappedMachines.filter((l) => l.canHarvest)}
                       getOptionLabel={(option) => option.name}
-                      value={
-                        machines
-                          .filter((l) => l.canHarvest)
-                          .map(({ id, licensePlate, description, make, model }) => ({
-                            id,
-                            name: `[${licensePlate}] ${make}, ${model} (${description})`,
-                          }))
-                          .find((m) => m.id === field.value) || null
-                      }
+                      value={mappedMachines.filter((l) => l.canHarvest).find((m) => m.id === field.value) || null}
                       onChange={handleChange(field)}
                       renderInput={(params) => (
                         <TextField
@@ -331,7 +345,9 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
                   render={({ field }) => (
                     <Autocomplete
                       size="small"
-                      options={operators.filter((op) => op.id !== selectedDeliveryOperator)}
+                      options={
+                        deliveredByHarvester ? operators : operators.filter((op) => op.id !== selectedDeliveryOperator)
+                      }
                       getOptionLabel={(option) => option.name}
                       value={operators.find((o) => o.id === field.value) || null}
                       onChange={handleChange(field)}
@@ -411,18 +427,43 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
               </Grid>
             </Grid>
           </Grid>
-          <Grid size={3}>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ height: 40 }}
-              fullWidth
-              type="submit"
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              {formatMessage({ id: 'weighing_entry_form.submit_button' })}
-            </Button>
+          <Grid
+            size={3}
+            container
+            columns={3}
+            alignItems="center"
+            display="flex"
+            justifyContent="space-between"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Grid size={showDeleteButton ? 2 : 3}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ height: 40 }}
+                fullWidth
+                type="submit"
+                disabled={isLoading}
+                loading={isLoading}
+              >
+                {formatMessage({ id: 'weighing_entry_form.submit_button' })}
+              </Button>
+            </Grid>
+            {showDeleteButton ? (
+              <Grid size={1}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  sx={{ height: 40 }}
+                  fullWidth
+                  type="button"
+                  onClick={handleRemoveWeighingInProgress}
+                >
+                  {formatMessage({ id: 'weighing_entry_form.close_button' })}
+                </Button>
+              </Grid>
+            ) : null}
           </Grid>
           {apiError ? (
             <Grid size={12}>
