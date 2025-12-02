@@ -30,7 +30,6 @@ const waitForLoginRefresh = async () => {
 
   const { user, error } = getState().auth;
   if (!user.username || error) throw new Error('Not logged in');
-  // console.log({ user, error, token });
 };
 
 const loadTodaysWeighings = async () => {
@@ -59,12 +58,9 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     loader: async () => {
-      // console.log('Protected route loader: verifying authentication and loading resources');
       try {
         await waitForLoginRefresh();
-        // console.log('Protected route loader: verifyingAuthentication and resource loading successful');
       } catch {
-        // console.log('Protected route loader: verifyingAuthentication or resource loading failed, redirecting to login');
         return redirect('/login');
       }
 
@@ -90,12 +86,9 @@ const router = createBrowserRouter([
             path: 'weighing',
             element: <WeighingEntry />,
             loader: async () => {
-              // console.log('Weighing entry loader: verifying authentication');
               try {
                 await waitForLoginRefresh();
-                // console.log('Weighing entry loader: authentication verified');
               } catch {
-                // console.log('Weighing entry loader: authentication failed, redirecting to login');
                 return redirect('/login');
               }
 
