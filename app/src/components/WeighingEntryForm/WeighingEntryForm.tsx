@@ -74,7 +74,6 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
   const deliveryMachine = watch('deliveryMachine');
   const harvesterMachine = watch('harvesterMachine');
   const deliveredByHarvester = deliveryMachine === harvesterMachine;
-  console.log({ deliveryMachine, harvesterMachine, deliveredByHarvester });
 
   const onCalculateNetto = () => {
     const gross = getValues('weightGross') || 0;

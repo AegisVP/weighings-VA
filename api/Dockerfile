@@ -34,6 +34,7 @@ RUN npm run build
 
 ##### Stage 3: Production runtime
 FROM node:24-alpine
+USER node
 
 # Declare built-time ARG with a default
 ARG PORT=80
