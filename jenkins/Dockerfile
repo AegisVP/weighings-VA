@@ -34,7 +34,7 @@ RUN useradd -m -u 1000 jenkins && \
     groupadd -g ${DOCKER_GID} docker || groupmod -g ${DOCKER_GID} docker && \
     usermod -aG docker jenkins && \
     mkdir -p /usr/share/jenkins && \
-    curl -fsSL https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/2.536/jenkins-war-2.536.war -o /usr/share/jenkins/jenkins.war && \
+    curl -fsSL https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/2.539/jenkins-war-2.539.war -o /usr/share/jenkins/jenkins.war && \
     chmod 644 /usr/share/jenkins/jenkins.war
 
 # Set environment variables
@@ -54,4 +54,4 @@ EXPOSE 8080 50000
 USER jenkins
 
 # Start Jenkins
-ENTRYPOINT ["java", "-jar", "/usr/share/jenkins/jenkins.war"]
+ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-jar", "/usr/share/jenkins/jenkins.war"]
