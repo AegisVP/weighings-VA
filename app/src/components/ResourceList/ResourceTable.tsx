@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 import { Controller, useForm } from 'react-hook-form';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
@@ -29,45 +30,64 @@ import type { ColumnDef } from './ResourceList';
 import type { TypeApiError } from '../../redux/types';
 import type { AddResourcePayload, ModifyResourcePayload, ResourceDefKey } from '../../resources/resources';
 
-const renderInputField = <T,>(column: ColumnDef<T>, control: Control<FieldValues>, error: boolean = false) => {
-  return column.type === 'boolean' ? (
+const RenderInputField = <T,>({
+  column,
+  control,
+  error = false,
+}: {
+  column: ColumnDef<T>;
+  control: Control<FieldValues>;
+  error?: boolean;
+}) => {
+  const { formatMessage } = useIntl();
+
+  if (column.type === 'boolean') {
+    return (
+      <Controller
+        control={control}
+        name={String(column.id)}
+        render={({ field }) => (
+          <Checkbox {...field} checked={field.value} sx={{ marginLeft: 'auto', marginRight: 'auto' }} />
+        )}
+      />
+    );
+  }
+
+  if (column.type === 'singleSelect' && column.valueOptions) {
+    return (
+      <Controller
+        control={control}
+        name={String(column.id)}
+        render={({ field }) => (
+          <FormControl fullWidth sx={{ minWidth: 120 }} size="small" error={!!error}>
+            <InputLabel id={`select-${String(column.id)}`}>{formatMessage({ id: column.label.id })}</InputLabel>
+            <Select
+              {...field}
+              id={`select-${String(column.id)}`}
+              labelId={`select-${String(column.id)}`}
+              label={formatMessage({ id: column.label.id })}
+              error={!!error}
+              fullWidth
+              size="small"
+            >
+              {column.valueOptions!.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+      />
+    );
+  }
+  return (
     <Controller
       control={control}
       name={String(column.id)}
       render={({ field }) => (
-        <Checkbox {...field} checked={field.value} sx={{ marginLeft: 'auto', marginRight: 'auto' }} />
+        <TextField {...field} error={!!error} label={formatMessage({ id: column.label.id })} fullWidth size="small" />
       )}
-    />
-  ) : column.type === 'singleSelect' && column.valueOptions ? (
-    <Controller
-      control={control}
-      name={String(column.id)}
-      render={({ field }) => (
-        <FormControl fullWidth sx={{ minWidth: 120 }} size="small" error={!!error}>
-          <InputLabel id={`select-${String(column.id)}`}>{column.label}</InputLabel>
-          <Select
-            {...field}
-            id={`select-${String(column.id)}`}
-            labelId={`select-${String(column.id)}`}
-            label={column.label}
-            error={!!error}
-            fullWidth
-            size="small"
-          >
-            {column.valueOptions!.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
-    />
-  ) : (
-    <Controller
-      control={control}
-      name={String(column.id)}
-      render={({ field }) => <TextField {...field} error={!!error} label={column.label} fullWidth size="small" />}
     />
   );
 };
@@ -95,6 +115,7 @@ export const ResourceTable = <T extends { id: string }>({
   onDelete,
   onModify,
 }: ResourceTableProps<T>) => {
+  const { formatMessage } = useIntl();
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const defaultValues = columns.reduce<FieldValues>((acc, column) => {
@@ -145,7 +166,7 @@ export const ResourceTable = <T extends { id: string }>({
             <TableRow>
               {columns.map(({ id, label, width }: ColumnDef<T>) => (
                 <TableCell key={String(id) + label} width={`${width}%`}>
-                  {label}
+                  {formatMessage({ id: label.id })}
                 </TableCell>
               ))}
             </TableRow>
@@ -159,7 +180,7 @@ export const ResourceTable = <T extends { id: string }>({
                 <TableRow selected>
                   {columns.map((column) => (
                     <TableCell key={column.id as React.Key} sx={{ textAlign: 'center', borderBottom: '0' }}>
-                      {renderInputField<T>(column, control, !!addErrors[column.id as string])}
+                      <RenderInputField<T> column={column} control={control} error={!!addErrors[column.id as string]} />
                     </TableCell>
                   ))}
                   <TableCell sx={{ textAlign: 'center', borderBottom: '0' }}>
@@ -199,7 +220,9 @@ export const ResourceTable = <T extends { id: string }>({
                   onClick={handleToggleAdd}
                   endIcon={isAdding ? <CloseOutlinedIcon /> : <AddOutlinedIcon />}
                 >
-                  {isAdding ? 'Відмінити' : 'Додати'}
+                  {isAdding
+                    ? formatMessage({ id: 'settings_page.cancel_button' })
+                    : formatMessage({ id: 'settings_page.add_button' })}
                 </Button>
               </TableCell>
             </TableRow>

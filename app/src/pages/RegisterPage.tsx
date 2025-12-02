@@ -12,11 +12,13 @@ import { Loader } from '../components/Loader/Loader';
 import { loginUser, registerUser } from '../redux/user/userOperations';
 import { selectUserError, selectUserIsLoading } from '../redux/user/userSelectors';
 import { userRegisterRequestSchema } from '../schema/userSchema';
-import { resetError } from '../redux/user/userSlice';
 
 import type { TypeUserRegisterRequestBody } from '../schema/userSchema';
+import { useIntl } from 'react-intl';
+import { LanguageSelector } from '../components/LanguageSelector/LanguageSelector';
 
 export const RegisterPage = () => {
+  const { formatMessage } = useIntl();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const defaultValues = { name: '', username: '', password: '' };
@@ -42,7 +44,6 @@ export const RegisterPage = () => {
   };
 
   const onClickLogin = (): void => {
-    dispatch(resetError());
     navigate('/login');
   };
 
@@ -65,7 +66,7 @@ export const RegisterPage = () => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="ПІБ"
+              label={formatMessage({ id: 'auth_page.name' })}
               error={!!errors.name}
               helperText={errors.name?.message}
               autoComplete="name"
@@ -79,7 +80,7 @@ export const RegisterPage = () => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="Логін"
+              label={formatMessage({ id: 'auth_page.username' })}
               error={!!errors.username}
               helperText={errors.username?.message}
               autoComplete="username"
@@ -94,7 +95,7 @@ export const RegisterPage = () => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="Пароль"
+              label={formatMessage({ id: 'auth_page.password' })}
               type="password"
               autoComplete="current-password"
               error={!!errors.password}
@@ -107,11 +108,14 @@ export const RegisterPage = () => {
         {error ? <Alert severity="error">{error}</Alert> : null}
 
         <Button variant="contained" color="primary" type="submit" disabled={isLoading}>
-          {isLoading ? <Loader size="24px" /> : 'Зареєструватися'}
+          {isLoading ? <Loader size="24px" /> : formatMessage({ id: 'auth_page.register' })}
         </Button>
-        <Button variant="outlined" color="secondary" onClick={onClickLogin}>
-          {'Вже є обліковий запис?'}
-        </Button>
+        <Box display="flex" justifyContent="space-between" flexWrap="nowrap" gap={2}>
+          <Button variant="outlined" color="secondary" onClick={onClickLogin} sx={{ width: '100%' }}>
+            {formatMessage({ id: 'auth_page.already_have_account' })}
+          </Button>
+          <LanguageSelector color="primary" />
+        </Box>
       </Card>
     </Box>
   );

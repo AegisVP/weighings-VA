@@ -19,6 +19,7 @@ import {
 } from '../../redux/resources/resourcesSelectors';
 
 import type { Resolver, SubmitHandler } from 'react-hook-form';
+import { useIntl } from 'react-intl';
 
 const weighingInputSchema = z.object({
   deliveryMachine: z.uuid(),
@@ -40,6 +41,7 @@ type WeighingEntryFormProps = {
   onSubmit: SubmitHandler<TypeWeighingInput>;
 };
 export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryFormProps) => {
+  const { formatMessage } = useIntl();
   const {
     control,
     handleSubmit,
@@ -118,7 +120,12 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   value={crops.find((c) => c.id === field.value) || null}
                   onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                   renderInput={(params) => (
-                    <TextField {...params} label="Культура" error={!!errors.crop} helperText={errors.crop?.message} />
+                    <TextField
+                      {...params}
+                      label={formatMessage({ id: 'resource.crop.label' })}
+                      error={!!errors.crop}
+                      helperText={errors.crop?.message}
+                    />
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
@@ -139,7 +146,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Джерело"
+                      label={formatMessage({ id: 'resource.location.columns.source' })}
                       error={!!errors.sourceLocation}
                       helperText={errors.sourceLocation?.message}
                     />
@@ -163,7 +170,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Місце призначення"
+                      label={formatMessage({ id: 'resource.location.columns.destination' })}
                       error={!!errors.destinationLocation}
                       helperText={errors.destinationLocation?.message}
                     />
@@ -203,7 +210,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Привіз"
+                          label={formatMessage({ id: 'weighing_entry_form.delivery_machine' })}
                           error={!!errors.deliveryMachine}
                           helperText={errors.deliveryMachine?.message}
                         />
@@ -227,7 +234,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Водій"
+                          label={formatMessage({ id: 'weighing_entry_form.delivery_operator' })}
                           error={!!errors.deliveryOperator}
                           helperText={errors.deliveryOperator?.message}
                         />
@@ -268,7 +275,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Зібрав"
+                          label={formatMessage({ id: 'weighing_entry_form.harvest_machine' })}
                           error={!!errors.harvesterMachine}
                           helperText={errors.harvesterMachine?.message}
                         />
@@ -292,7 +299,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Комбайнер"
+                          label={formatMessage({ id: 'weighing_entry_form.harvest_operator' })}
                           error={!!errors.harvesterOperator}
                           helperText={errors.harvesterOperator?.message}
                         />
@@ -314,7 +321,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Вага (брутто)"
+                      label={formatMessage({ id: 'weighing_entry_form.weight.brutto' })}
                       size="small"
                       type="number"
                       error={!!errors.weightGross}
@@ -333,7 +340,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Вага (тара)"
+                      label={formatMessage({ id: 'weighing_entry_form.weight.tare' })}
                       size="small"
                       type="number"
                       error={!!errors.weightTare}
@@ -352,7 +359,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Вага (нетто)"
+                      label={formatMessage({ id: 'weighing_entry_form.weight.netto' })}
                       size="small"
                       type="number"
                       error={!!errors.weightNetto}
@@ -367,7 +374,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
           </Grid>
           <Grid size={3}>
             <Button variant="contained" color="primary" sx={{ mb: 2, height: 40 }} fullWidth type="submit">
-              Зберегти
+              {formatMessage({ id: 'weighing_entry_form.submit_button' })}
             </Button>
           </Grid>
         </Grid>

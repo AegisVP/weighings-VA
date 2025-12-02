@@ -4,7 +4,7 @@ import { locationSchema } from '../../../api/src/schema/locationSchema';
 import { machineSchema } from '../../../api/src/schema/machineSchema';
 import { operatorSchema } from '../../../api/src/schema/operatorSchema';
 import { featureSchema } from '../../../api/src/schema/featureSchema';
-import { userSchema } from '../schema/userSchema';
+import { userLocale, userSchema } from '../schema/userSchema';
 import { weighingSchema } from '../schema/weighingSchema';
 
 export type TypeDefaultTimestamps = {
@@ -13,6 +13,8 @@ export type TypeDefaultTimestamps = {
   deletedAt?: string;
   syncedAt?: string;
 };
+
+export type TypeUserLocale = z.infer<typeof userLocale>;
 
 export type TypeApiError = string;
 export type TypeCropSchema = Omit<z.infer<typeof cropSchema>, keyof TypeDefaultTimestamps> & TypeDefaultTimestamps;

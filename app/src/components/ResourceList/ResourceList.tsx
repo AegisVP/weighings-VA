@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 
 import { useAppSelector } from '../../redux/hooks';
 import { ResourceTable } from './ResourceTable';
 
+import type { MessageDescriptor } from 'react-intl';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import type { ResourceDef, TypeAllResourceDefs } from '../../resources/resources';
 
@@ -21,7 +23,7 @@ export type RendererProps<T> = {
 };
 export type ColumnDef<T> = {
   id: Extract<keyof T, string>;
-  label: string;
+  label: MessageDescriptor;
   width?: number;
   renderer?: RendererDef<T>;
   type?: 'text' | 'boolean' | 'singleSelect';
@@ -33,6 +35,7 @@ export const ResourceList = <T extends Pick<TypeAllResourceDefs['schemaType'], '
 }: {
   config: ResourceDef<T>;
 }) => {
+  const { formatMessage } = useIntl();
   const { items, count, isLoading, error } = useAppSelector((state) => config.selector(state));
 
   useEffect(() => {
@@ -46,7 +49,7 @@ export const ResourceList = <T extends Pick<TypeAllResourceDefs['schemaType'], '
   return (
     <Grid key={config.key} size={config.cardSize}>
       <ResourceTable<T>
-        title={config.label}
+        title={formatMessage(config.label)}
         type={config.key}
         entries={items.filter((item) => !item.deletedAt)}
         count={count}

@@ -22,18 +22,18 @@ export const triggerSync = tryCatchWrapper(async (_, res: Response) => {
 export const stopSync = tryCatchWrapper(async (_, res: Response) => {
   await syncRunner.stop();
 
-  return res.status(200).json({
+  return res.status(202).json({
     success: true,
-    message: 'Synchronization stopped successfully',
+    message: 'Command accepted. Check status for current state.',
   });
 });
 
 export const startSync = tryCatchWrapper(async (_, res: Response) => {
   await syncRunner.start();
 
-  return res.status(200).json({
+  return res.status(202).json({
     success: true,
-    message: 'Synchronization started successfully',
+    message: 'Command accepted. Check status for current state.',
   });
 });
 

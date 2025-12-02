@@ -16,30 +16,34 @@ type TypeWeighingSearch = Partial<
 >;
 export type TypeWeighingApiResponse = z.infer<typeof weighingApiResponseSchema>;
 
-export const addWeighing = createAsyncThunk<TypeWeighingSchema, TypeAddPayload<TypeWeighingSchema>, TypeThunkApiConfig>(
-  'weighings/add',
-  async (weighing, { rejectWithValue, getState }) => {
-    try {
-      const user = getState().auth.user;
-      const weighingData = {
-        source: weighing.sourceLocation,
-        destination: weighing.destinationLocation,
-        auto: weighing.deliveryMachine,
-        driver: weighing.deliveryOperator,
-        harvester: weighing.harvesterMachine,
-        operator: weighing.harvesterOperator,
-        crop: weighing.crop,
-        weight: weighing.weightNetto,
-        createdBy: user.username,
-      };
+export const addWeighing = createAsyncThunk<
+  TypeWeighingSchema,
+  TypeAddPayload<TypeWeighingSchema> & { createdBy: string },
+  TypeThunkApiConfig
+>('weighings/add', async (weighing, { rejectWithValue }) => {
+  try {
+    // const user = getState().auth.user;
+    const weighingData = {
+      source: weighing.sourceLocation,
+      destination: weighing.destinationLocation,
+      auto: weighing.deliveryMachine,
+      driver: weighing.deliveryOperator,
+      harvester: weighing.harvesterMachine,
+      operator: weighing.harvesterOperator,
+      crop: weighing.crop,
+      weight: weighing.weightNetto,
+      // createdAt: weighing.dateTime,
+      // updatedAt: weighing.dateTime,
+      // createdBy: user.username,
+      createdBy: weighing.createdBy,
+    };
 
-      await axios.post('/weighings', weighingData);
-      return weighing;
-    } catch (err) {
-      return rejectWithValue(handleError(err));
-    }
+    await axios.post('/weighings', weighingData);
+    return weighing;
+  } catch (err) {
+    return rejectWithValue(handleError(err));
   }
-);
+});
 
 export const searchWeighing = createAsyncThunk<TypeWeighingSchema[], TypeWeighingSearch, TypeThunkApiConfig>(
   'weighings/search',

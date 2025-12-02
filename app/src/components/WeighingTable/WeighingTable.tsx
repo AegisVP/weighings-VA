@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,6 +9,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Typography from '@mui/material/Typography';
+
+import { constants } from '../../constants/constants';
+import { useAppSelector } from '../../redux/hooks';
+import { selectUserLocale } from '../../redux/user/userSelectors';
 
 import type { TypeWeighingSchema } from '../../redux/types';
 
@@ -31,6 +36,8 @@ export const WeighingTable = ({
   showCrop = false,
   getCropName,
 }: WeighingTableProps) => {
+  const locale = useAppSelector(selectUserLocale);
+  const { formatMessage } = useIntl();
   const [sortField, setSortField] = useState<SortField>('dateTime');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
@@ -72,7 +79,7 @@ export const WeighingTable = ({
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleString('uk-UA', {
+    return date.toLocaleString(constants.localeLang[locale], {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -92,7 +99,7 @@ export const WeighingTable = ({
                 direction={sortField === 'dateTime' ? sortOrder : 'asc'}
                 onClick={() => handleSort('dateTime')}
               >
-                Дата та час
+                {formatMessage({ id: 'weighing_entry.table.headers.date' })}
               </TableSortLabel>
             </TableCell>
             {showCrop && getCropName && (
@@ -102,7 +109,7 @@ export const WeighingTable = ({
                   direction={sortField === 'crop' ? sortOrder : 'asc'}
                   onClick={() => handleSort('crop')}
                 >
-                  Культура
+                  {formatMessage({ id: 'weighing_entry.table.headers.crop' })}
                 </TableSortLabel>
               </TableCell>
             )}
@@ -112,7 +119,7 @@ export const WeighingTable = ({
                 direction={sortField === 'sourceLocation' ? sortOrder : 'asc'}
                 onClick={() => handleSort('sourceLocation')}
               >
-                Джерело
+                {formatMessage({ id: 'weighing_entry.table.headers.source' })}
               </TableSortLabel>
             </TableCell>
             <TableCell>
@@ -121,7 +128,7 @@ export const WeighingTable = ({
                 direction={sortField === 'destinationLocation' ? sortOrder : 'asc'}
                 onClick={() => handleSort('destinationLocation')}
               >
-                Призначення
+                {formatMessage({ id: 'weighing_entry.table.headers.destination' })}
               </TableSortLabel>
             </TableCell>
             <TableCell>
@@ -130,7 +137,7 @@ export const WeighingTable = ({
                 direction={sortField === 'deliveryOperator' ? sortOrder : 'asc'}
                 onClick={() => handleSort('deliveryOperator')}
               >
-                Водій
+                {formatMessage({ id: 'weighing_entry.table.headers.driver' })}
               </TableSortLabel>
             </TableCell>
             <TableCell>
@@ -139,7 +146,7 @@ export const WeighingTable = ({
                 direction={sortField === 'harvesterOperator' ? sortOrder : 'asc'}
                 onClick={() => handleSort('harvesterOperator')}
               >
-                Комбайнер
+                {formatMessage({ id: 'weighing_entry.table.headers.harvester' })}
               </TableSortLabel>
             </TableCell>
             <TableCell align="right">
@@ -148,7 +155,7 @@ export const WeighingTable = ({
                 direction={sortField === 'weightNetto' ? sortOrder : 'asc'}
                 onClick={() => handleSort('weightNetto')}
               >
-                Вага (кг)
+                {formatMessage({ id: 'weighing_entry.table.headers.weight' })}
               </TableSortLabel>
             </TableCell>
           </TableRow>
@@ -173,7 +180,7 @@ export const WeighingTable = ({
                 <TableCell>{`${getOperatorName(weighing.harvesterOperator)} (${getMachineDescription(
                   weighing.harvesterMachine
                 )})`}</TableCell>
-                <TableCell align="right">{weighing.weightNetto.toLocaleString('uk-UA')}</TableCell>
+                <TableCell align="right">{weighing.weightNetto.toLocaleString(constants.localeLang[locale])}</TableCell>
               </TableRow>
             ))
           )}

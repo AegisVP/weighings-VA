@@ -20,6 +20,7 @@ import type { TypeFeatureSchema } from '../types';
 export type TypeUserReduxState = TypeDefaultLoadingTypes & {
   isLoggedIn: boolean;
   isRefreshing: boolean;
+  locale: 'en' | 'ua';
   user: {
     name: string;
     username: string;
@@ -31,8 +32,9 @@ export const initialState: TypeUserReduxState = {
   ...defaultLoadingTypes,
   isLoggedIn: false,
   isRefreshing: false,
+  locale: 'en',
   token: '',
-  refreshToken: '',
+  // refreshToken: '',
   user: {
     name: '',
     username: '',
@@ -44,7 +46,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    resetError: (state: TypeUserReduxState) => ({ ...state, error: undefined }),
+    setLocale: (state: TypeUserReduxState, action: { payload: 'en' | 'ua' }) => ({ ...state, locale: action.payload }),
   },
   extraReducers: (builder) => {
     builder
@@ -53,9 +55,9 @@ const userSlice = createSlice({
       .addCase(logoutUser.fulfilled, () => initialState)
       .addCase(refreshUser.fulfilled, handleRefreshUser)
       .addCase(refreshUser.rejected, () => initialState)
-      .addMatcher((action) => action.type.endsWith('/pending'), handlePending)
-      .addMatcher((action) => action.type.endsWith('/fulfilled'), handleFulfill)
-      .addMatcher((action) => action.type.endsWith('/rejected'), handleReject);
+      .addMatcher(({ type }) => type.startsWith('user/') && type.endsWith('/pending'), handlePending)
+      .addMatcher(({ type }) => type.startsWith('user/') && type.endsWith('/fulfilled'), handleFulfill)
+      .addMatcher(({ type }) => type.startsWith('user/') && type.endsWith('/rejected'), handleReject);
   },
 });
 
@@ -72,6 +74,6 @@ export const userHasAnyFeature = (features: string[], state?: TypeRootReduxState
   return features.some((feature) => userHasFeature(feature, currentState));
 };
 
-export const { resetError } = userSlice.actions;
+export const { setLocale } = userSlice.actions;
 
 export default userSlice.reducer;

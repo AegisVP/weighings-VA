@@ -25,10 +25,12 @@ const { getState, dispatch } = store;
 const waitForLoginRefresh = async () => {
   await waitForRehydration(persistor);
 
-  const token = getState().auth.token;
-  if (token) {
-    await dispatch(refreshUser());
-  }
+  const { isLoggedIn, token } = getState().auth;
+  if (!isLoggedIn && token) await dispatch(refreshUser());
+
+  const { user, error } = getState().auth;
+  if (!user.username || error) throw new Error('Not logged in');
+  // console.log({ user, error, token });
 };
 
 const loadTodaysWeighings = async () => {
@@ -57,7 +59,14 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     loader: async () => {
-      await waitForLoginRefresh();
+      // console.log('Protected route loader: verifying authentication and loading resources');
+      try {
+        await waitForLoginRefresh();
+        // console.log('Protected route loader: verifyingAuthentication and resource loading successful');
+      } catch {
+        // console.log('Protected route loader: verifyingAuthentication or resource loading failed, redirecting to login');
+        return redirect('/login');
+      }
 
       await Promise.all([
         dispatch(loadCrop()),
@@ -81,7 +90,14 @@ const router = createBrowserRouter([
             path: 'weighing',
             element: <WeighingEntry />,
             loader: async () => {
-              await waitForLoginRefresh();
+              // console.log('Weighing entry loader: verifying authentication');
+              try {
+                await waitForLoginRefresh();
+                // console.log('Weighing entry loader: authentication verified');
+              } catch {
+                // console.log('Weighing entry loader: authentication failed, redirecting to login');
+                return redirect('/login');
+              }
 
               if (!userHasFeature(menuLinks.weighing.feature, getState())) return redirect('/');
 
@@ -93,7 +109,11 @@ const router = createBrowserRouter([
             path: 'reporting',
             element: <AnalyzePage />,
             loader: async () => {
-              await waitForLoginRefresh();
+              try {
+                await waitForLoginRefresh();
+              } catch {
+                return redirect('/login');
+              }
 
               if (!userHasFeature(menuLinks.reporting.feature, getState())) return redirect('/');
 
@@ -105,7 +125,11 @@ const router = createBrowserRouter([
             path: 'settings',
             element: <SettingsPage />,
             loader: async () => {
-              await waitForLoginRefresh();
+              try {
+                await waitForLoginRefresh();
+              } catch {
+                return redirect('/login');
+              }
 
               if (!userHasFeature(menuLinks.settings.feature, getState())) return redirect('/');
               return null;

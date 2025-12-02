@@ -2,9 +2,12 @@ import { z } from 'zod';
 import { featureSchema } from '../../../api/src/schema/featureSchema';
 import type { TypeUserReduxState } from '../redux/user/userSlice';
 
+export const userLocale = z.enum(['en', 'ua']);
+
 export const userSchema = z.object({
   name: z.string(),
   username: z.string(),
+  locale: userLocale,
   features: z.array(featureSchema),
 });
 
@@ -15,11 +18,12 @@ export const userLoginRequestSchema = z.object({
 });
 export const userLoginResponseSchema = z.strictObject({
   token: z.jwt(),
-  refreshToken: z.jwt(),
+  // refreshToken: z.jwt(),
 });
 export type TypeUserLoginRequestBody = z.infer<typeof userLoginRequestSchema>;
 export type TypeUserLoginResponsePayload = z.infer<typeof userLoginResponseSchema>;
-export type TypeUserLoginAction = Pick<TypeUserReduxState, 'refreshToken' | 'token'>;
+// export type TypeUserLoginAction = Pick<TypeUserReduxState, 'refreshToken' | 'token'>;
+export type TypeUserLoginAction = Pick<TypeUserReduxState, 'token'>;
 
 // #########  USER REGISTER SCHEMAS  #########
 export const userRegisterRequestSchema = userLoginRequestSchema.extend({
@@ -27,11 +31,12 @@ export const userRegisterRequestSchema = userLoginRequestSchema.extend({
 });
 export const userRegisterResponseSchema = z.strictObject({
   token: z.jwt(),
-  refreshToken: z.jwt(),
+  // refreshToken: z.jwt(),
 });
 export type TypeUserRegisterRequestBody = z.infer<typeof userRegisterRequestSchema>;
 export type TypeUserRegisterResponsePayload = z.infer<typeof userRegisterResponseSchema>;
-export type TypeUserRegisterAction = Pick<TypeUserReduxState, 'refreshToken' | 'token'>;
+// export type TypeUserRegisterAction = Pick<TypeUserReduxState, 'refreshToken' | 'token'>;
+export type TypeUserRegisterAction = Pick<TypeUserReduxState, 'token'>;
 
 // #########  USER REFRESH SCHEMAS  #########
 export const userRefreshResponseSchema = z.strictObject({

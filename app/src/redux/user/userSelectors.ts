@@ -21,3 +21,5 @@ export const selectUserIsRefreshing = (store: TypeRootReduxState) => {
   const token = selectUserToken(store);
   return !!token && !name;
 };
+
+export const selectUserLocale = (store: TypeRootReduxState) => store.auth.locale;

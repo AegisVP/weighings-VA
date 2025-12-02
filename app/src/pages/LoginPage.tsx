@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { useIntl } from 'react-intl';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
@@ -7,16 +8,17 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Loader } from '../components/Loader/Loader';
+import { LanguageSelector } from '../components/LanguageSelector/LanguageSelector';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { loginUser } from '../redux/user/userOperations';
 import { selectUserError, selectUserIsLoading } from '../redux/user/userSelectors';
 import { userLoginRequestSchema } from '../schema/userSchema';
-import { resetError } from '../redux/user/userSlice';
 
 import type { TypeUserLoginRequestBody } from '../schema/userSchema';
 
 export const LoginPage = () => {
+  const { formatMessage } = useIntl();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const defaultValues = { username: '', password: '' };
@@ -40,7 +42,6 @@ export const LoginPage = () => {
   };
 
   const onRegisterClick = (): void => {
-    dispatch(resetError());
     navigate('/register');
   };
 
@@ -63,7 +64,7 @@ export const LoginPage = () => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="Логін"
+              label={formatMessage({ id: 'auth_page.username' })}
               error={!!errors.username}
               helperText={errors.username?.message}
               autoComplete="username"
@@ -78,7 +79,7 @@ export const LoginPage = () => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="Пароль"
+              label={formatMessage({ id: 'auth_page.password' })}
               type="password"
               autoComplete="current-password"
               error={!!errors.password}
@@ -91,11 +92,14 @@ export const LoginPage = () => {
         {error ? <Alert severity="error">{error}</Alert> : null}
 
         <Button variant="contained" color="primary" type="submit" disabled={isLoading}>
-          {isLoading ? <Loader size="24px" /> : 'Увійти'}
+          {isLoading ? <Loader size="24px" /> : formatMessage({ id: 'auth_page.login' })}
         </Button>
-        <Button variant="outlined" color="secondary" onClick={onRegisterClick}>
-          {'Створити обліковий запис'}
-        </Button>
+        <Box display="flex" justifyContent="space-between" flexWrap="nowrap" gap={2}>
+          <Button variant="outlined" color="secondary" onClick={onRegisterClick} sx={{ width: '100%' }}>
+            {formatMessage({ id: 'auth_page.dont_have_account' })}
+          </Button>
+          <LanguageSelector color="primary" />
+        </Box>
       </Card>
     </Box>
   );

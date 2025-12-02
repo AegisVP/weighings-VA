@@ -131,8 +131,8 @@ syncRouter.post('/start', triggerSync);
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200:
- *         description: Sync runner stopped successfully
+ *       202:
+ *         description: Command accepted and is processing
  *         content:
  *           application/json:
  *             schema:
@@ -143,7 +143,7 @@ syncRouter.post('/start', triggerSync);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Synchronization stopped successfully
+ *                   example: Command accepted. Check status for current state
  *       500:
  *         description: Failed to stop sync runner
  *         content:
@@ -166,8 +166,8 @@ syncRouter.post('/disable', stopSync);
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200:
- *         description: Sync runner started successfully
+ *       202:
+ *         description: Command accepted and is processing
  *         content:
  *           application/json:
  *             schema:
@@ -178,7 +178,7 @@ syncRouter.post('/disable', stopSync);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Synchronization started successfully
+ *                   example: Command accepted. Check status for current state
  *       500:
  *         description: Failed to start sync runner
  *         content:

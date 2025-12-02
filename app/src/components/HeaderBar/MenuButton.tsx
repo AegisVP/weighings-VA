@@ -1,5 +1,8 @@
 import { NavLink } from 'react-router';
+import { useIntl } from 'react-intl';
+
 import { userHasFeature } from '../../redux/user/userSlice';
+
 import type { TypeMenuItemDefinition } from '../../router/sections';
 
 type MenuButtonProps = {
@@ -12,12 +15,14 @@ export const MenuButtonWithFeatureCheck = ({ page, handleMenuNavigation, childre
     <MenuButton page={page} handleMenuNavigation={handleMenuNavigation} children={children} />
   ) : null;
 
-export const MenuButton = ({ page, handleMenuNavigation, children }: MenuButtonProps) =>
-  children ? (
+export const MenuButton = ({ page, handleMenuNavigation, children }: MenuButtonProps) => {
+  const { formatMessage } = useIntl();
+
+  return children ? (
     children
   ) : (
     <NavLink
-      key={page.name}
+      key={page.name.id}
       to={page.link ?? '#'}
       onClick={handleMenuNavigation(page)}
       style={({ isActive }) => ({
@@ -32,6 +37,7 @@ export const MenuButton = ({ page, handleMenuNavigation, children }: MenuButtonP
         boxShadow: isActive ? 'inset 0 -2px 0 0 white' : 'none',
       })}
     >
-      {page.name}
+      {formatMessage(page.name)}
     </NavLink>
   );
+};

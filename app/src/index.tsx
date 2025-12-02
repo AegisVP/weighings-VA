@@ -10,17 +10,21 @@ import '@fontsource/roboto/700.css';
 import './index.css';
 
 import { store } from './redux/store';
-import Router from './router/router.tsx';
+import { App } from './App';
 
 const containerElement = document.getElementById('root-page');
 if (!containerElement) {
   throw new Error('Root container missing in index.html');
 }
 
-createRoot(containerElement).render(
-  <StrictMode>
-    <Provider store={store}>
-      <Router />
-    </Provider>
-  </StrictMode>
-);
+export const Root = () => {
+  return (
+    <StrictMode>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </StrictMode>
+  );
+};
+
+createRoot(containerElement).render(<Root />);

@@ -15,6 +15,7 @@ import { addWeighing } from '../redux/weighings/weighingsOperations';
 
 import type { SubmitHandler } from 'react-hook-form';
 import type { TypeWeighingInput } from '../components/WeighingEntryForm/WeighingEntryForm';
+import { useIntl } from 'react-intl';
 
 const defaultValues: TypeWeighingInput = {
   deliveryMachine: '',
@@ -31,6 +32,8 @@ const defaultValues: TypeWeighingInput = {
 };
 
 export const WeighingEntry = () => {
+  const { formatMessage } = useIntl();
+  const { username } = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
   const [weighingsInProgress, setWeighingsInProgress] = useState<{ id: number }[]>([]);
   const weighings = useAppSelector(selectWeighings);
@@ -52,14 +55,18 @@ export const WeighingEntry = () => {
     setWeighingsInProgress((wipList) => [...wipList, newWip]);
   };
 
-  const onSubmit: SubmitHandler<TypeWeighingInput> = (data) => {
+  const onSubmit: SubmitHandler<TypeWeighingInput> = async (data) => {
     defaultValues.sourceLocation = data.sourceLocation;
     defaultValues.destinationLocation = data.destinationLocation;
     defaultValues.crop = data.crop;
 
-    setWeighingsInProgress((wipList) => wipList.filter((wip) => wip.id !== new Date(data.dateTime).getTime()));
-
-    dispatch(addWeighing({ ...data }));
+    try {
+      const res = await dispatch(addWeighing({ ...data, createdBy: username })).unwrap();
+      setWeighingsInProgress((wipList) => wipList.filter((wip) => wip.id !== new Date(data.dateTime).getTime()));
+      console.log({ res });
+    } catch (error) {
+      console.error('Error adding weighing:', error);
+    }
   };
 
   return (
@@ -76,7 +83,7 @@ export const WeighingEntry = () => {
           <Grid container spacing={2}>
             <Grid size={{ xs: 6, md: 9 }}>
               <Typography variant="h6" whiteSpace="nowrap">
-                Зважувань сьогодні ({sortedWeighings.length})
+                {formatMessage({ id: 'weighing_entry.recent_weighings' }, { count: sortedWeighings.length })}
               </Typography>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
@@ -87,7 +94,7 @@ export const WeighingEntry = () => {
                 fullWidth
                 onClick={() => newWeighing()}
               >
-                Нове зважування
+                {formatMessage({ id: 'weighing_entry.new_weighing' })}
               </Button>
             </Grid>
           </Grid>

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type Draft } from '@reduxjs/toolkit';
 
 import { addWeighing, searchWeighing } from './weighingsOperations';
 import {
@@ -14,13 +14,15 @@ import type { TypeWeighingSchema } from '../types';
 export type TypeWeighingReduxState = {
   isLoading: boolean;
   error?: string;
-  items: TypeWeighingSchema[];
+  history: TypeWeighingSchema[];
+  inProgress: Draft<TypeWeighingSchema>[];
 };
 
 export const initialState: TypeWeighingReduxState = {
   isLoading: false,
   error: undefined,
-  items: [],
+  history: [],
+  inProgress: [],
 };
 
 const weighingsSlice = createSlice({
@@ -31,9 +33,9 @@ const weighingsSlice = createSlice({
     builder
       .addCase(addWeighing.fulfilled, handleAddWeighing)
       .addCase(searchWeighing.fulfilled, handleSearchWeighing)
-      .addMatcher((action) => action.type.endsWith('/pending'), handlePending)
-      .addMatcher((action) => action.type.endsWith('/fulfilled'), handleFulfill)
-      .addMatcher((action) => action.type.endsWith('/rejected'), handleReject);
+      .addMatcher(({ type }) => type.startsWith('weighings/') && type.endsWith('/pending'), handlePending)
+      .addMatcher(({ type }) => type.startsWith('weighings/') && type.endsWith('/fulfilled'), handleFulfill)
+      .addMatcher(({ type }) => type.startsWith('weighings/') && type.endsWith('/rejected'), handleReject);
   },
 });
 
