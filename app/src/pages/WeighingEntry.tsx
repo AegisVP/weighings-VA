@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -9,33 +9,17 @@ import Box from '@mui/material/Box';
 import { WeighingEntryForm } from '../components/WeighingEntryForm/WeighingEntryForm';
 import { WeighingTable } from '../components/WeighingTable/WeighingTable';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { selectWeighings } from '../redux/weighings/weighingsSelectors';
 import { selectCrops, selectLocations, selectMachines, selectOperators } from '../redux/resources/resourcesSelectors';
-import { addWeighing } from '../redux/weighings/weighingsOperations';
+import { selectWeighings, selectWeighingsInProgress } from '../redux/weighings/weighingsSelectors';
+import { newWeighingInProgress } from '../redux/weighings/weighingsSlice';
+import { defaultValues } from '../redux/weighings/weighingsOperations';
 
-import type { SubmitHandler } from 'react-hook-form';
 import type { TypeWeighingInput } from '../components/WeighingEntryForm/WeighingEntryForm';
-import { useIntl } from 'react-intl';
-
-const defaultValues: TypeWeighingInput = {
-  deliveryMachine: '',
-  deliveryOperator: '',
-  harvesterMachine: '',
-  harvesterOperator: '',
-  sourceLocation: '',
-  destinationLocation: '',
-  crop: '',
-  weightGross: 0,
-  weightTare: 0,
-  weightNetto: 0,
-  dateTime: new Date().toISOString(),
-};
 
 export const WeighingEntry = () => {
   const { formatMessage } = useIntl();
-  const { username } = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
-  const [weighingsInProgress, setWeighingsInProgress] = useState<{ id: number }[]>([]);
+  const weighingsInProgress = useAppSelector(selectWeighingsInProgress);
   const weighings = useAppSelector(selectWeighings);
   const sortedWeighings = [...weighings].sort(
     (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
@@ -50,32 +34,22 @@ export const WeighingEntry = () => {
   const getOperatorName = (id: string) => operators.find((o) => o.id === id)?.name || id;
   const getMachineDescription = (id: string) => machines.find((m) => m.id === id)?.description || id;
 
-  const newWeighing = () => {
-    const newWip = { id: Date.now() };
-    setWeighingsInProgress((wipList) => [...wipList, newWip]);
-  };
+  const newWeighing = () => dispatch(newWeighingInProgress(new Date().toISOString()));
 
-  const onSubmit: SubmitHandler<TypeWeighingInput> = async (data) => {
+  const setDefaultValues = (data: TypeWeighingInput) => {
     defaultValues.sourceLocation = data.sourceLocation;
     defaultValues.destinationLocation = data.destinationLocation;
     defaultValues.crop = data.crop;
-
-    try {
-      const res = await dispatch(addWeighing({ ...data, createdBy: username })).unwrap();
-      setWeighingsInProgress((wipList) => wipList.filter((wip) => wip.id !== new Date(data.dateTime).getTime()));
-      console.log({ res });
-    } catch (error) {
-      console.error('Error adding weighing:', error);
-    }
   };
 
   return (
     <Grid container spacing={2} padding={2}>
       {weighingsInProgress.map((wip) => (
         <WeighingEntryForm
-          key={wip.id}
-          defaultValues={{ ...defaultValues, dateTime: new Date(wip.id).toISOString() }}
-          onSubmit={onSubmit}
+          key={wip.dateTime}
+          dateTime={wip.dateTime}
+          defaultValues={wip}
+          setDefaultValues={setDefaultValues}
         />
       ))}
       <Card sx={{ width: '100%' }}>
@@ -92,7 +66,7 @@ export const WeighingEntry = () => {
                 color="primary"
                 sx={{ height: 40, whiteSpace: 'nowrap' }}
                 fullWidth
-                onClick={() => newWeighing()}
+                onClick={newWeighing}
               >
                 {formatMessage({ id: 'weighing_entry.new_weighing' })}
               </Button>

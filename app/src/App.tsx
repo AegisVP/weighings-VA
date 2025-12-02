@@ -16,7 +16,7 @@ export const App = () => {
   const locale = useAppSelector(selectUserLocale);
   return (
     <IntlProvider locale={locale} messages={translations[locale]}>
-      <Router />;
+      <Router />
     </IntlProvider>
   );
 };

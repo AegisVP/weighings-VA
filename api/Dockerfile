@@ -38,8 +38,8 @@ RUN npm run build
 FROM node:24-alpine
 
 # Declare built-time ARG with a default
-ARG API_PORT=80
-ENV API_PORT=${API_PORT}
+ARG PORT=80
+ENV PORT=${PORT}
 
 # Copy built frontend assets to public directory
 WORKDIR /
@@ -55,7 +55,7 @@ RUN npm install --omit=dev
 COPY --from=api-builder /build/dist ./
 
 # Expose the port your app runs on
-EXPOSE ${API_PORT}
+EXPOSE ${PORT}
 
 # Start the Node.js server
 WORKDIR /app

@@ -43,7 +43,9 @@ export const MainMenuPage = () => {
 
         {/* Getting Started Guide */}
         <Card sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h5" gutterBottom color="primary" sx={{ fontWeight: 'medium', mb: 2 }}></Typography>
+          <Typography variant="h5" gutterBottom color="primary" sx={{ fontWeight: 'medium', mb: 2 }}>
+            {formatMessage({ id: 'main_page.getting_started_guide' })}
+          </Typography>
 
           <List>
             <ListItem sx={{ alignItems: 'flex-start', mb: 1 }}>

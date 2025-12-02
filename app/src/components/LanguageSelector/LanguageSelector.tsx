@@ -27,12 +27,8 @@ export const LanguageSelector = ({ color = 'white' }: { color?: string }) => {
         sx={{ color, fontWeight: 'bold' }}
         IconComponent={() => null}
       >
-        <MenuItem value="en" selected={locale === 'en'} onClick={() => dispatch(setLocale('en'))}>
-          EN
-        </MenuItem>
-        <MenuItem value="ua" selected={locale === 'ua'} onClick={() => dispatch(setLocale('ua'))}>
-          UA
-        </MenuItem>
+        <MenuItem value="en">EN</MenuItem>
+        <MenuItem value="ua">UA</MenuItem>
       </Select>
     </FormControl>
   );

@@ -1,25 +1,30 @@
 import z from 'zod';
-import { useEffect } from 'react';
-import type { FocusEvent } from 'react';
+import { useIntl } from 'react-intl';
+import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import Typography from '@mui/material/Typography';
 
-import { useAppSelector } from '../../redux/hooks';
+import { handleError } from '../../utils/handleError';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   selectCrops,
   selectLocations,
   selectMachines,
   selectOperators,
 } from '../../redux/resources/resourcesSelectors';
+import { selectUserInfo } from '../../redux/user/userSelectors';
+import { addWeighing } from '../../redux/weighings/weighingsOperations';
+import { editWeighingInProgress, removeWeighingInProgress } from '../../redux/weighings/weighingsSlice';
 
-import type { Resolver, SubmitHandler } from 'react-hook-form';
-import { useIntl } from 'react-intl';
+import type { FocusEvent } from 'react';
+import type { ControllerRenderProps, Resolver, SubmitHandler } from 'react-hook-form';
 
 const weighingInputSchema = z.object({
   deliveryMachine: z.uuid(),
@@ -37,11 +42,15 @@ const weighingInputSchema = z.object({
 export type TypeWeighingInput = z.infer<typeof weighingInputSchema>;
 
 type WeighingEntryFormProps = {
-  defaultValues?: TypeWeighingInput;
-  onSubmit: SubmitHandler<TypeWeighingInput>;
+  dateTime: string;
+  defaultValues: TypeWeighingInput;
+  setDefaultValues: (data: TypeWeighingInput) => void;
 };
-export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryFormProps) => {
+export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }: WeighingEntryFormProps) => {
   const { formatMessage } = useIntl();
+  const dispatch = useAppDispatch();
+  const [apiError, setApiError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
     control,
     handleSubmit,
@@ -53,8 +62,9 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
     formState: { errors },
   } = useForm<TypeWeighingInput>({
     resolver: zodResolver(weighingInputSchema) as unknown as Resolver<TypeWeighingInput>,
-    defaultValues,
+    defaultValues: { ...defaultValues, dateTime },
   });
+  const { username } = useAppSelector(selectUserInfo);
 
   const onCalculateNetto = () => {
     const gross = getValues('weightGross') || 0;
@@ -62,6 +72,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
     const netto = gross - tare >= 0 ? gross - tare : 0;
 
     setValue('weightNetto', netto);
+    dispatch(editWeighingInProgress({ ...getValues(), weightNetto: netto, weightGross: gross, weightTare: tare }));
 
     if (netto <= 0) {
       setError('weightNetto', { type: 'manual', message: 'Перевірте брутто та тару' });
@@ -69,6 +80,34 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
       clearErrors(['weightNetto']);
     }
   };
+
+  const onSubmit: SubmitHandler<TypeWeighingInput> = async (data) => {
+    setApiError('');
+    setIsLoading(true);
+    setDefaultValues(data);
+
+    try {
+      await dispatch(addWeighing({ ...data, createdBy: username })).unwrap();
+      dispatch(removeWeighingInProgress(dateTime));
+    } catch (error) {
+      setApiError(handleError(error));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChange =
+    (field: ControllerRenderProps<TypeWeighingInput>) =>
+    async (_: React.SyntheticEvent, value: Record<string, string | boolean | number> | null): Promise<void> => {
+      const valueStr = value ? value.id : '';
+      const payload = { ...getValues(), [field.name]: valueStr };
+      if (['crop', 'sourceLocation', 'destinationLocation'].includes(field.name)) {
+        setDefaultValues(payload);
+      }
+      console.log({ payload });
+      dispatch(editWeighingInProgress(payload));
+      return field.onChange(valueStr);
+    };
 
   const selectAllOnFocus = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.target.select();
@@ -118,7 +157,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   options={crops}
                   getOptionLabel={(option) => option.name}
                   value={crops.find((c) => c.id === field.value) || null}
-                  onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                  onChange={handleChange(field)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -142,7 +181,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   options={locations.filter((l) => l.isSource)}
                   getOptionLabel={(option) => option.name}
                   value={locations.find((l) => l.id === field.value) || null}
-                  onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                  onChange={handleChange(field)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -166,7 +205,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                   options={locations.filter((l) => l.isDestination)}
                   getOptionLabel={(option) => option.name}
                   value={locations.find((l) => l.id === field.value) || null}
-                  onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                  onChange={handleChange(field)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -206,7 +245,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                           }))
                           .find((m) => m.id === field.value) || null
                       }
-                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      onChange={handleChange(field)}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -230,7 +269,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                       options={operators.filter((op) => op.id !== selectedHarvesterOperator)}
                       getOptionLabel={(option) => option.name}
                       value={operators.find((o) => o.id === field.value) || null}
-                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      onChange={handleChange(field)}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -271,7 +310,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                           }))
                           .find((m) => m.id === field.value) || null
                       }
-                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      onChange={handleChange(field)}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -295,7 +334,7 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
                       options={operators.filter((op) => op.id !== selectedDeliveryOperator)}
                       getOptionLabel={(option) => option.name}
                       value={operators.find((o) => o.id === field.value) || null}
-                      onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                      onChange={handleChange(field)}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -373,10 +412,25 @@ export const WeighingEntryForm = ({ onSubmit, defaultValues }: WeighingEntryForm
             </Grid>
           </Grid>
           <Grid size={3}>
-            <Button variant="contained" color="primary" sx={{ mb: 2, height: 40 }} fullWidth type="submit">
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ height: 40 }}
+              fullWidth
+              type="submit"
+              disabled={isLoading}
+              loading={isLoading}
+            >
               {formatMessage({ id: 'weighing_entry_form.submit_button' })}
             </Button>
           </Grid>
+          {apiError ? (
+            <Grid size={12}>
+              <Typography variant="subtitle2" color="error" textAlign="left" sx={{ my: 0, py: 0 }}>
+                {apiError}
+              </Typography>
+            </Grid>
+          ) : null}
         </Grid>
       </Card>
     </Container>

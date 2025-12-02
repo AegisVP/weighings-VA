@@ -25,13 +25,6 @@ import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
 import type { CircularProgressProps } from '@mui/material/CircularProgress';
 import type { TypeMenuItemDefinition } from '../../router/sections';
 
-// const useStyles = makeStyles({
-//   outline: {
-//     outline: 'none',
-//     border: 'none',
-//   },
-// });
-
 export const HeaderBar = () => {
   const [open, setOpen] = React.useState(false);
   const { isLoggedIn, isRefreshing, user } = useAuth();

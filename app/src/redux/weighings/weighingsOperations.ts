@@ -5,6 +5,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { handleError } from '../../utils/handleError';
 import { weighingApiResponseSchema } from '../../schema/weighingSchema';
 
+import type { TypeWeighingInput } from '../../components/WeighingEntryForm/WeighingEntryForm';
 import type { TypeAddPayload, TypeThunkApiConfig } from '../resources/resourcesOperations';
 import type { TypeWeighingSchema } from '../types';
 
@@ -16,13 +17,26 @@ type TypeWeighingSearch = Partial<
 >;
 export type TypeWeighingApiResponse = z.infer<typeof weighingApiResponseSchema>;
 
+export const defaultValues: TypeWeighingInput = {
+  deliveryMachine: '',
+  deliveryOperator: '',
+  harvesterMachine: '',
+  harvesterOperator: '',
+  sourceLocation: '',
+  destinationLocation: '',
+  crop: '',
+  weightGross: 0,
+  weightTare: 0,
+  weightNetto: 0,
+  dateTime: new Date().toISOString(),
+};
+
 export const addWeighing = createAsyncThunk<
   TypeWeighingSchema,
   TypeAddPayload<TypeWeighingSchema> & { createdBy: string },
   TypeThunkApiConfig
 >('weighings/add', async (weighing, { rejectWithValue }) => {
   try {
-    // const user = getState().auth.user;
     const weighingData = {
       source: weighing.sourceLocation,
       destination: weighing.destinationLocation,
@@ -32,9 +46,6 @@ export const addWeighing = createAsyncThunk<
       operator: weighing.harvesterOperator,
       crop: weighing.crop,
       weight: weighing.weightNetto,
-      // createdAt: weighing.dateTime,
-      // updatedAt: weighing.dateTime,
-      // createdBy: user.username,
       createdBy: weighing.createdBy,
     };
 

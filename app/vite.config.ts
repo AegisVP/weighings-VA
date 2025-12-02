@@ -33,5 +33,6 @@ export default defineConfig({
     outDir: path.resolve(__dirname, '../public'),
     emptyOutDir: true,
     assetsDir: 'assets',
+    chunkSizeWarningLimit: 2048,
   },
 });

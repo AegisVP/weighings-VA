@@ -1,6 +1,6 @@
-import { createSlice, type Draft } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import { addWeighing, searchWeighing } from './weighingsOperations';
+import { addWeighing, defaultValues, searchWeighing } from './weighingsOperations';
 import {
   handleAddWeighing,
   handlePending,
@@ -10,12 +10,13 @@ import {
 } from './weighingsHandlers';
 
 import type { TypeWeighingSchema } from '../types';
+import type { TypeWeighingInput } from '../../components/WeighingEntryForm/WeighingEntryForm';
 
 export type TypeWeighingReduxState = {
   isLoading: boolean;
   error?: string;
   history: TypeWeighingSchema[];
-  inProgress: Draft<TypeWeighingSchema>[];
+  inProgress: TypeWeighingInput[];
 };
 
 export const initialState: TypeWeighingReduxState = {
@@ -28,7 +29,24 @@ export const initialState: TypeWeighingReduxState = {
 const weighingsSlice = createSlice({
   name: 'weighings',
   initialState,
-  reducers: {},
+  reducers: {
+    newWeighingInProgress: (state: TypeWeighingReduxState, action: { payload: string }) => {
+      return { ...state, inProgress: [...state.inProgress, { ...defaultValues, dateTime: action.payload }] };
+    },
+    removeWeighingInProgress: (state: TypeWeighingReduxState, action) => ({
+      ...state,
+      inProgress: state.inProgress.filter((wip) => wip.dateTime !== action.payload),
+    }),
+    editWeighingInProgress: (state: TypeWeighingReduxState, action: { payload: TypeWeighingInput }) => {
+      const index = state.inProgress.findIndex((wip) => wip.dateTime === action.payload.dateTime);
+      if (index !== -1) {
+        const updatedInProgress = [...state.inProgress];
+        updatedInProgress[index] = action.payload;
+        return { ...state, inProgress: updatedInProgress };
+      }
+      return state;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(addWeighing.fulfilled, handleAddWeighing)
@@ -38,5 +56,7 @@ const weighingsSlice = createSlice({
       .addMatcher(({ type }) => type.startsWith('weighings/') && type.endsWith('/rejected'), handleReject);
   },
 });
+
+export const { newWeighingInProgress, editWeighingInProgress, removeWeighingInProgress } = weighingsSlice.actions;
 
 export default weighingsSlice.reducer;

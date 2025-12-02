@@ -19,7 +19,7 @@ export const REMOTE_DB_USER = process.env.CLOUD_POSTGRES_USER || '';
 export const REMOTE_DB_PASS = process.env.CLOUD_POSTGRES_PASSWORD || '';
 
 export const SYNC_ENABLED = process.env.SYNC_ENABLED === 'true';
-export const API_PORT = Number(process.env.API_PORT) || 80;
+export const API_PORT = Number(process.env.PORT) || 80;
 export const JWT_SECRET = process.env.JWT_SECRET || 'JWT secret message';
 
 export const MIGRATION_VERSION =

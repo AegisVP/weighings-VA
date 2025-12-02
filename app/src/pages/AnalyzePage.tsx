@@ -286,7 +286,7 @@ export const AnalyzePage = () => {
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[optionAll, ...operators.items]}
+                options={[optionAll, ...operators.items].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
                 value={operators.items.find((o) => o.id === filterHarvesterOperator) || optionAll}
                 onChange={(_, newValue) => setFilterHarvesterOperator(newValue?.id || '')}
