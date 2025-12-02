@@ -9,10 +9,11 @@ type timestampFields = {
   createdAt?: timestampField;
   updatedAt?: timestampField;
   deletedAt?: timestampField;
+  syncedAt?: timestampField;
 };
-type funcDef = (args?: { createdAt?: boolean; updatedAt?: boolean; deletedAt?: boolean }) => timestampFields;
+type funcDef = (args?: { createdAt?: boolean; updatedAt?: boolean; deletedAt?: boolean; syncedAt?: boolean }) => timestampFields;
 export const generateTimestampFields: funcDef = (argv) => {
-  const { createdAt = true, updatedAt = true, deletedAt = true } = argv || {};
+  const { createdAt = true, updatedAt = true, deletedAt = true, syncedAt = true } = argv || {};
   const fields: timestampFields = {};
 
   if (createdAt) {
@@ -33,6 +34,13 @@ export const generateTimestampFields: funcDef = (argv) => {
 
   if (deletedAt) {
     fields.deletedAt = {
+      type: DataTypes.DATE,
+      allowNull: true,
+    };
+  }
+
+  if (syncedAt) {
+    fields.syncedAt = {
       type: DataTypes.DATE,
       allowNull: true,
     };

@@ -9,6 +9,7 @@ export class Crop extends Model {
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
+  declare syncedAt: Date | null;
 }
 
 Crop.init(
