@@ -37,7 +37,7 @@ export const authService: RequestHandler = async (req, _, next) => {
   }
 
   if (dbUser.token !== token) {
-    await dbUser.update({ token: null, refreshToken: null });
+    await dbUser.update({ token: null });
 
     // TODO: Add refresh token check and token reissue logic here
 

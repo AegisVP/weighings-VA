@@ -39,7 +39,7 @@
 - Create a symlink for container directories `sudo ln -s /mnt/usb/containerd /var/lib/containerd`
 - Set the correct rights `sudo chmod -R 700 /mnt/usb/docker` and `sudo chmod -R 700 /mnt/usb/containerd`
 
-## Install Portainer
+## Install Portainer (optional)
 
 - Pull the image with `docker pull portainer/portainer-ce:latest`
 - Create persistent volume with `docker volume create portainer_data`
