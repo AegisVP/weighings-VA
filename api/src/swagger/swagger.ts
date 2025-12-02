@@ -1,6 +1,9 @@
+import path from 'node:path';
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+
+const __dirname = import.meta.dirname;
 
 const options = {
   swaggerDefinition: {
@@ -75,7 +78,7 @@ const options = {
       },
     },
   },
-  apis: ['./src/router/*.ts'],
+  apis: [path.resolve(__dirname, '../router/*.ts'), path.resolve(__dirname, '../router/*.js')],
 };
 
 const swaggerDocument = swaggerJsdoc(options);
