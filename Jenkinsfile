@@ -30,10 +30,10 @@ pipeline {
             steps {
                 script {
                     echo "🔐 Loading environment secrets from Jenkins credentials..."
-                    withCredentials([file(credentialsId: 'env-file-secret', variable: 'ENV_FILE_PATH')]) {
+                    withCredentials([file(credentialsId: 'env-file-secret', variable: 'ENV_FILE_SECRET')]) {
                         sh '''
                             # Copy the secret file to .env
-                            cp ${ENV_FILE_PATH} ${ENV_FILE}
+                            cp "${ENV_FILE_SECRET}" "${ENV_FILE}"
                             chmod 600 ${ENV_FILE}
                             echo "✅ .env file created securely from secret file"
                         '''

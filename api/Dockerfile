@@ -42,16 +42,16 @@ ENV PORT=${PORT}
 
 # Copy built frontend assets to public directory
 WORKDIR /
-COPY --from=frontend-builder /build/public ./public
+COPY --chown=node:node --from=frontend-builder /build/public ./public
 
 # Copy only production dependencies for API
 WORKDIR /app
 
-COPY ./api/package*.json ./
+COPY --chown=node:node ./api/package*.json ./
 RUN npm install --omit=dev
 
 # Copy built API from builder
-COPY --from=api-builder /build/dist ./
+COPY --chown=node:node --from=api-builder /build/dist ./
 
 # Expose the port your app runs on
 EXPOSE ${PORT}

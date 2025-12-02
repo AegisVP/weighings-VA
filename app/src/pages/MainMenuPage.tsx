@@ -48,7 +48,7 @@ export const MainMenuPage = () => {
           </Typography>
 
           <List>
-            <ListItem sx={{ alignItems: 'flex-start', mb: 1 }}>
+            <ListItem sx={{ alignItems: 'center', mb: 1 }}>
               <ListItemIcon>
                 <ScaleIcon color="primary" />
               </ListItemIcon>
@@ -69,7 +69,7 @@ export const MainMenuPage = () => {
               />
             </ListItem>
 
-            <ListItem sx={{ alignItems: 'flex-start', mb: 1 }}>
+            <ListItem sx={{ alignItems: 'center', mb: 1 }}>
               <ListItemIcon>
                 <AssessmentIcon color="primary" />
               </ListItemIcon>
@@ -87,7 +87,7 @@ export const MainMenuPage = () => {
               />
             </ListItem>
 
-            <ListItem sx={{ alignItems: 'flex-start', mb: 1 }}>
+            <ListItem sx={{ alignItems: 'center', mb: 1 }}>
               <ListItemIcon>
                 <SettingsIcon color="primary" />
               </ListItemIcon>
