@@ -1,4 +1,5 @@
-import { type ZodDate, type ZodOptional, type ZodUUID, z } from 'zod';
+import { z } from 'zod';
+import type { ZodDate, ZodOptional, ZodUUID } from 'zod';
 
 export const getByIdSchema = z.strictObject({ id: z.uuid() });
 export type TypeGetById = z.infer<typeof getByIdSchema>;
@@ -10,11 +11,13 @@ type TypeTimestampFields = {
   createdAt?: ZodDate;
   updatedAt?: ZodDate;
   deletedAt?: ZodDate | ZodOptional;
+  syncedAt?: ZodDate | ZodOptional;
 };
 export const timestampSchemaFields = (isParanoid = true): TypeTimestampFields => {
   const retObj: TypeTimestampFields = {
     createdAt: z.date(),
     updatedAt: z.date(),
+    syncedAt: z.date().optional(),
   };
 
   if (isParanoid) {

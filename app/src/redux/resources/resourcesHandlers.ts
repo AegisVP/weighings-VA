@@ -11,31 +11,40 @@ export const handleResourceLoaded =
 // ########### DEFAULT HANDLERS #################
 export const handlePending =
   (resourceName: Extract<keyof TypeResourcesReduxState, string>): CaseReducer<TypeResourcesReduxState> =>
-  (state) => ({ ...state, [resourceName]: { isLoading: true, error: undefined } });
+  (state) => ({ ...state, [resourceName]: { ...state[resourceName], isLoading: true, error: undefined } });
 
 export const handleReject =
   (
     resourceName: Extract<keyof TypeResourcesReduxState, string>
   ): CaseReducer<TypeResourcesReduxState, PayloadAction<TypeApiError>> =>
-  (state, { payload }) => ({ ...state, [resourceName]: { isLoading: false, error: payload } });
+  (state, { payload }) => ({ ...state, [resourceName]: { ...state[resourceName], isLoading: false, error: payload } });
 
 export const handleFulfill =
   (
     resourceName: Extract<keyof TypeResourcesReduxState, string>
   ): CaseReducer<TypeResourcesReduxState, PayloadAction<TypeApiError>> =>
-  (state) => ({ ...state, [resourceName]: { isLoading: false, error: undefined } });
+  (state) => ({ ...state, [resourceName]: { ...state[resourceName], isLoading: false, error: undefined } });
 
-const buildMatcherHandlers = (type: 'Pending' | 'Rejected' | 'Fulfilled', resource: string) => {
-  const handler = type === 'Pending' ? handlePending : type === 'Rejected' ? handleReject : handleFulfill;
-  const matcherString = `${resource.slice(0, 1).toUpperCase()}${resource.slice(1)}/${type.toLowerCase()}`;
+type TypeResource = keyof TypeResourcesReduxState;
+type TypeActionType = 'pending' | 'rejected' | 'fulfilled';
+const getHandler = (actionType: TypeActionType) => {
+  switch (actionType) {
+    case 'pending':
+      return handlePending;
+    case 'rejected':
+      return handleReject;
+    case 'fulfilled':
+      return handleFulfill;
+  }
+};
+
+export const buildMatcherHandlers = (resource: TypeResource, actionType: TypeActionType) => {
+  const handler = getHandler(actionType);
   return [
-    ({ type }: { type: string }) => type.endsWith(matcherString),
-    handler(resource as keyof TypeResourcesReduxState),
+    ({ type }: { type: string }) => type.startsWith(`${resource}`) && type.endsWith(`/${actionType}`),
+    handler(resource),
   ] as const;
 };
-export const buildMatcherPendingHandler = (resource: string) => buildMatcherHandlers('Pending', resource);
-export const buildMatcherRejectedHandler = (resource: string) => buildMatcherHandlers('Rejected', resource);
-export const buildMatcherFulfilledHandler = (resource: string) => buildMatcherHandlers('Fulfilled', resource);
 
 // ########### CRUD HANDLERS #################
 export const handleResourceAdded =

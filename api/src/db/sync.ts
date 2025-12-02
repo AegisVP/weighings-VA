@@ -29,26 +29,27 @@ export const runMigrationIfNeeded = async () => {
     console.log(`Migrating database model from version ${dbVersion} to ${MIGRATION_VERSION}`);
     await sequelize.sync(syncCondition);
     try {
-      await Feature.create({ name: 'ADMIN', description: '', enabled: true });
+      await Feature.create({ name: 'ADMIN', description: 'Administrative access', enabled: true });
     } catch (error) {
       console.log('ADMIN feature already exists');
     }
     try {
-      await Feature.create({ name: 'WEIGHING_ADD', description: '', enabled: true });
+      await Feature.create({ name: 'WEIGHING_ADD', description: 'Додавання зважувань', enabled: true });
     } catch (error) {
       console.log('WEIGHING_ADD feature already exists');
     }
     try {
-      await Feature.create({ name: 'DATA_ANALYZE', description: '', enabled: true });
+      await Feature.create({ name: 'DATA_ANALYZE', description: 'Аналіз введених даних', enabled: true });
     } catch (error) {
       console.log('DATA_ANALYZE feature already exists');
     }
     try {
-      await Feature.create({ name: 'SETTINGS_CHANGE', description: '', enabled: true });
+      await Feature.create({ name: 'SETTINGS_CHANGE', description: 'Зміна налаштувань', enabled: true });
     } catch (error) {
       console.log('SETTINGS_CHANGE feature already exists');
     }
 
     await MigrationVersion.upsert({ version: MIGRATION_VERSION });
+    console.log('Database migration completed');
   }
 };

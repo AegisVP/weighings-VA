@@ -6,16 +6,19 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import {
-  Scale as ScaleIcon,
-  Assessment as AssessmentIcon,
-  Settings as SettingsIcon,
-  People as PeopleIcon,
-} from '@mui/icons-material';
+import { Scale as ScaleIcon, Assessment as AssessmentIcon, Settings as SettingsIcon } from '@mui/icons-material';
+import { useIntl } from 'react-intl';
+
+import { menuLinks } from '../router/sections';
+import { useAppSelector } from '../redux/hooks';
+import { selectUserLocale } from '../redux/user/userSelectors';
+import { constants } from '../constants/constants';
 
 export const MainMenuPage = () => {
+  const { formatMessage } = useIntl();
+  const locale = useAppSelector(selectUserLocale);
   const today = new Date();
-  const formattedDate = today.toLocaleDateString('uk-UA', {
+  const formattedDate = today.toLocaleDateString(constants.localeLang[locale], {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -28,17 +31,20 @@ export const MainMenuPage = () => {
         {/* Welcome Header */}
         <Card sx={{ p: 4, mb: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
           <Typography variant="h3" component="h1" gutterBottom sx={{ color: 'white', fontWeight: 'bold' }}>
-            Вітаємо!
+            {formatMessage({ id: 'main_page.welcome_title' })}
           </Typography>
           <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
             {formattedDate}
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.9)', mt: 2 }}>
+            {formatMessage({ id: 'main_page.welcome_message' })}
           </Typography>
         </Card>
 
         {/* Getting Started Guide */}
         <Card sx={{ p: 3, mb: 3 }}>
           <Typography variant="h5" gutterBottom color="primary" sx={{ fontWeight: 'medium', mb: 2 }}>
-            Як почати роботу
+            {formatMessage({ id: 'main_page.getting_started_guide' })}
           </Typography>
 
           <List>
@@ -49,13 +55,15 @@ export const MainMenuPage = () => {
               <ListItemText
                 primary={
                   <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                    1. Створення зважування
+                    {formatMessage({ id: 'main_page.getting_started_step1.title' })}
                   </Typography>
                 }
                 secondary={
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    Перейдіть до розділу &quot;Зважування&quot; у верхньому меню для створення нових записів. Введіть
-                    дані про культуру, джерело, призначення, вагу та операторів.
+                    {formatMessage(
+                      { id: 'main_page.getting_started_step1.description' },
+                      { linkName: formatMessage(menuLinks.weighing.name) }
+                    )}
                   </Typography>
                 }
               />
@@ -68,13 +76,12 @@ export const MainMenuPage = () => {
               <ListItemText
                 primary={
                   <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                    2. Аналіз даних
+                    {formatMessage({ id: 'main_page.getting_started_step2.title' })}
                   </Typography>
                 }
                 secondary={
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    У розділі &quot;Аналіз&quot; ви можете переглядати всі зважування, фільтрувати за різними
-                    параметрами, сортувати та переглядати загальну вагу.
+                    {formatMessage({ id: 'main_page.getting_started_step2.description' })}
                   </Typography>
                 }
               />
@@ -87,59 +94,15 @@ export const MainMenuPage = () => {
               <ListItemText
                 primary={
                   <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                    3. Налаштування
+                    {formatMessage({ id: 'main_page.getting_started_step3.title' })}
                   </Typography>
                 }
                 secondary={
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    У розділі &quot;Налаштування&quot; налаштуйте довідники: культури, локації, машини та оператори. Це
-                    необхідно для коректної роботи системи.
+                    {formatMessage({ id: 'main_page.getting_started_step3.description' })}
                   </Typography>
                 }
               />
-            </ListItem>
-
-            <ListItem sx={{ alignItems: 'flex-start' }}>
-              <ListItemIcon>
-                <PeopleIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                    4. Керування користувачами
-                  </Typography>
-                }
-                secondary={
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    Адміністратори можуть керувати користувачами системи у відповідному розділі налаштувань.
-                  </Typography>
-                }
-              />
-            </ListItem>
-          </List>
-        </Card>
-
-        {/* Quick Tips */}
-        <Card sx={{ p: 3, bgcolor: 'info.lighter' }}>
-          <Typography variant="h6" gutterBottom color="info.main" sx={{ fontWeight: 'medium' }}>
-            💡 Корисні поради
-          </Typography>
-          <List dense>
-            <ListItem>
-              <Typography variant="body2">
-                • Використовуйте пошук у фільтрах для швидкого знаходження потрібних записів
-              </Typography>
-            </ListItem>
-            <ListItem>
-              <Typography variant="body2">• Всі зміни зберігаються автоматично після підтвердження</Typography>
-            </ListItem>
-            <ListItem>
-              <Typography variant="body2">
-                • Натисніть на заголовок колонки в таблиці аналізу для сортування даних
-              </Typography>
-            </ListItem>
-            <ListItem>
-              <Typography variant="body2">• Використовуйте швидкі кнопки дат для вибору популярних періодів</Typography>
             </ListItem>
           </List>
         </Card>

@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 
 import { useAppSelector } from '../../redux/hooks';
 import { ResourceTable } from './ResourceTable';
 
+import type { MessageDescriptor } from 'react-intl';
 import type { SelectChangeEvent } from '@mui/material/Select';
-import type { ResourceDef } from '../../resources/resources';
+import type { ResourceDef, TypeAllResourceDefs } from '../../resources/resources';
 
 export type TypeOnChangeDef = (
   e: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<string | number | boolean> | React.SyntheticEvent,
@@ -21,17 +23,19 @@ export type RendererProps<T> = {
 };
 export type ColumnDef<T> = {
   id: Extract<keyof T, string>;
-  label: string;
+  label: MessageDescriptor;
   width?: number;
   renderer?: RendererDef<T>;
   type?: 'text' | 'boolean' | 'singleSelect';
   valueOptions?: { value: string; label: string }[];
 };
 
-type ResourceListProps<T extends { id: string }> = {
+export const ResourceList = <T extends Pick<TypeAllResourceDefs['schemaType'], 'id' | 'deletedAt'>>({
+  config,
+}: {
   config: ResourceDef<T>;
-};
-export const ResourceList = <T extends { id: string }>({ config }: ResourceListProps<T>) => {
+}) => {
+  const { formatMessage } = useIntl();
   const { items, count, isLoading, error } = useAppSelector((state) => config.selector(state));
 
   useEffect(() => {
@@ -45,9 +49,9 @@ export const ResourceList = <T extends { id: string }>({ config }: ResourceListP
   return (
     <Grid key={config.key} size={config.cardSize}>
       <ResourceTable<T>
-        title={config.label}
+        title={formatMessage(config.label)}
         type={config.key}
-        entries={items}
+        entries={items.filter((item) => !item.deletedAt)}
         count={count}
         error={error}
         columns={config.columns}

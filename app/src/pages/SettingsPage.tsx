@@ -22,7 +22,7 @@ export const SettingsPage = () => {
     <Container maxWidth="xl" disableGutters>
       <Grid container spacing={2}>
         {resourceConfigs.map((config) => (
-          <ResourceList<typeof config.schemaType & { id: string }>
+          <ResourceList<typeof config.schemaType>
             key={config.key}
             config={config as ResourceDef<typeof config.schemaType>}
           />

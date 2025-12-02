@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import { CROSS_ENV, ENVIRONMENT_CLOUD } from '../config/constants.js';
 import { requestError } from '../utils/requrestError.js';
 import { Weighing } from '../models/modelWeighing.js';
 import { Location } from '../models/modelLocation.js';
@@ -18,35 +19,39 @@ const get: TypedRequestHandler<TypeGetById> = async ({ params: { id } }, res, ne
 };
 
 const add: TypedRequestHandler<TypeAddWeighingSchema, any, any> = async (req, res, next) => {
+  if (CROSS_ENV === ENVIRONMENT_CLOUD) {
+    return next(requestError(403, 'Додавання зважувань заборонено в хмарній версії'));
+  }
+
   const { source, destination, auto, driver, harvester, operator, crop, weight } = req.body;
   const newWeighing = new Weighing();
 
   if (!(await Location.findOne({ where: { id: source, isSource: true } }))) {
-    return next(requestError(404, 'Джерело задане невірно'));
+    return next(requestError(400, 'Джерело задане невірно'));
   }
 
   if (!(await Location.findOne({ where: { id: destination, isDestination: true } }))) {
-    return next(requestError(404, 'Призначення задане невірно'));
+    return next(requestError(400, 'Призначення задане невірно'));
   }
 
-  if (!(await Machine.findOne({ where: { id: auto } }))) {
-    return next(requestError(404, 'Машина задана невірно'));
+  if (!(await Machine.findOne({ where: { id: auto, canDeliver: true } }))) {
+    return next(requestError(400, 'Машина задана невірно'));
   }
 
   if (!(await Operator.findOne({ where: { id: driver } }))) {
-    return next(requestError(404, 'Водій заданий невірно'));
+    return next(requestError(400, 'Водій заданий невірно'));
   }
 
-  if (!(await Machine.findOne({ where: { id: harvester } }))) {
-    return next(requestError(404, 'Комбайн заданий невірно'));
+  if (!(await Machine.findOne({ where: { id: harvester, canHarvest: true } }))) {
+    return next(requestError(400, 'Комбайн заданий невірно'));
   }
 
   if (!(await Operator.findOne({ where: { id: operator } }))) {
-    return next(requestError(404, 'Комбайнер заданий невірно'));
+    return next(requestError(400, 'Комбайнер заданий невірно'));
   }
 
   if (!(await Crop.findOne({ where: { id: crop } }))) {
-    return next(requestError(404, 'Культура задана невірно'));
+    return next(requestError(400, 'Культура задана невірно'));
   }
 
   await newWeighing.update({

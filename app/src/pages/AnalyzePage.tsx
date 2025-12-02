@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,8 +18,14 @@ import { selectCrop, selectLocation, selectMachine, selectOperator } from '../re
 import { searchWeighing } from '../redux/weighings/weighingsOperations';
 import { Loader } from '../components/Loader/Loader';
 import { WeighingTable } from '../components/WeighingTable/WeighingTable';
+import { constants } from '../constants/constants';
+import { selectUserLocale } from '../redux/user/userSelectors';
+
+type TypeDateRangePreset = 'custom' | 'today' | 'yesterday' | 'this_week' | 'this_month' | 'last_month' | 'this_year';
 
 export const AnalyzePage = () => {
+  const { formatMessage } = useIntl();
+  const locale = useAppSelector(selectUserLocale);
   const dispatch = useAppDispatch();
   const weighings = useAppSelector(selectWeighings);
   const isLoading = useAppSelector(selectWeighingsLoading);
@@ -26,6 +33,7 @@ export const AnalyzePage = () => {
   const locations = useAppSelector(selectLocation);
   const machines = useAppSelector(selectMachine);
   const operators = useAppSelector(selectOperator);
+  const [filterDateRangePreset, setFilterDateRangePreset] = useState<TypeDateRangePreset>('today');
 
   const [startDate, setStartDate] = useState<Date | null>(() => {
     const date = new Date();
@@ -45,6 +53,7 @@ export const AnalyzePage = () => {
   const [filterHarvesterOperator, setFilterHarvesterOperator] = useState<string>('');
 
   const handleDateChange = (newStartDateRaw: Date | null, newEndDateRaw: Date | null) => {
+    setFilterDateRangePreset('custom');
     let newStartDate = startDate;
     let newEndDate = endDate;
     if (newStartDateRaw) {
@@ -92,6 +101,7 @@ export const AnalyzePage = () => {
     const start = new Date();
     const end = new Date();
     handleDateChange(start, end);
+    setFilterDateRangePreset('today');
   };
 
   const setYesterday = () => {
@@ -99,6 +109,7 @@ export const AnalyzePage = () => {
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
     const end = new Date(start);
     handleDateChange(start, end);
+    setFilterDateRangePreset('yesterday');
   };
 
   const setThisWeek = () => {
@@ -108,6 +119,7 @@ export const AnalyzePage = () => {
     start.setDate(start.getDate() - diff);
     const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
     handleDateChange(start, end);
+    setFilterDateRangePreset('this_week');
   };
 
   const setThisMonth = () => {
@@ -115,6 +127,7 @@ export const AnalyzePage = () => {
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
     const end = new Date();
     handleDateChange(start, end);
+    setFilterDateRangePreset('this_month');
   };
 
   const setLastMonth = () => {
@@ -122,6 +135,7 @@ export const AnalyzePage = () => {
     const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const end = new Date(now.getFullYear(), now.getMonth(), 0);
     handleDateChange(start, end);
+    setFilterDateRangePreset('last_month');
   };
 
   const setThisYear = () => {
@@ -129,6 +143,7 @@ export const AnalyzePage = () => {
     const start = new Date(now.getFullYear(), 0, 1);
     const end = new Date(now.getFullYear(), 11, 31);
     handleDateChange(start, end);
+    setFilterDateRangePreset('this_year');
   };
 
   const resetAllFilters = () => {
@@ -139,26 +154,33 @@ export const AnalyzePage = () => {
     setFilterHarvesterOperator('');
   };
 
+  const getVar = (preset: TypeDateRangePreset) => (filterDateRangePreset === preset ? 'contained' : 'outlined');
+
+  const markDeleted = (c: { id: string; name: string; deletedAt?: unknown }) =>
+    c.deletedAt ? { id: c.id, name: c.name + ' (видалено)' } : { id: c.id, name: c.name };
+
   const isFilterSet =
     !!filterCrop || !!filterSource || !!filterDestination || !!filterDeliveryOperator || !!filterHarvesterOperator;
+
+  const optionAll = { id: '', name: formatMessage({ id: 'analyze_page.filters.option_all' }) };
 
   return (
     <Container maxWidth="xl" disableGutters>
       <Box sx={{ p: 2 }}>
         <Typography variant="h5" gutterBottom>
-          Аналіз зважувань
+          {formatMessage({ id: 'analyze_page.title' })}
         </Typography>
 
         {/* Date Range Picker */}
         <Card sx={{ p: 2, mb: 2 }}>
           <Typography variant="h6" gutterBottom>
-            Період
+            {formatMessage({ id: 'analyze_page.date_range.title' })}
           </Typography>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
                 <DatePicker
-                  label="Дата початку"
+                  label={formatMessage({ id: 'analyze_page.date_range.from' })}
                   value={startDate}
                   onChange={(date: Date | null) => handleDateChange(date, endDate)}
                   slotProps={{ textField: { fullWidth: true, size: 'small' } }}
@@ -166,7 +188,7 @@ export const AnalyzePage = () => {
               </Box>
               <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
                 <DatePicker
-                  label="Дата закінчення"
+                  label={formatMessage({ id: 'analyze_page.date_range.to' })}
                   value={endDate}
                   onChange={(date: Date | null) => handleDateChange(startDate, date)}
                   slotProps={{ textField: { fullWidth: true, size: 'small' } }}
@@ -174,12 +196,24 @@ export const AnalyzePage = () => {
               </Box>
               <Box sx={{ minWidth: 0 }}>
                 <ButtonGroup size="small" variant="outlined">
-                  <Button onClick={setToday}>Сьогодні</Button>
-                  <Button onClick={setYesterday}>Вчора</Button>
-                  <Button onClick={setThisWeek}>Цей тиждень</Button>
-                  <Button onClick={setThisMonth}>Цей місяць</Button>
-                  <Button onClick={setLastMonth}>Минулий місяць</Button>
-                  <Button onClick={setThisYear}>Цей рік</Button>
+                  <Button variant={getVar('today')} onClick={setToday}>
+                    {formatMessage({ id: 'analyze_page.date_range.today' })}
+                  </Button>
+                  <Button variant={getVar('yesterday')} onClick={setYesterday}>
+                    {formatMessage({ id: 'analyze_page.date_range.yesterday' })}
+                  </Button>
+                  <Button variant={getVar('this_week')} onClick={setThisWeek}>
+                    {formatMessage({ id: 'analyze_page.date_range.this_week' })}
+                  </Button>
+                  <Button variant={getVar('this_month')} onClick={setThisMonth}>
+                    {formatMessage({ id: 'analyze_page.date_range.this_month' })}
+                  </Button>
+                  <Button variant={getVar('last_month')} onClick={setLastMonth}>
+                    {formatMessage({ id: 'analyze_page.date_range.last_month' })}
+                  </Button>
+                  <Button variant={getVar('this_year')} onClick={setThisYear}>
+                    {formatMessage({ id: 'analyze_page.date_range.this_year' })}
+                  </Button>
                 </ButtonGroup>
               </Box>
             </Box>
@@ -189,10 +223,10 @@ export const AnalyzePage = () => {
         {/* Filters */}
         <Card sx={{ p: 2, mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-            <Typography variant="h6">Фільтри</Typography>
+            <Typography variant="h6">{formatMessage({ id: 'analyze_page.filters.title' })}</Typography>
             {isFilterSet && (
               <Button size="small" variant="outlined" color="secondary" onClick={resetAllFilters}>
-                Скинути фільтри
+                {formatMessage({ id: 'analyze_page.filters.reset' })}
               </Button>
             )}
           </Box>
@@ -200,60 +234,65 @@ export const AnalyzePage = () => {
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...crops.items]}
+                options={[optionAll, ...crops.items].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
-                value={crops.items.find((c) => c.id === filterCrop) || { id: '', name: 'Всі' }}
+                value={crops.items.find((c) => c.id === filterCrop) || optionAll}
                 onChange={(_, newValue) => setFilterCrop(newValue?.id || '')}
-                renderInput={(params) => <TextField {...params} label="Культура" />}
+                renderInput={(params) => (
+                  <TextField {...params} label={formatMessage({ id: 'analyze_page.filters.crop' })} />
+                )}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
               />
             </Box>
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...locations.items.filter((l) => l.isSource)]}
+                options={[optionAll, ...locations.items.filter((l) => l.isSource)].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
-                value={locations.items.find((l) => l.id === filterSource) || { id: '', name: 'Всі' }}
+                value={locations.items.find((l) => l.id === filterSource) || optionAll}
                 onChange={(_, newValue) => setFilterSource(newValue?.id || '')}
-                renderInput={(params) => <TextField {...params} label="Джерело" />}
+                renderInput={(params) => (
+                  <TextField {...params} label={formatMessage({ id: 'analyze_page.filters.source' })} />
+                )}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
               />
             </Box>
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...locations.items.filter((l) => l.isDestination)]}
+                options={[optionAll, ...locations.items.filter((l) => l.isDestination)].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
-                value={locations.items.find((l) => l.id === filterDestination) || { id: '', name: 'Всі' }}
+                value={locations.items.find((l) => l.id === filterDestination) || optionAll}
                 onChange={(_, newValue) => setFilterDestination(newValue?.id || '')}
-                renderInput={(params) => <TextField {...params} label="Призначення" />}
+                renderInput={(params) => (
+                  <TextField {...params} label={formatMessage({ id: 'analyze_page.filters.destination' })} />
+                )}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
               />
             </Box>
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...operators.items]}
+                options={[optionAll, ...operators.items].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
-                value={operators.items.find((o) => o.id === filterDeliveryOperator) || { id: '', name: 'Всі' }}
+                value={operators.items.find((o) => o.id === filterDeliveryOperator) || optionAll}
                 onChange={(_, newValue) => setFilterDeliveryOperator(newValue?.id || '')}
-                renderInput={(params) => <TextField {...params} label="Водій" />}
+                renderInput={(params) => (
+                  <TextField {...params} label={formatMessage({ id: 'analyze_page.filters.driver' })} />
+                )}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
               />
             </Box>
             <Box sx={{ flex: '1 1 200px', minWidth: 180 }}>
               <Autocomplete
                 size="small"
-                options={[{ id: '', name: 'Всі' }, ...operators.items]}
+                options={[optionAll, ...operators.items].map(markDeleted)}
                 getOptionLabel={(option) => option.name}
-                value={
-                  operators.items.find((o) => o.id === filterHarvesterOperator) || {
-                    id: '',
-                    name: 'Всі',
-                  }
-                }
+                value={operators.items.find((o) => o.id === filterHarvesterOperator) || optionAll}
                 onChange={(_, newValue) => setFilterHarvesterOperator(newValue?.id || '')}
-                renderInput={(params) => <TextField {...params} label="Комбайнер" />}
+                renderInput={(params) => (
+                  <TextField {...params} label={formatMessage({ id: 'analyze_page.filters.harvester' })} />
+                )}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
               />
             </Box>
@@ -264,10 +303,16 @@ export const AnalyzePage = () => {
         <Card sx={{ p: 2, mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 3, m: 2, flexWrap: 'wrap' }}>
             <Typography variant="body2" color="text.secondary">
-              Знайдено записів: <strong>{filteredWeighings.length}</strong>
+              {formatMessage({ id: 'analyze_page.filters.results.found_entries' }, { count: filteredWeighings.length })}
             </Typography>
             <Typography variant="body2" color="text.primary">
-              Загальна вага: <strong>{totalWeight.toLocaleString('uk-UA')} кг</strong>
+              {formatMessage(
+                { id: 'analyze_page.filters.results.total_weight' },
+                {
+                  strong: (chunks) => <strong>{chunks}</strong>,
+                  weight: totalWeight.toLocaleString(constants.localeLang[locale]),
+                }
+              )}
             </Typography>
           </Box>
         </Card>

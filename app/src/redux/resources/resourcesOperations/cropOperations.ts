@@ -16,7 +16,7 @@ export const loadCrop = createAsyncThunk<TypeResourcesApiResponse<TypeCropSchema
   'crops/load',
   async (_, { rejectWithValue }) => {
     try {
-      return (await axios.get('/crops')).data;
+      return (await axios.get('/crops?deleted=false')).data;
     } catch (err) {
       return rejectWithValue(handleError(err));
     }

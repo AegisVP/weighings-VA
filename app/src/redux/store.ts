@@ -21,15 +21,24 @@ const persistedUserReducer = persistReducer(
   {
     key: 'auth',
     storage,
-    whitelist: ['token'],
+    whitelist: ['token', 'locale'],
   },
   userReducer
+);
+
+const persistedWeighingReducer = persistReducer(
+  {
+    key: 'weighings',
+    storage,
+    whitelist: ['inProgress'],
+  },
+  weighingReducer
 );
 
 const rootReducer = combineReducers({
   auth: persistedUserReducer,
   resources: resourcesReducer,
-  weighings: weighingReducer,
+  weighings: persistedWeighingReducer,
 });
 
 export const store = configureStore({

@@ -10,7 +10,7 @@ export const handleAddWeighing: CaseReducer<
   PayloadAction<TypeAddPayload<TypeWeighingSchema>>
 > = (state, { payload }) => ({
   ...state,
-  items: [...state.items, payload],
+  history: [...state.history, payload],
 });
 
 export const handleSearchWeighing: CaseReducer<TypeWeighingReduxState, PayloadAction<TypeWeighingSchema[]>> = (
@@ -18,7 +18,7 @@ export const handleSearchWeighing: CaseReducer<TypeWeighingReduxState, PayloadAc
   { payload }
 ) => ({
   ...state,
-  items: payload,
+  history: payload,
 });
 
 export const handlePending: CaseReducer<TypeWeighingReduxState> = (state) => ({

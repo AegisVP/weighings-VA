@@ -1,11 +1,4 @@
 export const constants = {
-  BASE_URL: '',
-  icon: {
-    clear: '❌',
-    delete: '🗑',
-    add: '➕',
-    working: '🛠',
-    search: '🔎',
-    pin: '📌',
-  },
+  BASE_URL: import.meta.env.VITE_BASE_URL ?? '',
+  localeLang: { ua: 'uk-UA', en: 'en-US' },
 };

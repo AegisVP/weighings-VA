@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { JWT_SECRET } from '../config/constants.js';
+import { JWT_SECRET, CROSS_ENV, ENVIRONMENT_DEV, ENVIRONMENT_ONSITE } from '../config/constants.js';
 import { Feature, User, UserHasFeature } from '../models/index.js';
 import { cryptPassword } from '../utils/crypt.js';
 import { requestError } from '../utils/requrestError.js';
@@ -14,10 +14,10 @@ const issueToken = ({ id, name, username }: Pick<User, 'id' | 'name' | 'username
   const token = jwt.sign({ id, name, username }, JWT_SECRET, {
     expiresIn: 60 * 60 * 8, // 8 hours
   });
-  const refreshToken = jwt.sign({ id, name, username }, JWT_SECRET, {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-  });
-  return { token, refreshToken };
+  // const refreshToken = jwt.sign({ id, name, username }, JWT_SECRET, {
+  //   expiresIn: 60 * 60 * 24 * 7, // 7 days
+  // });
+  return { token }; // return { token, refreshToken };
 };
 
 const registerUser: TypedRequestHandler<TypeUserRegisterRequestBody> = async (req, res, next) => {
@@ -28,29 +28,31 @@ const registerUser: TypedRequestHandler<TypeUserRegisterRequestBody> = async (re
   }
 
   const newUser = new User(req.body);
-  const { id, name } = newUser;
-  const { token, refreshToken } = issueToken({ id, name, username: newUser.username });
-
   newUser.username = newUser.username.toLowerCase();
   newUser.password = cryptPassword(newUser.password);
+
+  const { id, name } = newUser;
+  const { token } = issueToken({ id, name, username: newUser.username }); // const { token, refreshToken } = issueToken({ id, name, username: newUser.username });
   newUser.token = token;
-  newUser.refreshToken = refreshToken;
-  newUser.features = [];
+  newUser.features = []; // newUser.refreshToken = refreshToken;
 
   const userCount = await User.count();
   await newUser.save();
 
-  if (userCount === 0) {
-    const adminFeature = await Feature.findOne({ where: { name: 'ADMIN' } });
-    if (adminFeature) {
+  // ######### Block for Thesis demostration purposes only #########
+  const userFeature = ['ADMIN', 'WEIGHING_ADD', 'DATA_ANALYZE'];
+  if ([ENVIRONMENT_DEV, ENVIRONMENT_ONSITE].includes(CROSS_ENV) && userCount < userFeature.length) {
+    const addedFeature = await Feature.findOne({ where: { name: userFeature[userCount] } });
+    if (addedFeature) {
       await UserHasFeature.create({
         user_id: newUser.id,
-        feature_id: adminFeature.id,
+        feature_id: addedFeature.id,
       });
+      console.log(`Assigned ${userFeature[userCount]} feature to registered user: ${newUser.username}`);
     }
   }
 
-  res.json({ token, refreshToken });
+  res.json({ token }); // res.json({ token, refreshToken });
 };
 
 const loginUser: TypedRequestHandler<TypeUserLoginRequestBody> = async (req, res, next) => {
@@ -67,15 +69,16 @@ const loginUser: TypedRequestHandler<TypeUserLoginRequestBody> = async (req, res
   }
 
   const { id, name } = user;
-  const { token, refreshToken } = issueToken({ id, name, username });
-  await user.update({ token, refreshToken });
 
-  res.json({ token, refreshToken });
+  const { token } = issueToken({ id, name, username }); // const { token, refreshToken } = issueToken({ id, name, username });
+  await user.update({ token }); // await user.update({ token, refreshToken });
+
+  res.json({ token }); // res.json({ token, refreshToken });
 };
 
 const logoutUser: RequestHandler = async (req, res) => {
   const user = await User.findByPk(req.user?.id);
-  user?.update({ token: '', refreshToken: '' });
+  user?.update({ token: '' }); // user?.update({ token: '', refreshToken: '' });
 
   res.status(204).send();
 };

@@ -29,9 +29,9 @@ export const pathsExist = new Promise((resolve, reject) => {
 
 app.use(cors());
 app.use(express.json());
+app.use('/health', healthCheckRouter);
 app.use(morgan(CROSS_ENV === ENVIRONMENT_DEV ? 'dev' : 'short'));
 
-app.use('/health', healthCheckRouter);
 app.use('/api-docs', swaggerRouter);
 
 app.use('/api/user', userRouter);

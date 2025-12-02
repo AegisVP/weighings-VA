@@ -1,26 +1,4 @@
-# Stage 1: Build frontend assets
-FROM node:24-alpine AS frontend-builder
-
-WORKDIR /build/api
-
-# Copy API schemas first (needed for TypeScript imports in frontend)
-COPY ./api/package*.json ./
-RUN npm install
-
-COPY ./api/src/schema ./src/schema
-
-# Copy frontend package files and install dependencies
-WORKDIR /build/app
-
-COPY ./app/package*.json ./
-RUN npm install
-
-# Copy frontend source and build
-COPY ./app ./
-
-RUN npm run build
-
-# Stage 2: Build API
+##### Stage 1: Build API
 FROM node:24-alpine AS api-builder
 
 WORKDIR /build
@@ -33,12 +11,34 @@ RUN npm install
 COPY ./api ./
 RUN npm run build
 
-# Stage 3: Production runtime
+##### Stage 2: Build frontend assets
+FROM node:24-alpine AS frontend-builder
+
+WORKDIR /build/api
+
+# Copy API schemas first (needed for TypeScript imports in frontend)
+COPY --from=api-builder /build/src/schema ./src/schema
+COPY --from=api-builder /build/dist/schema ./dist/schema
+COPY ./api/package*.json ./
+RUN npm install
+
+# Copy frontend package files and install dependencies
+WORKDIR /build/app
+
+COPY ./app/package*.json ./
+RUN npm install
+
+# Copy frontend source and build
+COPY ./app ./
+RUN npm run build
+
+##### Stage 3: Production runtime
 FROM node:24-alpine
+USER node
 
 # Declare built-time ARG with a default
-ARG API_PORT=8040
-ENV API_PORT=${API_PORT}
+ARG PORT=80
+ENV PORT=${PORT}
 
 # Copy built frontend assets to public directory
 WORKDIR /
@@ -54,7 +54,7 @@ RUN npm install --omit=dev
 COPY --from=api-builder /build/dist ./
 
 # Expose the port your app runs on
-EXPOSE ${API_PORT}
+EXPOSE ${PORT}
 
 # Start the Node.js server
 WORKDIR /app

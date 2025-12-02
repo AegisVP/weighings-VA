@@ -8,8 +8,10 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Loader } from '../components/Loader/Loader';
 import { logoutUser } from '../redux/user/userOperations';
 import { selectUserIsLoading } from '../redux/user/userSelectors';
+import { useIntl } from 'react-intl';
 
 export const LogoutPage = () => {
+  const { formatMessage } = useIntl();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isLoading = useAppSelector(selectUserIsLoading);
@@ -29,13 +31,13 @@ export const LogoutPage = () => {
           width: 400,
         }}
       >
-        <Typography>Дійсно вийти?</Typography>
+        <Typography>{formatMessage({ id: 'logout_page.confirmation' })}</Typography>
 
         <Button variant="contained" color="primary" onClick={onSubmit} disabled={isLoading}>
-          {isLoading ? <Loader size="24px" /> : 'Вийти'}
+          {isLoading ? <Loader size="24px" /> : formatMessage({ id: 'logout_page.logout' })}
         </Button>
         <Button variant="outlined" color="secondary" onClick={() => navigate('/')}>
-          {'Повернутись на головну'}
+          {formatMessage({ id: 'logout_page.return_to_main' })}
         </Button>
       </Card>
     </Box>

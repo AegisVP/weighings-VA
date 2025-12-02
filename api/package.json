@@ -10,7 +10,7 @@
     "dev": "tsx --watch src/server.ts dotenv_config_path=../.env",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
-    "start": "CROSS_ENV=prod node server.js"
+    "start": "node server.js"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -28,6 +28,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.1.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

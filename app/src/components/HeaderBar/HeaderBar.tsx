@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIntl } from 'react-intl';
 import { Link, Navigate, NavLink, useNavigate } from 'react-router';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -11,22 +12,24 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Tooltip from '@mui/material/Tooltip';
-import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import Tooltip from '@mui/material/Tooltip';
 
 import { Loader } from '../Loader/Loader';
 import { useAuth } from '../../hooks/useAuth';
 import { menuLinks } from '../../router/sections';
 import { MenuButtonWithFeatureCheck } from './MenuButton';
+import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
 
-import type { TypeMenuItemDefinition } from '../../router/sections';
 import type { CircularProgressProps } from '@mui/material/CircularProgress';
+import type { TypeMenuItemDefinition } from '../../router/sections';
 
 export const HeaderBar = () => {
   const [open, setOpen] = React.useState(false);
   const { isLoggedIn, isRefreshing, user } = useAuth();
   const navigate = useNavigate();
+  const { formatMessage } = useIntl();
 
   const LOGO = 'Vital-AGRO';
 
@@ -69,11 +72,11 @@ export const HeaderBar = () => {
                       .filter((p) => p.showOnMenu)
                       .map((page) => (
                         <MenuButtonWithFeatureCheck
-                          key={page.name}
+                          key={page.name.id}
                           page={page}
                           handleMenuNavigation={handleMenuNavigation}
                         >
-                          <ListItem key={page.name}>
+                          <ListItem key={page.name.id}>
                             <NavLink
                               to={page.link}
                               style={({ isActive }) => ({
@@ -86,7 +89,7 @@ export const HeaderBar = () => {
                               })}
                             >
                               {page.icon && <ListItemIcon color="inherit">{page.icon}</ListItemIcon>}
-                              <ListItemText primary={page.name} style={{ textDecoration: 'inherit' }} />
+                              <ListItemText primary={formatMessage(page.name)} style={{ textDecoration: 'inherit' }} />
                             </NavLink>
                           </ListItem>
                         </MenuButtonWithFeatureCheck>
@@ -131,7 +134,7 @@ export const HeaderBar = () => {
                   .filter((p) => p.showOnMenu)
                   .map((page) => (
                     <MenuButtonWithFeatureCheck
-                      key={page.name}
+                      key={page.name.id}
                       page={page}
                       handleMenuNavigation={handleMenuNavigation}
                     />
@@ -140,9 +143,14 @@ export const HeaderBar = () => {
             ) : null}
           </Box>
 
+          {/* Language selector */}
+          <Box sx={{ mx: 2 }}>
+            <LanguageSelector />
+          </Box>
+
           {/* User menu */}
           {isLoggedIn ? (
-            <Tooltip title={menuLinks.logout.name}>
+            <Tooltip title={formatMessage(menuLinks.logout.name)}>
               <Link
                 to={menuLinks.logout.link}
                 style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}

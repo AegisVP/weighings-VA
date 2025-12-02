@@ -19,6 +19,7 @@ export class Weighing extends Model {
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
+  declare syncedAt: Date | null;
 }
 
 Weighing.init(

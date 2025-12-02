@@ -12,10 +12,16 @@ export class UserHasFeature extends Model {
   declare createdAt: Date;
   declare updatedAt: Date;
   declare deletedAt: Date | null;
+  declare syncedAt: Date | null;
 }
 
 UserHasFeature.init(
   {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
     userId: {
       type: DataTypes.UUID,
       references: {
