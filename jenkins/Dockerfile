@@ -54,4 +54,4 @@ EXPOSE 8080 50000
 USER jenkins
 
 # Start Jenkins
-ENTRYPOINT ["java", "-jar", "/usr/share/jenkins/jenkins.war", "-Dfile.encoding=UTF-8"]
+ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-jar", "/usr/share/jenkins/jenkins.war"]
