@@ -21,67 +21,67 @@ This README shows how to configure and start both the API and the frontend local
 
 1. Create and run a local Postgres container (example):
 
-```sh
-# create a persistent docker volume for the DB data
-docker volume create graintrack-postgres-data
+   ```sh
+   # create a persistent docker volume for the DB data
+   docker volume create graintrack-postgres-data
 
-# run Postgres (reads env variables from .env at repo root)
-docker run -d --name postgres --env-file ../.env -p 5432:5432 \
-	-v graintrack-postgres-data:/var/lib/postgresql/data postgres:18-alpine
-```
+   # run Postgres (reads env variables from .env at repo root)
+   docker run -d --name postgres --env-file ../.env -p 5432:5432 \
+   -v graintrack-postgres-data:/var/lib/postgresql/data postgres:18-alpine
+   ```
 
 2. Configure environment variables
 
-Create a `.env` file in the repository root (or provide envs in your shell). Example `.env`:
+   Create a `.env` file in the repository root (or provide envs in your shell). Example `.env`:
 
-```env
-# Postgres
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=graintrack
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+   ```env
+   # Postgres
+   POSTGRES_HOST=localhost
+   POSTGRES_PORT=5432
+   POSTGRES_DB=graintrack
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
 
-# API
-PORT=80
-JWT_SECRET=your_jwt_secret
-CROSS_ENV=dev
+   # API
+   PORT=80
+   JWT_SECRET=your_jwt_secret
+   CROSS_ENV=dev
 
-# Optional: MIGRATION_VERSION (used for migrations in production)
-```
+   # Optional: MIGRATION_VERSION (used for migrations in production)
+   ```
 
-The `api` dev script expects a `.env` one level above the `api/` folder (the repo root). If you keep `.env` in the repo
-root the dev script will pick it up.
+   The `api` dev script expects a `.env` one level above the `api/` folder (the repo root). If you keep `.env` in the
+   repo root the dev script will pick it up.
 
 3. Start the API
 
-```sh
-cd api
-npm install
-npm run dev
-```
+   ```sh
+   cd api
+   npm install
+   npm run dev
+   ```
 
-- The API listens on `PORT` (default `80`).
-- The dev server runs the TypeScript sources (using `tsx --watch`).
+   - The API listens on `PORT` (default `80`).
+   - The dev server runs the TypeScript sources (using `tsx --watch`).
 
-Useful API commands (inside `api/`):
+   Useful API commands (inside `api/`):
 
-```sh
-npm run typecheck   # run tsc to check types
-npm run build       # build TypeScript to dist
-npm start           # build + start production bundle (see api/package.json)
-```
+   ```sh
+   npm run typecheck   # run tsc to check types
+   npm run build       # build TypeScript to dist
+   npm start           # build + start production bundle (see api/package.json)
+   ```
 
 4. Start the frontend
 
-```sh
-cd app
-npm install
-npm run dev
-```
+   ```sh
+   cd app
+   npm install
+   npm run dev
+   ```
 
-- The frontend runs with Vite (default port 5173). Open the URL shown by Vite after start.
-- To build a production bundle run `npm run build` and serve the `dist` directory with your preferred static server.
+   - The frontend runs with Vite (default port 5173). Open the URL shown by Vite after start.
+   - To build a production bundle run `npm run build` and serve the `dist` directory with your preferred static server.
 
 ## How the dev setup works
 
