@@ -11,7 +11,7 @@ import type { TypedRequestHandler } from '../types/api.js';
 const NOT_FOUND = 'Оператор не знайдений';
 
 const getAll: TypedRequestHandler = async ({ query: { deleted } }, res) => {
-  const items = await Operator.findAll({ paranoid: deleted === undefined });
+  const items = await Operator.findAll({ paranoid: deleted === undefined, order: [['name', 'ASC']] });
   res.json({ items: items.map((o) => o.dataValues), count: items.length });
 };
 

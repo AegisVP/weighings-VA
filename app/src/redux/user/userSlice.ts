@@ -34,7 +34,6 @@ export const initialState: TypeUserReduxState = {
   isRefreshing: false,
   locale: 'ua',
   token: '',
-  // refreshToken: '',
   user: {
     name: '',
     username: '',

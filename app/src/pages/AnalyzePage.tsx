@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -93,9 +93,30 @@ export const AnalyzePage = () => {
     return filteredWeighings.reduce((sum, weighing) => sum + weighing.weightNetto, 0);
   }, [filteredWeighings]);
 
-  const getLocationName = (id: string) => locations.items.find((l) => l.id === id)?.name || id;
-  const getOperatorName = (id: string) => operators.items.find((o) => o.id === id)?.name || id;
-  const getMachineDescription = (id: string) => machines.items.find((m) => m.id === id)?.description || id;
+  const findById = <T extends { id: string }>(items: T[], id: string) => items.find((i) => i.id === id);
+
+  const markDeleted = (c: { id: string; name: string; deletedAt?: unknown }) =>
+    c.deletedAt ? { id: c.id, name: c.name + ' (видалено)' } : { id: c.id, name: c.name };
+
+  const getCropName = (id: string) => {
+    const item = findById(crops.items, id);
+    return item ? markDeleted({ id, name: item.name, deletedAt: item.deletedAt }).name : '';
+  };
+
+  const getLocationName = (id: string) => {
+    const item = findById(locations.items, id);
+    return item ? markDeleted({ id, name: item.name, deletedAt: item.deletedAt }).name : '';
+  };
+
+  const getOperatorName = (id: string) => {
+    const item = findById(operators.items, id);
+    return item ? markDeleted({ id, name: item.name, deletedAt: item.deletedAt }).name : '';
+  };
+
+  const getMachineDescription = (id: string) => {
+    const item = findById(machines.items, id);
+    return item ? markDeleted({ id, name: item.description, deletedAt: item.deletedAt }).name : '';
+  };
 
   const setToday = () => {
     const start = new Date();
@@ -156,9 +177,6 @@ export const AnalyzePage = () => {
 
   const getVar = (preset: TypeDateRangePreset) => (filterDateRangePreset === preset ? 'contained' : 'outlined');
 
-  const markDeleted = (c: { id: string; name: string; deletedAt?: unknown }) =>
-    c.deletedAt ? { id: c.id, name: c.name + ' (видалено)' } : { id: c.id, name: c.name };
-
   const isFilterSet =
     !!filterCrop || !!filterSource || !!filterDestination || !!filterDeliveryOperator || !!filterHarvesterOperator;
 
@@ -168,13 +186,13 @@ export const AnalyzePage = () => {
     <Container maxWidth="xl" disableGutters>
       <Box sx={{ p: 2 }}>
         <Typography variant="h5" gutterBottom>
-          {formatMessage({ id: 'analyze_page.title' })}
+          <FormattedMessage id="analyze_page.title" />
         </Typography>
 
         {/* Date Range Picker */}
         <Card sx={{ p: 2, mb: 2 }}>
           <Typography variant="h6" gutterBottom>
-            {formatMessage({ id: 'analyze_page.date_range.title' })}
+            <FormattedMessage id="analyze_page.date_range.title" />
           </Typography>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -197,22 +215,22 @@ export const AnalyzePage = () => {
               <Box sx={{ minWidth: 0 }}>
                 <ButtonGroup size="small" variant="outlined">
                   <Button variant={getVar('today')} onClick={setToday}>
-                    {formatMessage({ id: 'analyze_page.date_range.today' })}
+                    <FormattedMessage id="analyze_page.date_range.today" />
                   </Button>
                   <Button variant={getVar('yesterday')} onClick={setYesterday}>
-                    {formatMessage({ id: 'analyze_page.date_range.yesterday' })}
+                    <FormattedMessage id="analyze_page.date_range.yesterday" />
                   </Button>
                   <Button variant={getVar('this_week')} onClick={setThisWeek}>
-                    {formatMessage({ id: 'analyze_page.date_range.this_week' })}
+                    <FormattedMessage id="analyze_page.date_range.this_week" />
                   </Button>
                   <Button variant={getVar('this_month')} onClick={setThisMonth}>
-                    {formatMessage({ id: 'analyze_page.date_range.this_month' })}
+                    <FormattedMessage id="analyze_page.date_range.this_month" />
                   </Button>
                   <Button variant={getVar('last_month')} onClick={setLastMonth}>
-                    {formatMessage({ id: 'analyze_page.date_range.last_month' })}
+                    <FormattedMessage id="analyze_page.date_range.last_month" />
                   </Button>
                   <Button variant={getVar('this_year')} onClick={setThisYear}>
-                    {formatMessage({ id: 'analyze_page.date_range.this_year' })}
+                    <FormattedMessage id="analyze_page.date_range.this_year" />
                   </Button>
                 </ButtonGroup>
               </Box>
@@ -223,10 +241,12 @@ export const AnalyzePage = () => {
         {/* Filters */}
         <Card sx={{ p: 2, mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-            <Typography variant="h6">{formatMessage({ id: 'analyze_page.filters.title' })}</Typography>
+            <Typography variant="h6">
+              <FormattedMessage id="analyze_page.filters.title" />
+            </Typography>
             {isFilterSet && (
               <Button size="small" variant="outlined" color="secondary" onClick={resetAllFilters}>
-                {formatMessage({ id: 'analyze_page.filters.reset' })}
+                <FormattedMessage id="analyze_page.filters.reset" />
               </Button>
             )}
           </Box>
@@ -303,16 +323,19 @@ export const AnalyzePage = () => {
         <Card sx={{ p: 2, mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 3, m: 2, flexWrap: 'wrap' }}>
             <Typography variant="body2" color="text.secondary">
-              {formatMessage({ id: 'analyze_page.filters.results.found_entries' }, { count: filteredWeighings.length })}
+              <FormattedMessage
+                id={'analyze_page.filters.results.found_entries'}
+                values={{ count: filteredWeighings.length }}
+              />
             </Typography>
             <Typography variant="body2" color="text.primary">
-              {formatMessage(
-                { id: 'analyze_page.filters.results.total_weight' },
-                {
+              <FormattedMessage
+                id={'analyze_page.filters.results.total_weight'}
+                values={{
                   strong: (chunks) => <strong>{chunks}</strong>,
                   weight: totalWeight.toLocaleString(constants.localeLang[locale]),
-                }
-              )}
+                }}
+              />
             </Typography>
           </Box>
         </Card>
@@ -323,10 +346,11 @@ export const AnalyzePage = () => {
         ) : (
           <WeighingTable
             weighings={filteredWeighings}
+            getCropName={getCropName}
             getLocationName={getLocationName}
             getOperatorName={getOperatorName}
             getMachineDescription={getMachineDescription}
-            showCrop={false}
+            showCrop={true}
           />
         )}
       </Box>

@@ -1,7 +1,9 @@
 import type { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
+import { Op } from 'sequelize';
+
 import { JWT_SECRET } from '../config/constants.js';
-import { User } from '../models/index.js';
+import { Feature, User, UserHasFeature } from '../models/index.js';
 import { requestError } from '../utils/requrestError.js';
 
 export type TypeJwtPayload = {
@@ -29,7 +31,30 @@ export const authService: RequestHandler = async (req, _, next) => {
   if (!decodedUser || !decodedUser.id || !decodedUser.username || !decodedUser.name)
     return next(requestError(401, NOT_AUTHORIZED_MSG, 'TokenInvalid'));
 
-  const dbUser = await User.findByPk(decodedUser.id);
+  const dbUser = await User.findByPk(decodedUser.id, {
+    include: [
+      {
+        model: Feature,
+        as: 'features',
+        attributes: ['name', 'enabled'],
+        where: { enabled: true },
+        include: [
+          {
+            model: UserHasFeature,
+            as: 'UserHasFeature',
+            attributes: ['expires'],
+          },
+        ],
+        required: false, // keep the user even if no matching features
+        through: {
+          attributes: ['expires'],
+          where: {
+            [Op.or]: [{ expires: null }, { expires: { [Op.gt]: new Date() } }],
+          },
+        },
+      },
+    ],
+  });
   if (!dbUser) return next(requestError(401, NOT_AUTHORIZED_MSG, 'NoTokenUser'));
   dbUser.username = dbUser.username.toLowerCase();
   if (dbUser.username !== `${decodedUser.username}`.toLowerCase()) {
@@ -44,13 +69,13 @@ export const authService: RequestHandler = async (req, _, next) => {
     return next(requestError(401, NOT_AUTHORIZED_MSG, 'TokenMismatch'));
   }
 
-  const validFeatures = dbUser.features
-    .filter((f) => f.enabled)
-    .filter((f) => f.UserHasFeature.expires === null || f.UserHasFeature.expires > new Date());
+  // const validFeatures = dbUser.features
+  //   .filter((f) => f.enabled)
+  //   .filter((f) => f.UserHasFeature.expires === null || f.UserHasFeature.expires > new Date());
 
   req.user = {
     ...dbUser.get(),
-    features: validFeatures,
+    // features: validFeatures,
   };
 
   return next();

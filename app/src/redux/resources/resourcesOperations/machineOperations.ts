@@ -17,7 +17,7 @@ export const loadMachine = createAsyncThunk<TypeResourcesApiResponse<TypeMachine
   'machines/load',
   async (_, { rejectWithValue }) => {
     try {
-      return (await axios.get('/machines')).data;
+      return (await axios.get('/machines?deleted=false')).data;
     } catch (err) {
       return rejectWithValue(handleError(err));
     }

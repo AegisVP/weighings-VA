@@ -11,7 +11,7 @@ import type { TypedRequestHandler } from '../types/api.js';
 const NOT_FOUND = 'Машина не знайдена';
 
 const getAll: TypedRequestHandler = async ({ query: { deleted } }, res) => {
-  const items = await Machine.findAll({ paranoid: deleted === undefined });
+  const items = await Machine.findAll({ paranoid: deleted === undefined, order: [['description', 'ASC']] });
   res.json({ items: items.map((m) => m.dataValues), count: items.length });
 };
 

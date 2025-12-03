@@ -16,7 +16,7 @@ export const loadLocation = createAsyncThunk<TypeResourcesApiResponse<TypeLocati
   'locations/load',
   async (_, { rejectWithValue }) => {
     try {
-      return (await axios.get('/locations')).data;
+      return (await axios.get('/locations?deleted=false')).data;
     } catch (err) {
       return rejectWithValue(handleError(err));
     }
