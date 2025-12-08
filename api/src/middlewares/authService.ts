@@ -69,14 +69,7 @@ export const authService: RequestHandler = async (req, _, next) => {
     return next(requestError(401, NOT_AUTHORIZED_MSG, 'TokenMismatch'));
   }
 
-  // const validFeatures = dbUser.features
-  //   .filter((f) => f.enabled)
-  //   .filter((f) => f.UserHasFeature.expires === null || f.UserHasFeature.expires > new Date());
-
-  req.user = {
-    ...dbUser.get(),
-    // features: validFeatures,
-  };
+  req.user = dbUser.get();
 
   return next();
 };

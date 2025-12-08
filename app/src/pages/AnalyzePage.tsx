@@ -95,7 +95,7 @@ export const AnalyzePage = () => {
 
   const findById = <T extends { id: string }>(items: T[], id: string) => items.find((i) => i.id === id);
 
-  const markDeleted = (c: { id: string; name: string; deletedAt?: unknown }) =>
+  const markDeleted = (c: { id: string; name: string; deletedAt?: string | null | undefined }) =>
     c.deletedAt ? { id: c.id, name: c.name + ' (видалено)' } : { id: c.id, name: c.name };
 
   const getCropName = (id: string) => {
