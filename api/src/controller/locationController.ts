@@ -11,7 +11,7 @@ import type { TypedRequestHandler } from '../types/api.js';
 const NOT_FOUND = 'Локація не знайдена';
 
 const getAll: TypedRequestHandler = async ({ query: { deleted } }, res) => {
-  const items = await Location.findAll({ paranoid: deleted === undefined });
+  const items = await Location.findAll({ paranoid: deleted === undefined, order: [['name', 'ASC']] });
   res.json({ items: items.map((location) => location.dataValues), count: items.length });
 };
 

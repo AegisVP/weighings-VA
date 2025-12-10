@@ -11,7 +11,7 @@ import type { TypedRequestHandler } from '../types/api.js';
 const NOT_FOUND = 'Культура не знайдена';
 
 const getAll: TypedRequestHandler = async ({ query: { deleted } }, res) => {
-  const items = await Crop.findAll({ paranoid: deleted === undefined });
+  const items = await Crop.findAll({ paranoid: deleted === undefined, order: [['name', 'ASC']] });
   res.json({ items: items.map((c) => c.dataValues), count: items.length });
 };
 

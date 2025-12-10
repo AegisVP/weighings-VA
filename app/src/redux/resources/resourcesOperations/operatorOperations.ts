@@ -16,7 +16,7 @@ export const loadOperator = createAsyncThunk<TypeResourcesApiResponse<TypeOperat
   'operators/load',
   async (_, { rejectWithValue }) => {
     try {
-      return (await axios.get('/operators')).data;
+      return (await axios.get('/operators?deleted=false')).data;
     } catch (err) {
       return rejectWithValue(handleError(err));
     }
