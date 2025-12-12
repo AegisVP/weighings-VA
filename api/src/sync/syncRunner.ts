@@ -297,8 +297,10 @@ class SyncRunner {
 
   private async syncModel(model: any, tableName: string): Promise<number> {
     try {
+      const userTokenExclude = tableName === 'users' ? ['userToken'] : [];
       // Find records that need syncing
       const records = await model.findAll({
+        attributes: { exclude: userTokenExclude },
         where: {
           [Op.or]: [
             { syncedAt: null },

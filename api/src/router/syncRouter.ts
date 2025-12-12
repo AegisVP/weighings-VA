@@ -5,16 +5,9 @@ export const syncRouter = Router();
 
 /**
  * @openapi
- * tags:
- *   name: Sync
- *   description: Remote database synchronization endpoints
- */
-
-/**
- * @openapi
  * /api/sync/status:
  *   get:
- *     tags: [Sync]
+ *     tags: [System]
  *     summary: Get synchronization status
  *     security:
  *       - bearerAuth: []
@@ -71,7 +64,7 @@ syncRouter.get('/status', getSyncStatus);
  * @openapi
  * /api/sync/start:
  *   post:
- *     tags: [Sync]
+ *     tags: [System]
  *     summary: Trigger manual synchronization
  *     description: Manually start synchronization with remote database
  *     security:
@@ -125,7 +118,7 @@ syncRouter.post('/start', triggerSync);
  * @openapi
  * /api/sync/disable:
  *   post:
- *     tags: [Sync]
+ *     tags: [System]
  *     summary: Stop synchronization runner
  *     description: Stops the background synchronization runner. This will cancel any scheduled sync operations.
  *     security:
@@ -160,7 +153,7 @@ syncRouter.post('/disable', stopSync);
  * @openapi
  * /api/sync/enable:
  *   post:
- *     tags: [Sync]
+ *     tags: [System]
  *     summary: Start synchronization runner
  *     description: Starts the background synchronization runner. This will enable scheduled automatic sync operations.
  *     security:

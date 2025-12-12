@@ -13,7 +13,7 @@ const options = {
       version: '1.0.0',
     },
     tags: [
-      { name: 'System', description: 'System health and status endpoints' },
+      { name: 'System', description: 'System health and synchronization endpoints' },
       { name: 'User', description: 'User management and authentication' },
       { name: 'Crops', description: 'Crop management' },
       { name: 'Locations', description: 'Location management' },

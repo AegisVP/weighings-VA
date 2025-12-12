@@ -1,4 +1,4 @@
-# Setting up Raspberry PI
+# Setting up Raspberry Pi
 
 - Install Raspberry OS Lite
 - Configure SSH
@@ -10,14 +10,14 @@
 
 ## Install Raspberry OS Lite
 
-- Download Raspberry PI Imager (<https://www.raspberrypi.com/software/>)
-- Select "Raspberry PI OS Lite (64 bit)" for your board type
+- Download Raspberry Pi Imager (<https://www.raspberrypi.com/software/>)
+- Select "Raspberry Pi OS Lite (64-bit)" for your board type
 - Write the image to a prepared SD card
 - After setup is done, make sure to upgrade all packages by running `sudo apt update && sudo apt upgrade -y`
 
 ## Configure SSH
 
-- Configure it during Imager step or
+- Configure it during the Imager step or
 - Enable and configure it manually
 
 ## Connect and configure an external USB
@@ -56,7 +56,8 @@
 - Copy the `jenkins/Dockerfile` to your raspberry
 - Build the custom Jenkins image
   `docker build --build-arg DOCKER_GID=$(getent group docker | cut -d: -f3) -t jenkins-rpi4-arm64 .`
-- Run the created image:
-  `docker run -d -v /var/run/docker.sock:/var/run/docker.sock -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 --name jenkins jenkins-rpi4-arm64`
-- Configure the environment variables from `.env.template` in the Credentials Store
-- Configure a pipeline to read the `Jenkins` file from root in the `main` branch of the repository
+- Run the created image
+  `docker run -d -v /var/run/docker.sock:/var/run/docker.sock -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 --name jenkins --restart=always jenkins-rpi4-arm64`
+- Configure the environment variables from `.env.template` in the Jenkins Credentials store and save them as a
+  secret-file with id `env-file-secret`
+- Configure a pipeline to read a `Jenkinsfile` from the jenkins directory of the repository

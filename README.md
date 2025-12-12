@@ -22,17 +22,17 @@ This README shows how to configure and start both the API and the frontend local
 1. Create and run a local Postgres container (example):
 
    ```sh
-   # create a persistent docker volume for the DB data
+   # create a persistent Docker volume for the DB data
    docker volume create graintrack-postgres-data
 
-   # run Postgres (reads env variables from .env at repo root)
+   # run Postgres (reads environment variables from .env at repo root)
    docker run -d --name postgres --env-file ../.env -p 5432:5432 \
    -v graintrack-postgres-data:/var/lib/postgresql/data postgres:18-alpine
    ```
 
 2. Configure environment variables
 
-   Create a `.env` file in the repository root (or provide envs in your shell). Example `.env`:
+   Create a `.env` file in the repository root (or provide the environment variables in your shell). Example `.env`:
 
    ```env
    # Postgres
@@ -80,14 +80,14 @@ This README shows how to configure and start both the API and the frontend local
    npm run dev
    ```
 
-   - The frontend runs with Vite (default port 5173). Open the URL shown by Vite after start.
+   - The frontend runs with Vite (default port 5173). Open the URL shown by Vite after it starts.
    - To build a production bundle run `npm run build` and serve the `dist` directory with your preferred static server.
 
 ## How the dev setup works
 
 - The backend looks for Postgres connection settings from environment variables (see `api/src/config/constants.ts`).
 - On startup the API runs a quick DB verification and will run migrations if needed (`api/src/server.ts`).
-- The frontend communicates with the API using relative paths — in development use a reverse-proxy or configure Vite to
+- The frontend communicates with the API using relative paths — in development use a reverse proxy or configure Vite to
   proxy API requests to the API port if needed.
 
 ## Development notes and tips

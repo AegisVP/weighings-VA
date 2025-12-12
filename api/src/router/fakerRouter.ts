@@ -5,16 +5,9 @@ export const fakerRouter = Router();
 
 /**
  * @openapi
- * tags:
- *   name: Faker
- *   description: Test data generation endpoints (development only)
- */
-
-/**
- * @openapi
  * /api/faker/generate:
  *   post:
- *     tags: [Faker]
+ *     tags: [System]
  *     summary: Generate fake weighing data
  *     description: Generate random weighing records for testing. Only works in development environment.
  *     security:
