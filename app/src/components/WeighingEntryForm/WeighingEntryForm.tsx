@@ -85,7 +85,10 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
     dispatch(editWeighingInProgress({ ...getValues(), weightNetto: netto, weightGross: gross, weightTare: tare }));
 
     if (netto <= 0 || tare <= 0) {
-      setError('weightNetto', { type: 'manual', message: 'Перевірте брутто та тару' });
+      setError('weightNetto', {
+        type: 'manual',
+        message: formatMessage({ id: 'weighing_entry_form.errors.weight_netto' }),
+      });
     } else {
       clearErrors(['weightNetto']);
     }

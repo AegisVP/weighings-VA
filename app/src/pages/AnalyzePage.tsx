@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -8,6 +8,13 @@ import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import Grow from '@mui/material/Grow';
+import Popper from '@mui/material/Popper';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Paper from '@mui/material/Paper';
+import MenuList from '@mui/material/MenuList';
+import MenuItem from '@mui/material/MenuItem';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -34,6 +41,29 @@ export const AnalyzePage = () => {
   const machines = useAppSelector(selectMachine);
   const operators = useAppSelector(selectOperator);
   const [filterDateRangePreset, setFilterDateRangePreset] = useState<TypeDateRangePreset>('today');
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const options = [
+    formatMessage({ id: 'report.driver.title' }),
+    formatMessage({ id: 'report.harvester.title' }),
+    formatMessage({ id: 'report.day.title' }),
+  ];
+
+  const handleMenuItemClick = (_event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
+    setSelectedIndex(index);
+    setOpen(false);
+  };
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event: Event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) return;
+    setOpen(false);
+  };
 
   const [startDate, setStartDate] = useState<Date | null>(() => {
     const date = new Date();
@@ -321,8 +351,8 @@ export const AnalyzePage = () => {
 
         {/* Results count and total weight */}
         <Card sx={{ p: 2, mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 3, m: 2, flexWrap: 'wrap' }}>
-            <Typography variant="body2" color="text.secondary">
+          <Box display="flex" alignItems="center" justifyContent="end" gap={3} flexWrap="nowrap">
+            <Typography variant="body2" color="text.secondary" marginInlineEnd="auto">
               <FormattedMessage
                 id={'analyze_page.filters.results.found_entries'}
                 values={{ count: filteredWeighings.length }}
@@ -337,6 +367,14 @@ export const AnalyzePage = () => {
                 }}
               />
             </Typography>
+            <ButtonGroup variant="contained" size="small" ref={anchorRef}>
+              <Button>
+                <FormattedMessage id="report.generate" />
+              </Button>
+              <Button onClick={handleToggle}>
+                <ArrowDropDownIcon />
+              </Button>
+            </ButtonGroup>
           </Box>
         </Card>
 
@@ -354,6 +392,32 @@ export const AnalyzePage = () => {
           />
         )}
       </Box>
+      <Popper sx={{ zIndex: 1 }} open={open} anchorEl={anchorRef.current} role={undefined} transition>
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleClose}>
+                <MenuList id="split-button-menu" autoFocusItem>
+                  {options.map((option, index) => (
+                    <MenuItem
+                      key={option}
+                      selected={index === selectedIndex}
+                      onClick={(event) => handleMenuItemClick(event, index)}
+                    >
+                      {option}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
     </Container>
   );
 };
