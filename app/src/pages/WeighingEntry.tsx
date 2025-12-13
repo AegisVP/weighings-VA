@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -16,14 +17,13 @@ import { defaultValues } from '../redux/weighings/weighingsOperations';
 
 import type { TypeWeighingInput } from '../components/WeighingEntryForm/WeighingEntryForm';
 
+const getTime = (dateTime: string) => new Date(dateTime).getTime();
+
 export const WeighingEntry = () => {
   const { formatMessage } = useIntl();
   const dispatch = useAppDispatch();
   const weighingsInProgress = useAppSelector(selectWeighingsInProgress);
   const weighings = useAppSelector(selectWeighings);
-  const sortedWeighings = [...weighings].sort(
-    (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
-  );
   const crops = useAppSelector(selectCrops());
   const locations = useAppSelector(selectLocations());
   const machines = useAppSelector(selectMachines());
@@ -35,6 +35,11 @@ export const WeighingEntry = () => {
   const getMachineDescription = (id: string) => machines.find((m) => m.id === id)?.description || id;
 
   const newWeighing = () => dispatch(newWeighingInProgress(new Date().toISOString()));
+
+  const sortedWeighings = useMemo(
+    () => [...weighings].sort((a, b) => getTime(b.dateTime) - getTime(a.dateTime)),
+    [weighings]
+  );
 
   const setDefaultValues = (data: TypeWeighingInput) => {
     defaultValues.sourceLocation = data.sourceLocation;
@@ -55,11 +60,6 @@ export const WeighingEntry = () => {
       <Card sx={{ width: '100%' }}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 6, md: 9 }}>
-              <Typography variant="h6" whiteSpace="nowrap">
-                {formatMessage({ id: 'weighing_entry.recent_weighings' }, { count: sortedWeighings.length })}
-              </Typography>
-            </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Button
                 variant="contained"
@@ -70,6 +70,11 @@ export const WeighingEntry = () => {
               >
                 {formatMessage({ id: 'weighing_entry.new_weighing' })}
               </Button>
+            </Grid>
+            <Grid container size={{ xs: 6, md: 9 }} justifyContent="flex-end">
+              <Typography variant="h6" whiteSpace="nowrap">
+                {formatMessage({ id: 'weighing_entry.recent_weighings' }, { count: sortedWeighings.length })}
+              </Typography>
             </Grid>
           </Grid>
           <Box sx={{ mt: 2 }}>

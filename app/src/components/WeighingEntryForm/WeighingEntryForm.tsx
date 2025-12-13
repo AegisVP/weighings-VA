@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -436,33 +437,24 @@ export const WeighingEntryForm = ({ dateTime, defaultValues, setDefaultValues }:
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <Grid size={showDeleteButton ? 2 : 3}>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ height: 40 }}
-                fullWidth
-                type="submit"
-                disabled={isLoading}
-                loading={isLoading}
-              >
-                {formatMessage({ id: 'weighing_entry_form.submit_button' })}
-              </Button>
-            </Grid>
-            {showDeleteButton ? (
-              <Grid size={1}>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  sx={{ height: 40 }}
-                  fullWidth
-                  type="button"
-                  onClick={handleRemoveWeighingInProgress}
-                >
-                  {formatMessage({ id: 'weighing_entry_form.close_button' })}
+            <Grid size={3}>
+              <ButtonGroup variant="contained" fullWidth sx={{ height: 40 }}>
+                <Button color="primary" type="submit" disabled={isLoading} loading={isLoading}>
+                  {formatMessage({ id: 'weighing_entry_form.submit_button' })}
                 </Button>
-              </Grid>
-            ) : null}
+                {showDeleteButton && (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    type="button"
+                    sx={{ width: '50%' }}
+                    onClick={handleRemoveWeighingInProgress}
+                  >
+                    {formatMessage({ id: 'weighing_entry_form.close_button' })}
+                  </Button>
+                )}
+              </ButtonGroup>
+            </Grid>
           </Grid>
           {apiError ? (
             <Grid size={12}>
